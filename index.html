@@ -1,4 +1,3 @@
-```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -45,14 +44,9 @@
       --press: translateY(0.5px);
       --focus: 0 0 0 3px rgba(255,255,255,.12);
 
-      /* Mark colors (dark mode default) */
-      --mark-stroke: rgba(244,244,246,.92);
-      --mark-fill: rgba(255,255,255,.03);
-      --mark-shadow: rgba(130,170,255,.22);
-      --mark-shadow-2: rgba(0,220,255,.14);
-      --mark-muted: rgba(255,255,255,.55);
+      --glow-1: rgba(130,170,255,.22);
+      --glow-2: rgba(0,220,255,.14);
 
-      /* Brand typography (tighter pairing) */
       --brand-font: ui-rounded, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --brand-weight: 860;
       --brand-track: .22px;
@@ -68,12 +62,8 @@
         --border:rgba(0,0,0,.12);
         --shadow: 0 14px 30px rgba(0,0,0,.12);
 
-        /* Monochrome mark in light mode */
-        --mark-stroke: rgba(16,16,21,.92);
-        --mark-fill: rgba(0,0,0,.02);
-        --mark-shadow: rgba(40,80,255,.16);
-        --mark-shadow-2: rgba(0,160,255,.10);
-        --mark-muted: rgba(16,16,21,.55);
+        --glow-1: rgba(40,80,255,.16);
+        --glow-2: rgba(0,160,255,.10);
       }
       body{
         background:
@@ -115,7 +105,6 @@
       gap:12px;
     }
 
-    /* Brand with inline SVG mark */
     .brandWrap{
       display:flex;
       align-items:center;
@@ -123,7 +112,7 @@
       min-width: 0;
     }
 
-    /* Increased header icon button size */
+    /* Bigger header icon button */
     .brandIconBtn{
       width:44px;
       height:44px;
@@ -139,31 +128,28 @@
       flex: 0 0 auto;
     }
 
-    /* Very subtle glow on hover */
+    /* Subtle glow on hover */
     .brandIconBtn:hover{
       background: rgba(255,255,255,.08);
       transform: var(--lift);
       box-shadow:
         0 0 0 1px rgba(255,255,255,.06),
-        0 0 18px var(--mark-shadow),
-        0 0 28px var(--mark-shadow-2);
+        0 0 18px var(--glow-1),
+        0 0 28px var(--glow-2);
     }
-    .brandIconBtn:active{
-      transform: var(--press);
-      box-shadow:none;
-    }
-    .brandIconBtn:focus-visible{
-      box-shadow: var(--focus);
-    }
+    .brandIconBtn:active{ transform: var(--press); box-shadow:none; }
+    .brandIconBtn:focus-visible{ box-shadow: var(--focus); }
 
-    /* Increased SVG size */
-    .brandIconSvg{
+    /* Bigger logo image */
+    .brandIcon{
       width:36px;
       height:36px;
+      border-radius:999px;
       display:block;
+      object-fit:cover;
     }
 
-    /* Tighter, deliberate wordmark */
+    /* Deliberate wordmark */
     .brandText{
       font-family: var(--brand-font);
       font-weight: var(--brand-weight);
@@ -177,7 +163,6 @@
       font-kerning: normal;
     }
 
-    /* Location pill (clickable) */
     .pill{
       border:1px solid var(--border);
       background: rgba(255,255,255,.04);
@@ -197,16 +182,9 @@
       outline: none;
       transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
     }
-    .pill:hover{
-      background: rgba(255,255,255,.08);
-      transform: var(--lift);
-    }
-    .pill:active{
-      transform: var(--press);
-    }
-    .pill:focus-visible{
-      box-shadow: var(--focus);
-    }
+    .pill:hover{ background: rgba(255,255,255,.08); transform: var(--lift); }
+    .pill:active{ transform: var(--press); }
+    .pill:focus-visible{ box-shadow: var(--focus); }
 
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -240,10 +218,7 @@
       overflow: hidden;
     }
 
-    /* Minimal loading state using the hoodie icon */
-    .answerBox.loading{
-      background: rgba(0,0,0,.16);
-    }
+    .answerBox.loading{ background: rgba(0,0,0,.16); }
     .loaderRow{
       display:flex;
       align-items:center;
@@ -254,8 +229,9 @@
       width: 34px;
       height: 34px;
       flex: 0 0 auto;
-      opacity: .9;
-      filter: saturate(.98) contrast(.98);
+      opacity: .92;
+      border-radius: 999px;
+      object-fit: cover;
     }
     .loaderText{
       font-size: 14px;
@@ -271,7 +247,6 @@
       100%{ transform: scale(1); opacity: .78; }
     }
 
-    /* Verdict tinting (subtle) */
     .answerBox.verdict-hoodie{
       border-color: rgba(120,160,255,.35);
       background: rgba(120,160,255,.08);
@@ -327,15 +302,8 @@
       gap:12px;
       min-height: 260px;
     }
-    .row{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    label{
-      font-size: 13px;
-      color: var(--muted);
-    }
+    .row{ display:flex; flex-direction:column; gap:8px; }
+    label{ font-size: 13px; color: var(--muted); }
 
     select, input[type="text"]{
       width:100%;
@@ -349,13 +317,8 @@
       color-scheme: dark;
       transition: border-color .15s ease, transform .15s ease;
     }
-    select option{
-      background-color:#0b0b0f;
-      color:#f4f4f6;
-    }
-    select:focus, input[type="text"]:focus{
-      border-color: rgba(255,255,255,.25);
-    }
+    select option{ background-color:#0b0b0f; color:#f4f4f6; }
+    select:focus, input[type="text"]:focus{ border-color: rgba(255,255,255,.25); }
 
     .btnRow{
       display:flex;
@@ -379,33 +342,17 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      transition:
-        transform .15s ease,
-        background-color .15s ease,
-        border-color .15s ease,
-        box-shadow .15s ease;
+      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
     }
-
-    /* Hover animation */
     button:hover, a.btn:hover{
       background: rgba(255,255,255,.09);
       border-color: rgba(255,255,255,.18);
       transform: var(--lift);
       box-shadow: 0 10px 22px rgba(0,0,0,.28);
     }
-    button:active, a.btn:active{
-      transform: var(--press);
-      box-shadow: none;
-    }
-    button:focus-visible, a.btn:focus-visible{
-      box-shadow: var(--focus);
-    }
-    button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+    button:active, a.btn:active{ transform: var(--press); box-shadow: none; }
+    button:focus-visible, a.btn:focus-visible{ box-shadow: var(--focus); }
+    button:disabled{ opacity:.55; cursor:not-allowed; transform: none; box-shadow: none; }
 
     .tiny{
       font-size: 12px;
@@ -436,119 +383,24 @@
       text-decoration: none;
       border-bottom: 1px solid rgba(255,255,255,.25);
     }
-    footer a.btn{
-      border-bottom: none;
-    }
-
-    /* Mark rendering */
-    .mark-stroke{ stroke: var(--mark-stroke); }
-    .mark-fill{ fill: var(--mark-fill); }
-    .mark-muted{ stroke: var(--mark-muted); }
-
-    /* Question mark animation (one time, very light) */
-    .qmark{
-      transform-origin: 50% 50%;
-      opacity: .92;
-    }
-    .qmark.animate-once{
-      animation: qmark-pop 850ms cubic-bezier(.2,.8,.2,1) 1 both;
-    }
-    @keyframes qmark-pop{
-      0%{ transform: translateY(0px) scale(1); filter: blur(0px); opacity: .85; }
-      35%{ transform: translateY(-1.5px) scale(1.02); opacity: 1; }
-      100%{ transform: translateY(0px) scale(1); opacity: .92; }
-    }
+    footer a.btn{ border-bottom: none; }
 
     @media (prefers-reduced-motion: reduce){
       button, a.btn, .pill, select, input[type="text"], .brandIconBtn{
         transition: none;
       }
       .pulse{ animation: none; }
-      .qmark.animate-once{ animation: none; }
     }
   </style>
 </head>
 
 <body>
-  <!-- Clean SVG mark for ultra-sharp scaling -->
-  <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
-    <defs>
-      <symbol id="hoodieMark" viewBox="0 0 64 64">
-        <circle class="mark-fill" cx="32" cy="32" r="28" />
-
-        <path
-          class="mark-stroke"
-          d="M22 24
-             C22 17.8 26.6 14 32 14
-             C37.4 14 42 17.8 42 24
-             V27
-             C46.3 30 49 34.8 49 40.2
-             V46
-             C49 48.2 47.2 50 45 50
-             H19
-             C16.8 50 15 48.2 15 46
-             V40.2
-             C15 34.8 17.7 30 22 27
-             Z"
-          fill="none"
-          stroke-width="2.4"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-
-        <path
-          class="mark-muted"
-          d="M25 26
-             C26.6 22 29.3 20 32 20
-             C34.7 20 37.4 22 39 26"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
-
-        <path
-          class="mark-muted"
-          d="M24 43
-             C26.2 41 29 40 32 40
-             C35 40 37.8 41 40 43"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-        />
-
-        <g id="qmarkGroup" class="qmark" fill="none">
-          <path
-            class="mark-stroke"
-            d="M30.3 29.2
-               C30.3 27.4 31.7 26 33.5 26
-               C35.3 26 36.7 27.3 36.7 29.1
-               C36.7 31.2 34.7 31.7 33.8 32.7
-               C33.2 33.4 33.2 34 33.2 35.1"
-            stroke-width="2.4"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-          <path
-            class="mark-stroke"
-            d="M33.2 38.7 L33.2 38.7"
-            stroke-width="3.2"
-            stroke-linecap="round"
-          />
-        </g>
-      </symbol>
-    </defs>
-  </svg>
-
   <div class="wrap">
     <header>
       <div class="brandWrap">
         <button class="brandIconBtn" id="brandHomeBtn" type="button" aria-label="Use my GPS">
-          <svg class="brandIconSvg" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-            <use href="#hoodieMark"></use>
-          </svg>
+          <img class="brandIcon" src="/logo-mark.png" alt="Hoodie or Nah logo" />
         </button>
-
-        <!-- Updated header text -->
         <div class="brandText">Hoodie or Nah</div>
       </div>
 
@@ -559,9 +411,7 @@
       <section class="hero">
         <div class="answerBox verdict-maybe loading" id="answerBox">
           <div class="loaderRow" id="loaderRow" aria-live="polite">
-            <svg class="loaderIcon pulse" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-              <use href="#hoodieMark"></use>
-            </svg>
+            <img class="loaderIcon pulse" src="/logo-mark.png" alt="" aria-hidden="true" />
             <div class="loaderText" id="loaderText">Getting your local weather…</div>
           </div>
 
@@ -613,7 +463,6 @@
     </main>
 
     <footer>
-      <!-- Removed footer stamp icon -->
       <div style="opacity:.70;">Made to settle the daily hoodie debate.</div>
 
       <div>
@@ -638,8 +487,7 @@
       placeName: null,
       last: null,
       suggestionMap: new Map(),
-      lastPickedLabel: null,
-      didAnimateQmark: false
+      lastPickedLabel: null
     };
 
     function round(n){
@@ -778,47 +626,6 @@
       return now >= sunset || now < sunrise;
     }
 
-    function tryAnimateQuestionMarkOnceIfVisible(){
-      if (state.didAnimateQmark) return;
-
-      const qmark = document.getElementById("qmarkGroup");
-      if (!qmark) return;
-
-      const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return;
-
-      const isVisibleNow = () => {
-        const box = el("answerBox");
-        if (!box) return false;
-        const rect = box.getBoundingClientRect();
-        const vh = window.innerHeight || document.documentElement.clientHeight;
-        const vw = window.innerWidth || document.documentElement.clientWidth;
-        const inViewport = rect.bottom > 0 && rect.right > 0 && rect.top < vh && rect.left < vw;
-        const shown = box.offsetParent !== null && getComputedStyle(box).visibility !== "hidden" && getComputedStyle(box).display !== "none";
-        return inViewport && shown;
-      };
-
-      if ("IntersectionObserver" in window){
-        const obs = new IntersectionObserver((entries) => {
-          for (const entry of entries){
-            if (entry.isIntersecting && isVisibleNow() && !state.didAnimateQmark){
-              state.didAnimateQmark = true;
-              qmark.classList.add("animate-once");
-              obs.disconnect();
-              break;
-            }
-          }
-        }, { threshold: 0.25 });
-
-        obs.observe(el("answerBox"));
-      } else {
-        if (isVisibleNow()){
-          state.didAnimateQmark = true;
-          qmark.classList.add("animate-once");
-        }
-      }
-    }
-
     async function render(){
       if (state.lat == null || state.lon == null) return;
 
@@ -883,8 +690,6 @@
 
         setLoading(false);
         setStatus(`Updated ${new Date(current.time).toLocaleString()}.`);
-
-        tryAnimateQuestionMarkOnceIfVisible();
       }catch(err){
         console.error(err);
         setLoading(false);
@@ -1029,35 +834,7 @@
       { name: "Cape Town, South Africa", lat: -33.9249, lon: 18.4241 },
       { name: "Nairobi, Kenya", lat: -1.2921, lon: 36.8219 },
       { name: "Dubai, UAE", lat: 25.2048, lon: 55.2708 },
-      { name: "Mumbai, India", lat: 19.0760, lon: 72.8777 },
-      { name: "Bangkok, Thailand", lat: 13.7563, lon: 100.5018 },
-      { name: "Singapore", lat: 1.3521, lon: 103.8198 },
-      { name: "Tokyo, Japan", lat: 35.6762, lon: 139.6503 },
-      { name: "Seoul, South Korea", lat: 37.5665, lon: 126.9780 },
-      { name: "Sydney, Australia", lat: -33.8688, lon: 151.2093 },
-      { name: "Auckland, New Zealand", lat: -36.8485, lon: 174.7633 },
-      { name: "Honolulu, Hawaii, USA", lat: 21.3069, lon: -157.8583 },
-      { name: "Anchorage, Alaska, USA", lat: 61.2181, lon: -149.9003 },
-      { name: "Vancouver, Canada", lat: 49.2827, lon: -123.1207 },
-      { name: "Mexico City, Mexico", lat: 19.4326, lon: -99.1332 },
-      { name: "Bogotá, Colombia", lat: 4.7110, lon: -74.0721 },
-      { name: "Lima, Peru", lat: -12.0464, lon: -77.0428 },
-      { name: "Rio de Janeiro, Brazil", lat: -22.9068, lon: -43.1729 },
-      { name: "Buenos Aires, Argentina", lat: -34.6037, lon: -58.3816 },
-      { name: "Santiago, Chile", lat: -33.4489, lon: -70.6693 },
-      { name: "New York, NY, USA", lat: 40.7128, lon: -74.0060 },
-      { name: "Chicago, IL, USA", lat: 41.8781, lon: -87.6298 },
-      { name: "Denver, CO, USA", lat: 39.7392, lon: -104.9903 },
-      { name: "Phoenix, AZ, USA", lat: 33.4484, lon: -112.0740 },
-      { name: "Miami, FL, USA", lat: 25.7617, lon: -80.1918 },
-      { name: "Seattle, WA, USA", lat: 47.6062, lon: -122.3321 },
-      { name: "San Francisco, CA, USA", lat: 37.7749, lon: -122.4194 },
-      { name: "Helsinki, Finland", lat: 60.1699, lon: 24.9384 },
-      { name: "Oslo, Norway", lat: 59.9139, lon: 10.7522 },
-      { name: "Stockholm, Sweden", lat: 59.3293, lon: 18.0686 },
-      { name: "Lisbon, Portugal", lat: 38.7223, lon: -9.1393 },
-      { name: "Marrakesh, Morocco", lat: 31.6295, lon: -7.9811 },
-      { name: "Ushuaia, Argentina", lat: -54.8019, lon: -68.3030 }
+      { name: "Tokyo, Japan", lat: 35.6762, lon: 139.6503 }
     ];
 
     let lastRandomIndex = -1;
@@ -1107,11 +884,6 @@
     });
 
     useGps();
-
-    window.addEventListener("load", () => {
-      tryAnimateQuestionMarkOnceIfVisible();
-    }, { once: true });
   </script>
 </body>
 </html>
-```
