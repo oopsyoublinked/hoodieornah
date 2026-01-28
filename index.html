@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -50,6 +51,9 @@
       --brand-font: ui-rounded, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       --brand-weight: 860;
       --brand-track: .22px;
+
+      --toast-bg: rgba(10,10,14,.72);
+      --toast-border: rgba(255,255,255,.12);
     }
 
     @media (prefers-color-scheme: light){
@@ -64,6 +68,9 @@
 
         --glow-1: rgba(40,80,255,.16);
         --glow-2: rgba(0,160,255,.10);
+
+        --toast-bg: rgba(255,255,255,.88);
+        --toast-border: rgba(0,0,0,.10);
       }
       body{
         background:
@@ -181,6 +188,31 @@
     .pill:hover{ background: rgba(255,255,255,.08); transform: var(--lift); }
     .pill:active{ transform: var(--press); }
     .pill:focus-visible{ box-shadow: var(--focus); }
+
+    .pill .pillText{
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display:block;
+      min-width: 0;
+    }
+    .pill .pillPin{
+      opacity: .9;
+      flex: 0 0 auto;
+    }
+    .pill .pillSpinner{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.22);
+      border-top-color: rgba(255,255,255,.72);
+      animation: spin .9s linear infinite;
+      flex: 0 0 auto;
+    }
+    @keyframes spin{
+      from{ transform: rotate(0deg); }
+      to{ transform: rotate(360deg); }
+    }
 
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -399,12 +431,40 @@
     }
     footer a.btn{ border-bottom: none; }
 
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      border: 1px solid var(--toast-border);
+      background: var(--toast-bg);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+      font-size: 13px;
+      max-width: min(520px, calc(100vw - 24px));
+      text-align: center;
+      transition: opacity .18s ease, transform .18s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 9999;
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     @media (prefers-reduced-motion: reduce){
       button, a.btn, .pill, select, input[type="text"], .brandIconBtn{
         transition: none;
       }
       .pulse{ animation: none; }
       .snark-line.is-animating{ animation: none; }
+      .pill .pillSpinner{ animation: none; }
+      .toast{ transition: none; }
     }
   </style>
 </head>
@@ -419,7 +479,9 @@
         <div class="brandText">Hoodie or Nah</div>
       </div>
 
-      <button class="pill" id="locPill" type="button">Locating…</button>
+      <button class="pill" id="locPill" type="button" aria-label="Set location">
+        <span class="pillText">Near you</span>
+      </button>
     </header>
 
     <main class="card">
@@ -494,6 +556,8 @@
     </footer>
   </div>
 
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script>
     const el = (id) => document.getElementById(id);
 
@@ -501,10 +565,14 @@
       lat: null,
       lon: null,
       placeName: null,
+      placeLabelShort: null,
       last: null,
       suggestionMap: new Map(),
       lastPickedLabel: null,
-      forceNewSnark: false
+      forceNewSnark: false,
+      locationSource: "unknown",
+      gpsInFlight: false,
+      toastTimer: null
     };
 
     function round(n){
@@ -535,7 +603,41 @@
     }
 
     function setStatus(msg){ el("status").textContent = msg || ""; }
-    function setLocPill(text){ el("locPill").textContent = text; }
+
+    function showToast(msg){
+      const t = el("toast");
+      if (!t) return;
+
+      if (state.toastTimer) clearTimeout(state.toastTimer);
+
+      t.textContent = msg;
+      t.classList.add("show");
+
+      state.toastTimer = setTimeout(() => {
+        t.classList.remove("show");
+      }, 2200);
+    }
+
+    function setLocPillNeutral(){
+      const p = el("locPill");
+      p.innerHTML = '<span class="pillText">Near you</span>';
+    }
+
+    function setLocPillLoading(){
+      const p = el("locPill");
+      p.innerHTML = '<span class="pillSpinner" aria-hidden="true"></span><span class="pillText">Near you</span>';
+    }
+
+    function setLocPillPinned(label){
+      const p = el("locPill");
+      const safe = String(label || "").trim();
+      if (!safe){
+        setLocPillNeutral();
+        return;
+      }
+      p.innerHTML = '<span class="pillPin" aria-hidden="true">📍</span><span class="pillText"></span>';
+      p.querySelector(".pillText").textContent = safe;
+    }
 
     function clearSnarkLine(){
       const s = el("snarkLine");
@@ -570,7 +672,7 @@
 
     function setAnswer(verdict, reason, metaParts){
       applyVerdictClass(verdict);
-      el("answer").textContent = verdict.toUpperCase();
+      el("answer").textContent = String(verdict || "").toUpperCase();
       el("reason").textContent = reason;
 
       const meta = el("meta");
@@ -629,9 +731,44 @@
       return (data && data.results) ? data.results : [];
     }
 
+    async function reverseGeocode(lat, lon){
+      const url = new URL("https://geocoding-api.open-meteo.com/v1/reverse");
+      url.searchParams.set("latitude", String(lat));
+      url.searchParams.set("longitude", String(lon));
+      url.searchParams.set("language", "en");
+      url.searchParams.set("format", "json");
+
+      const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+      if (!res.ok) throw new Error("Reverse geocode failed");
+      const data = await res.json();
+      const r = (data && data.results && data.results[0]) ? data.results[0] : null;
+      if (!r) throw new Error("No reverse result");
+      return r;
+    }
+
     function formatPlace(r){
       const country = r.country || r.country_code || "";
       return [r.name, r.admin1, country].filter(Boolean).join(", ");
+    }
+
+    function formatShortPlace(r){
+      const name = (r && r.name) ? String(r.name).trim() : "";
+      const cc = (r && (r.country_code || r.country)) ? String(r.country_code || r.country).trim().toUpperCase() : "";
+      const admin1 = (r && r.admin1) ? String(r.admin1).trim() : "";
+      const admin1Code = (r && r.admin1_code) ? String(r.admin1_code).trim().toUpperCase() : "";
+
+      if (!name) return "";
+
+      if (cc === "US" && (admin1Code || admin1)){
+        const st = admin1Code || admin1;
+        return `${name}, ${st}`;
+      }
+
+      if (admin1 && admin1.toLowerCase() !== name.toLowerCase()){
+        return `${name}, ${admin1}`;
+      }
+
+      return name;
     }
 
     function pickBestResult(query, results){
@@ -664,7 +801,8 @@
       return {
         lat: Number(r.latitude),
         lon: Number(r.longitude),
-        name: formatPlace(r)
+        name: formatPlace(r),
+        short: formatShortPlace(r)
       };
     }
 
@@ -843,8 +981,9 @@
 
         const needsLayerUp = (verdict === "Hoodie" && adjusted <= (units.usesF ? 50 : 10));
 
-        const place = state.placeName || "Near you";
-        setLocPill(place);
+        const shortLabel = state.placeLabelShort || "";
+        if (shortLabel) setLocPillPinned(shortLabel);
+        else setLocPillNeutral();
 
         const metaParts = [
           `Feels like ${round(feels)}${units.tempSymbol}`,
@@ -855,19 +994,19 @@
 
         if (needsLayerUp) metaParts.push("Layer up");
 
-        const where = place === "Near you" ? "near you" : "in " + place;
+        const where = shortLabel ? `in ${shortLabel}` : "near you";
 
         let explanation = "";
         if (verdict === "Hoodie"){
           explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Hoodie weather.`;
           if (needsLayerUp) explanation += " Layer up. You might want a jacket too.";
-          if (wind > (units.usesF ? 10 : 16)) explanation += " The wind makes it feel colder.";
+          if (wind > (units.usesF ? 10 : 16)) explanation += " The wind is being rude.";
           if (night) explanation += " Nights cool off fast.";
         } else if (verdict === "Maybe"){
-          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Could go either way. If you will be outside awhile, bring it.`;
+          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. You could go either way. If you will be out awhile, bring it.`;
         } else {
           explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Probably no hoodie.`;
-          if (night) explanation += " If you are out late, a light layer might still help.";
+          if (night) explanation += " If you are out late, a light layer might still save you.";
         }
 
         setAnswer(verdict, explanation, metaParts);
@@ -880,44 +1019,81 @@
           forceNew
         });
 
-        state.last = { verdict, place, feels: round(feels), wind: round(wind) };
-
         setLoading(false);
         setStatus(`Updated ${new Date(current.time).toLocaleString()}.`);
       }catch(err){
         console.error(err);
         setLoading(false);
         clearSnarkLine();
-        setAnswer("…", "Could not load weather right now.", []);
+        setAnswer("…", "Weather fetch failed. Love that for us.", []);
         setStatus("Try refresh, GPS, or manual location.");
-        setLocPill("Location");
+        setLocPillNeutral();
       }
     }
 
     async function useGps(){
-      setLocPill("Locating…");
+      state.gpsInFlight = true;
+      state.locationSource = "gps";
+      state.placeName = null;
+      state.placeLabelShort = "";
+
+      setLocPillLoading();
       setStatus("");
-      setLoading(true, "Locating you…");
+      setLoading(true, "Asking your browser nicely…");
 
       if (!navigator.geolocation){
+        state.gpsInFlight = false;
         setLoading(false);
-        setLocPill("No GPS");
-        setStatus("Your browser does not support location.");
+        setLocPillNeutral();
+        setStatus("No GPS support. Wild.");
+        showToast("Location unavailable");
         return;
       }
 
       navigator.geolocation.getCurrentPosition(async (pos) => {
-        state.lat = pos.coords.latitude;
-        state.lon = pos.coords.longitude;
-        state.placeName = "Near you";
-        state.lastPickedLabel = null;
-        await requestRender({ forceNewSnark: true });
+        try{
+          state.lat = pos.coords.latitude;
+          state.lon = pos.coords.longitude;
+
+          let shortLabel = "";
+          try{
+            const r = await reverseGeocode(state.lat, state.lon);
+            shortLabel = formatShortPlace(r);
+          }catch{
+            shortLabel = "";
+          }
+
+          state.placeLabelShort = shortLabel || "";
+          state.placeName = shortLabel || "Near you";
+
+          state.gpsInFlight = false;
+
+          if (state.placeLabelShort) setLocPillPinned(state.placeLabelShort);
+          else setLocPillNeutral();
+
+          await requestRender({ forceNewSnark: true });
+        }catch(err){
+          console.error(err);
+          state.gpsInFlight = false;
+          setLoading(false);
+          setLocPillNeutral();
+          setStatus("GPS worked. Reverse lookup did not. Classic.");
+          showToast("Location unavailable");
+        }
       }, (err) => {
         console.error(err);
+        state.gpsInFlight = false;
         setLoading(false);
         clearSnarkLine();
-        setLocPill("GPS blocked");
-        setStatus("Allow location access or enter a city/ZIP.");
+        setLocPillNeutral();
+
+        if (err && err.code === 1){
+          setStatus("No location. No problem. Use manual if you want.");
+          showToast("Location access denied");
+        } else {
+          setStatus("GPS timed out. Try again or just type a city.");
+          showToast("Location unavailable");
+        }
       }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
     }
 
@@ -932,10 +1108,13 @@
 
       for (const r of results){
         const label = formatPlace(r);
+        const short = formatShortPlace(r);
+
         state.suggestionMap.set(label, {
           lat: Number(r.latitude),
           lon: Number(r.longitude),
-          name: label
+          name: label,
+          short: short || r.name || label
         });
 
         const opt = document.createElement("option");
@@ -952,12 +1131,17 @@
       if (state.suggestionMap.has(q) && state.lastPickedLabel !== q){
         const picked = state.suggestionMap.get(q);
         state.lastPickedLabel = q;
+
         state.lat = picked.lat;
         state.lon = picked.lon;
         state.placeName = picked.name;
-        setLocPill(picked.name);
-        setLoading(true, "Loading weather…");
+        state.placeLabelShort = picked.short || picked.name;
+        state.locationSource = "manual";
+
+        setLocPillPinned(state.placeLabelShort);
+        setLoading(true, "Fine. Teleporting your forecast…");
         setStatus("Loading weather…");
+
         await requestRender({ forceNewSnark: true });
         return;
       }
@@ -986,52 +1170,62 @@
     async function useCity(){
       const qRaw = el("city").value.trim();
       if (!qRaw){
-        setStatus("Type a city, region, country or ZIP first.");
+        setStatus("Type a city or ZIP first. I cannot guess harder than this.");
         return;
       }
 
       const picked = state.suggestionMap.get(qRaw);
 
       try{
-        setLocPill("Searching…");
-        setLoading(true, "Finding that location…");
-        setStatus("Finding that location…");
+        setLoading(true, "Finding that place…");
+        setStatus("Finding that place…");
+
+        state.locationSource = "manual";
 
         if (picked){
           state.lat = picked.lat;
           state.lon = picked.lon;
           state.placeName = picked.name;
+          state.placeLabelShort = picked.short || picked.name;
           state.lastPickedLabel = qRaw;
+
+          setLocPillPinned(state.placeLabelShort);
           await requestRender({ forceNewSnark: true });
           return;
         }
 
+        setLocPillLoading();
         const g = await geocodeBest(qRaw);
+
         state.lat = g.lat;
         state.lon = g.lon;
         state.placeName = g.name;
+        state.placeLabelShort = g.short || g.name;
         state.lastPickedLabel = null;
+
+        setLocPillPinned(state.placeLabelShort);
         await requestRender({ forceNewSnark: true });
       }catch(err){
         console.error(err);
         setLoading(false);
         clearSnarkLine();
-        setLocPill("Not found");
-        setStatus("Could not find that location. Try: City, Country (example: Sydney, Australia).");
+        setLocPillNeutral();
+        setStatus("Could not find that location. Try: City, Country.");
+        showToast("Location not found");
       }
     }
 
     const RANDOM_PLACES = [
-      { name: "Reykjavík, Iceland", lat: 64.1466, lon: -21.9426 },
-      { name: "Dublin, Ireland", lat: 53.3498, lon: -6.2603 },
-      { name: "London, UK", lat: 51.5072, lon: -0.1276 },
-      { name: "Paris, France", lat: 48.8566, lon: 2.3522 },
-      { name: "Rome, Italy", lat: 41.9028, lon: 12.4964 },
-      { name: "Cairo, Egypt", lat: 30.0444, lon: 31.2357 },
-      { name: "Cape Town, South Africa", lat: -33.9249, lon: 18.4241 },
-      { name: "Nairobi, Kenya", lat: -1.2921, lon: 36.8219 },
-      { name: "Dubai, UAE", lat: 25.2048, lon: 55.2708 },
-      { name: "Tokyo, Japan", lat: 35.6762, lon: 139.6503 }
+      { name: "Reykjavík, Iceland", short: "Reykjavík", lat: 64.1466, lon: -21.9426 },
+      { name: "Dublin, Ireland", short: "Dublin", lat: 53.3498, lon: -6.2603 },
+      { name: "London, UK", short: "London", lat: 51.5072, lon: -0.1276 },
+      { name: "Paris, France", short: "Paris", lat: 48.8566, lon: 2.3522 },
+      { name: "Rome, Italy", short: "Rome", lat: 41.9028, lon: 12.4964 },
+      { name: "Cairo, Egypt", short: "Cairo", lat: 30.0444, lon: 31.2357 },
+      { name: "Cape Town, South Africa", short: "Cape Town", lat: -33.9249, lon: 18.4241 },
+      { name: "Nairobi, Kenya", short: "Nairobi", lat: -1.2921, lon: 36.8219 },
+      { name: "Dubai, UAE", short: "Dubai", lat: 25.2048, lon: 55.2708 },
+      { name: "Tokyo, Japan", short: "Tokyo", lat: 35.6762, lon: 139.6503 }
     ];
 
     let lastRandomIndex = -1;
@@ -1050,11 +1244,13 @@
       state.lat = p.lat;
       state.lon = p.lon;
       state.placeName = p.name;
+      state.placeLabelShort = p.short || p.name;
       state.lastPickedLabel = null;
+      state.locationSource = "random";
 
-      setLocPill(p.name);
-      setLoading(true, "Teleporting…");
-      setStatus("Teleporting…");
+      setLocPillPinned(state.placeLabelShort);
+      setLoading(true, "Spinning the globe…");
+      setStatus("Spinning the globe…");
       await requestRender({ forceNewSnark: true });
     }
 
@@ -1081,9 +1277,9 @@
       autocomplete();
     });
 
+    setLocPillNeutral();
     useGps();
   </script>
 </body>
 </html>
-
-
+```
