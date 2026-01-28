@@ -731,18 +731,44 @@
     }
 
     async function reverseGeocode(lat, lon){
-      const url = new URL("https://geocoding-api.open-meteo.com/v1/reverse");
-      url.searchParams.set("latitude", String(lat));
-      url.searchParams.set("longitude", String(lon));
-      url.searchParams.set("language", "en");
-      url.searchParams.set("format", "json");
+  // Try Open-Meteo first
+  try{
+    const url = new URL("https://geocoding-api.open-meteo.com/v1/reverse");
+    url.searchParams.set("latitude", String(lat));
+    url.searchParams.set("longitude", String(lon));
+    url.searchParams.set("language", "en");
+    url.searchParams.set("format", "json");
 
-      const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("Reverse geocode failed");
-      const data = await res.json();
-      const r = (data && data.results && data.results[0]) ? data.results[0] : null;
-      if (!r) throw new Error("No reverse result");
-      return r;
+    const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+    if (!res.ok) throw new Error("Open-Meteo reverse failed");
+    const data = await res.json();
+
+    const r = (data && data.results && data.results[0]) ? data.results[0] : null;
+    if (r && (r.name || r.admin1 || r.country_code || r.country)) return r;
+  }catch{
+    // fall through
+  }
+
+  // Fallback: BigDataCloud (CORS friendly, no key)
+  const url2 = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+  url2.searchParams.set("latitude", String(lat));
+  url2.searchParams.set("longitude", String(lon));
+  url2.searchParams.set("localityLanguage", "en");
+
+  const res2 = await fetch(url2.toString(), { headers: { "Accept": "application/json" } });
+  if (!res2.ok) throw new Error("BigDataCloud reverse failed");
+  const d = await res2.json();
+
+  // Normalize to the shape your formatter expects
+  return {
+    name: d.city || d.locality || d.principalSubdivision || d.localityInfo?.administrative?.[0]?.name || "",
+    admin1: d.principalSubdivision || "",
+    admin1_code: d.principalSubdivisionCode || "",
+    country_code: (d.countryCode || "").toUpperCase(),
+    country: d.countryName || ""
+  };
+}
+
     }
 
     function formatPlace(r){
@@ -1057,9 +1083,17 @@
           let shortLabel = "";
           try{
             const r = await reverseGeocode(state.lat, state.lon);
-            shortLabel = formatShortPlace(r);
-          }catch{
-            shortLabel = "";
+  shortLabel = formatShortPlace(r);
+
+  // If formatShortPlace returns empty for some reason, try a simpler build
+  if (!shortLabel){
+    const n = (r && r.name) ? String(r.name).trim() : "";
+    const a = (r && r.admin1) ? String(r.admin1).trim() : "";
+    shortLabel = [n, a].filter(Boolean).join(", ").trim();
+  }
+}catch{
+  shortLabel = "";
+}
           }
 
           state.placeLabelShort = shortLabel || "";
@@ -1281,4 +1315,5 @@
   </script>
 </body>
 </html>
+
 
