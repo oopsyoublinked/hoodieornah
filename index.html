@@ -113,7 +113,6 @@
       min-width: 0;
     }
 
-    /* Bigger header icon button */
     .brandIconBtn{
       width:44px;
       height:44px;
@@ -129,7 +128,6 @@
       flex: 0 0 auto;
     }
 
-    /* Subtle glow on hover */
     .brandIconBtn:hover{
       background: rgba(255,255,255,.08);
       transform: var(--lift);
@@ -141,7 +139,6 @@
     .brandIconBtn:active{ transform: var(--press); box-shadow:none; }
     .brandIconBtn:focus-visible{ box-shadow: var(--focus); }
 
-    /* Bigger logo image */
     .brandIcon{
       width:36px;
       height:36px;
@@ -150,7 +147,6 @@
       object-fit:cover;
     }
 
-    /* Deliberate wordmark */
     .brandText{
       font-family: var(--brand-font);
       font-weight: var(--brand-weight);
@@ -279,7 +275,6 @@
       max-width: 46ch;
     }
 
-    /* Snark line */
     .snark-line{
       margin-top: 10px;
       opacity: 0.92;
@@ -438,10 +433,7 @@
 
           <div class="answer" id="answer">…</div>
           <div class="reason" id="reason">Getting your local weather.</div>
-
-          <!-- Snark line lives right under the explanation -->
           <div id="snarkLine" class="snark-line" aria-live="polite"></div>
-
           <div class="meta" id="meta"></div>
           <div class="status" id="status"></div>
         </div>
@@ -516,192 +508,42 @@
       forceNewSnark: false
     };
 
-    // -----------------------------
-    // Snark lines (Hoodie or Nah)
-    // -----------------------------
-
-    const EXTREME_FALLBACK_LINE = "This weather is doing the most. Dress like you respect yourself.";
-
-    const SNARK_POOLS = {
-      hoodie: [
-        { t: "Prime hoodie weather. Do not overthink it.", w: 1 },
-        { t: "Hoodie time. The universe has spoken.", w: 1 },
-        { t: "This is exactly why hoodies were invented.", w: 1 },
-        { t: "Put the hoodie on. Feel the power.", w: 1 },
-        { t: "Yes, a hoodie. No, not the thin one.", w: 1 },
-        { t: "Hoodie weather. Arguments are invalid.", w: 1 },
-        { t: "You will not regret the hoodie choice today.", w: 1 },
-        { t: "This is hoodie season behavior.", w: 1 },
-        { t: "Hoodie up. Be comfortable on purpose.", w: 1 },
-        { t: "A hoodie is the correct amount of effort.", w: 1 },
-        { t: "The air feels like it wants a hoodie. Let it.", w: 1 },
-        { t: "Hoodie weather. Proceed with confidence.", w: 1 },
-        { t: "This is the sweet spot. Hoodie, no jacket.", w: 1 },
-        { t: "Hoodie weather. Your future self says thanks.", w: 1 },
-        { t: "If you skip the hoodie, you will complain later.", w: 1 },
-        { t: "Hoodie weather. The vibe is secure.", w: 1 },
-        { t: "This is hoodie comfort territory.", w: 1 },
-        { t: "Wear the hoodie. Keep your hands in the pocket. Win.", w: 0.9 },
-        { t: "You are one breeze away from needing a hoodie.", w: 1 },
-        { t: "Hoodie weather. No notes.", w: 1 },
-        { t: "This is a hoodie day. The math checks out.", w: 1 },
-        { t: "Hoodie on. Headphones in. Main character.", w: 0.7 },
-        { t: "If you are chilly in the shade, that is hoodie proof.", w: 1 },
-        { t: "Hoodie approved. The council has decided.", w: 0.7 },
-        { t: "Put on the hoodie and pretend you planned this.", w: 0.7 },
-        { t: "This is hoodie weather. Stay cozy, not complicated.", w: 1 },
-        { t: "The forecast says hoodie. Your ego says t-shirt. Ignore your ego.", w: 0.6 },
-        { t: "Hoodie weather. Carrying a jacket is for amateurs.", w: 0.6 },
-        { t: "Hoodie weather. Go be unstoppable.", w: 0.9 },
-        { t: "Hoodie time. The world can wait.", w: 0.7 }
-      ],
-
-      maybe: [
-        { t: "Borderline. Choose wisely, hero.", w: 1 },
-        { t: "This is a decision. Not a suggestion.", w: 1 },
-        { t: "You could go either way. Regret is possible.", w: 1 },
-        { t: "Hoodie if you are dramatic. T-shirt if you are brave.", w: 1 },
-        { t: "You will be fine until the shade hits.", w: 1 },
-        { t: "This is prime ‘I will carry it later’ weather.", w: 1 },
-        { t: "Hoodie in the morning. Questioning it by noon.", w: 1 },
-        { t: "It is giving: hoodie, but unzipped.", w: 0.9 },
-        { t: "You are one cloud away from switching teams.", w: 1 },
-        { t: "This is the weather equivalent of a maybe text.", w: 0.9 },
-        { t: "Hoodie if you hate being slightly uncomfortable.", w: 1 },
-        { t: "You can wear a hoodie. Just do not commit emotionally.", w: 1 },
-        { t: "This is a layered look moment.", w: 1 },
-        { t: "It is fine now. It will be different in 20 minutes.", w: 1 },
-        { t: "Hoodie depends on wind. Wind is chaos.", w: 1 },
-        { t: "This is ‘check the sun’ weather.", w: 1 },
-        { t: "A hoodie might be correct. Might.", w: 1 },
-        { t: "You can risk it. You can also suffer.", w: 1 },
-        { t: "If you run hot, skip it. If you complain, wear it.", w: 1 },
-        { t: "This is a soft launch into hoodie season.", w: 0.9 },
-        { t: "Half hoodie. Full uncertainty.", w: 0.9 },
-        { t: "Bring the hoodie. Decide later like everyone else.", w: 1 },
-        { t: "This weather is not here to help you.", w: 1 },
-        { t: "A hoodie is optional. Your comfort is not.", w: 1 },
-        { t: "This is the danger zone: comfortable lies.", w: 0.8 },
-        { t: "You are either prepared or smug. Pick one.", w: 0.8 },
-        { t: "Hoodie, but only if you want pocket access.", w: 0.9 },
-        { t: "This is hoodie weather for people who like options.", w: 1 },
-        { t: "It is giving ‘I might be chilly’ energy.", w: 1 },
-        { t: "A hoodie could work. So could denial.", w: 0.8 }
-      ],
-
-      nah: [
-        { t: "Absolutely not. Step away from the hoodie.", w: 1 },
-        { t: "This is t-shirt weather. Accept it.", w: 1 },
-        { t: "If you wear a hoodie, you will regret it fast.", w: 1 },
-        { t: "Hoodie? No. Hydration? Yes.", w: 1 },
-        { t: "This is how you end up carrying a hoodie all day.", w: 1 },
-        { t: "The hoodie is not the move today.", w: 1 },
-        { t: "It is too warm for hoodie behavior.", w: 1 },
-        { t: "Save the hoodie for when the air has teeth.", w: 1 },
-        { t: "T-shirt weather. Your pits will thank you.", w: 0.9 },
-        { t: "This is shorts and confidence weather.", w: 1 },
-        { t: "A hoodie would be a personal choice. A wrong one.", w: 0.9 },
-        { t: "Do not let nostalgia trick you into long sleeves.", w: 1 },
-        { t: "If you hoodie up, you are basically slow cooking.", w: 0.8 },
-        { t: "The sun is watching. Do not be foolish.", w: 0.9 },
-        { t: "No hoodie. You are not in a music video.", w: 0.7 },
-        { t: "Hoodie energy is not supported by today’s climate.", w: 1 },
-        { t: "If you insist on a hoodie, pick the thinnest one you own.", w: 1 },
-        { t: "This is a breathable fabric situation.", w: 1 },
-        { t: "Hoodie? Nah. Keep it moving.", w: 1 },
-        { t: "The weather said: sleeves are optional.", w: 1 },
-        { t: "Hoodies are great. Today is not.", w: 1 },
-        { t: "This is ‘roll the windows down’ weather.", w: 0.8 },
-        { t: "Wear a hoodie if you love being uncomfortable.", w: 1 },
-        { t: "A hoodie right now is just ambition with consequences.", w: 0.8 },
-        { t: "You will take it off in five minutes. Be honest.", w: 1 },
-        { t: "Skip the hoodie. Save yourself the burden.", w: 1 },
-        { t: "This is not hoodie weather. This is sunscreen weather.", w: 1 },
-        { t: "If you hoodie up, you owe everyone an apology.", w: 0.6 },
-        { t: "You can wear a hoodie. You can also make mistakes.", w: 0.8 },
-        { t: "Nah. Let your arms live.", w: 1 }
-      ]
-    };
-
-    function pickWeighted(items) {
-      let total = 0;
-      for (const it of items) total += (typeof it.w === "number" ? it.w : 1);
-      let r = Math.random() * total;
-      for (const it of items) {
-        r -= (typeof it.w === "number" ? it.w : 1);
-        if (r <= 0) return it.t;
-      }
-      return items[items.length - 1].t;
-    }
-
-    function isExtremeWeather(feelsLikeF) {
-      return feelsLikeF <= 15 || feelsLikeF >= 95;
-    }
-
-    function buildLocationKey() {
-      const lat = Number(state.lat);
-      const lon = Number(state.lon);
-      if (Number.isFinite(lat) && Number.isFinite(lon)) {
-        return `ll:${lat.toFixed(3)},${lon.toFixed(3)}`;
-      }
-      const p = (state.placeName || "unknown").toLowerCase().trim();
-      return `place:${p}`;
-    }
-
-    function snarkSessionKey({ locationKey, resultType }) {
-      return `hon_snark_v1:${resultType}:${locationKey}`;
-    }
-
-    function clearSnarkLine() {
-      const s = el("snarkLine");
-      if (!s) return;
-      s.classList.remove("is-animating");
-      s.textContent = "";
-    }
-
-    function setSnarkLine({ verdict, feelsLikeF, forceNew }) {
-      const s = el("snarkLine");
-      if (!s) return;
-
-      const resultType =
-        verdict === "Hoodie" ? "hoodie" :
-        verdict === "Maybe" ? "maybe" : "nah";
-
-      const locationKey = buildLocationKey();
-      const key = snarkSessionKey({ locationKey, resultType });
-
-      if (!forceNew) {
-        const existing = sessionStorage.getItem(key);
-        if (existing) {
-          s.textContent = existing;
-          return;
-        }
-      }
-
-      const line = isExtremeWeather(feelsLikeF)
-        ? EXTREME_FALLBACK_LINE
-        : pickWeighted(SNARK_POOLS[resultType] || []);
-
-      sessionStorage.setItem(key, line);
-
-      s.classList.remove("is-animating");
-      void s.offsetWidth;
-      s.classList.add("is-animating");
-      s.textContent = line;
-    }
-
-    function requestRender({ forceNewSnark = false } = {}) {
-      state.forceNewSnark = !!forceNewSnark;
-      return render();
-    }
-
     function round(n){
       const x = Number(n);
       return Number.isFinite(x) ? Math.round(x) : null;
     }
 
+    function getRegionCode(){
+      try{
+        const loc = Intl.DateTimeFormat().resolvedOptions().locale || "";
+        const m = loc.match(/-([A-Z]{2})\b/);
+        return m ? m[1] : null;
+      }catch{
+        return null;
+      }
+    }
+
+    function inferUnitSystem(){
+      const region = getRegionCode();
+      const usesF = region === "US" || region === "LR" || region === "MM";
+      return {
+        tempUnit: usesF ? "fahrenheit" : "celsius",
+        windUnit: usesF ? "mph" : "kmh",
+        tempSymbol: usesF ? "°F" : "°C",
+        windSymbol: usesF ? "mph" : "km/h",
+        usesF
+      };
+    }
+
     function setStatus(msg){ el("status").textContent = msg || ""; }
     function setLocPill(text){ el("locPill").textContent = text; }
+
+    function clearSnarkLine(){
+      const s = el("snarkLine");
+      if (!s) return;
+      s.classList.remove("is-animating");
+      s.textContent = "";
+    }
 
     function setLoading(isLoading, text){
       const box = el("answerBox");
@@ -741,30 +583,33 @@
       });
     }
 
-    function computeDecision({ feelsF, windMph, isNight, tempPrefShift }){
-      let adjusted = feelsF;
+    function computeDecision({ feels, wind, isNight, tempPrefShift, usesF }){
+      let adjusted = feels;
 
-      if (windMph > 10) adjusted -= 3;
-      if (isNight) adjusted -= 2;
+      if (wind > (usesF ? 10 : 16)) adjusted -= (usesF ? 3 : 2);
+      if (isNight) adjusted -= (usesF ? 2 : 1);
 
       adjusted += tempPrefShift;
 
+      const hoodieCut = usesF ? 62 : 17;
+      const maybeTop = usesF ? 68 : 20;
+
       let verdict = "Nah";
-      if (adjusted < 62) verdict = "Hoodie";
-      else if (adjusted <= 68) verdict = "Maybe";
+      if (adjusted < hoodieCut) verdict = "Hoodie";
+      else if (adjusted <= maybeTop) verdict = "Maybe";
 
       return { verdict, adjusted };
     }
 
-    async function fetchWeather(lat, lon){
+    async function fetchWeather(lat, lon, units){
       const url = new URL("https://api.open-meteo.com/v1/forecast");
       url.searchParams.set("latitude", lat);
       url.searchParams.set("longitude", lon);
       url.searchParams.set("current", "temperature_2m,apparent_temperature,wind_speed_10m");
       url.searchParams.set("daily", "sunrise,sunset");
       url.searchParams.set("timezone", "auto");
-      url.searchParams.set("temperature_unit", "fahrenheit");
-      url.searchParams.set("wind_speed_unit", "mph");
+      url.searchParams.set("temperature_unit", units.tempUnit);
+      url.searchParams.set("wind_speed_unit", units.windUnit);
 
       const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
       if (!res.ok) throw new Error("Weather fetch failed");
@@ -832,6 +677,137 @@
       return now >= sunset || now < sunrise;
     }
 
+    function buildLocationKey(){
+      const lat = Number(state.lat);
+      const lon = Number(state.lon);
+      if (Number.isFinite(lat) && Number.isFinite(lon)){
+        return `ll:${lat.toFixed(3)},${lon.toFixed(3)}`;
+      }
+      const p = (state.placeName || "unknown").toLowerCase().trim();
+      return `place:${p}`;
+    }
+
+    function pickWeighted(items){
+      let total = 0;
+      for (const it of items) total += (typeof it.w === "number" ? it.w : 1);
+      let r = Math.random() * total;
+      for (const it of items){
+        r -= (typeof it.w === "number" ? it.w : 1);
+        if (r <= 0) return it.t;
+      }
+      return items[items.length - 1].t;
+    }
+
+    function isExtremeWeather(temp, units){
+      return units.usesF ? (temp <= 15 || temp >= 95) : (temp <= -9 || temp >= 35);
+    }
+
+    const EXTREME_FALLBACK_LINE = "This weather is doing the most. Dress like you respect yourself.";
+
+    const SNARK_POOLS = {
+      hoodie_cold: [
+        { t: "It is cold. Hoodie is the minimum.", w: 1 },
+        { t: "This is hoodie weather with consequences.", w: 1 },
+        { t: "Hoodie, yes. Also respect the wind.", w: 1 },
+        { t: "If you skip the hoodie, you will complain immediately.", w: 1 },
+        { t: "Cold enough to justify the good hoodie.", w: 1 },
+        { t: "Hoodie weather. Do not try to be tough.", w: 1 },
+        { t: "This is the kind of cold that sneaks up on confidence.", w: 0.9 },
+        { t: "Hoodie on. Hands in pockets. Survive.", w: 0.9 },
+        { t: "If you own a beanie, this is its moment.", w: 0.7 },
+        { t: "The air is disrespectful. Hoodie up.", w: 0.8 },
+        { t: "Hoodie time. And maybe actual outerwear.", w: 0.8 },
+        { t: "This is not fashion weather. This is survival weather.", w: 0.8 }
+      ],
+      hoodie_mild: [
+        { t: "Prime hoodie weather. Do not overthink it.", w: 1 },
+        { t: "This is exactly why hoodies were invented.", w: 1 },
+        { t: "Yes, a hoodie. No, not the thin one.", w: 1 },
+        { t: "Hoodie weather. The vibe is secure.", w: 1 },
+        { t: "Hoodie on. Headphones in. Main character.", w: 0.7 },
+        { t: "This is the sweet spot. Hoodie, no jacket.", w: 0.5 },
+        { t: "Hoodie time. The universe has spoken.", w: 1 },
+        { t: "Put on the hoodie and pretend you planned this.", w: 0.8 },
+        { t: "Hoodie weather. Carrying a jacket is for amateurs.", w: 0.6 },
+        { t: "Hoodie weather. No notes.", w: 1 },
+        { t: "This is a hoodie day. The math checks out.", w: 1 },
+        { t: "Hoodie up. Be comfortable on purpose.", w: 1 }
+      ],
+      maybe: [
+        { t: "Borderline. Choose wisely, hero.", w: 1 },
+        { t: "You could go either way. Regret is possible.", w: 1 },
+        { t: "This is ‘I will carry it later’ weather.", w: 1 },
+        { t: "Hoodie depends on wind. Wind is chaos.", w: 1 },
+        { t: "Bring it or do not. Just do not whine.", w: 0.8 },
+        { t: "This weather is not here to help you.", w: 1 },
+        { t: "A hoodie might be correct. Might.", w: 1 },
+        { t: "It is giving: hoodie, but unzipped.", w: 0.9 },
+        { t: "You will be fine until the shade hits.", w: 1 },
+        { t: "Half hoodie. Full uncertainty.", w: 0.9 },
+        { t: "This is a layered look moment.", w: 0.9 },
+        { t: "You are one cloud away from switching teams.", w: 0.9 }
+      ],
+      nah: [
+        { t: "Absolutely not. Step away from the hoodie.", w: 1 },
+        { t: "This is t-shirt weather. Accept it.", w: 1 },
+        { t: "This is how you end up carrying a hoodie all day.", w: 1 },
+        { t: "Hoodie? No. Hydration? Yes.", w: 1 },
+        { t: "The hoodie is not the move today.", w: 1 },
+        { t: "This is a breathable fabric situation.", w: 1 },
+        { t: "No hoodie. Save yourself the burden.", w: 1 },
+        { t: "Hoodies are great. Today is not.", w: 1 },
+        { t: "You will take it off in five minutes. Be honest.", w: 1 },
+        { t: "Nah. Let your arms live.", w: 1 },
+        { t: "If you hoodie up, you are basically slow cooking.", w: 0.8 },
+        { t: "The sun is watching. Do not be foolish.", w: 0.8 }
+      ]
+    };
+
+    function setSnarkLine({ verdict, feelsLike, adjustedLike, units, forceNew }){
+      const s = el("snarkLine");
+      if (!s) return;
+
+      const resultType =
+        verdict === "Hoodie" ? "hoodie" :
+        verdict === "Maybe" ? "maybe" : "nah";
+
+      const hoodieColdMax = units.usesF ? 35 : 2;
+      const band =
+        resultType === "hoodie"
+          ? (adjustedLike <= hoodieColdMax ? "hoodie_cold" : "hoodie_mild")
+          : resultType;
+
+      const locationKey = buildLocationKey();
+      const key = `hon_snark_v2:${band}:${locationKey}`;
+
+      if (!forceNew){
+        const existing = sessionStorage.getItem(key);
+        if (existing){
+          s.textContent = existing;
+          return;
+        }
+      }
+
+      const extreme = isExtremeWeather(feelsLike, units);
+      const pool = extreme
+        ? [{ t: EXTREME_FALLBACK_LINE, w: 1 }]
+        : (SNARK_POOLS[band] || SNARK_POOLS[resultType] || []);
+
+      const line = pickWeighted(pool);
+
+      sessionStorage.setItem(key, line);
+
+      s.classList.remove("is-animating");
+      void s.offsetWidth;
+      s.classList.add("is-animating");
+      s.textContent = line;
+    }
+
+    function requestRender({ forceNewSnark = false } = {}){
+      state.forceNewSnark = !!forceNewSnark;
+      return render();
+    }
+
     async function render(){
       if (state.lat == null || state.lon == null) return;
 
@@ -842,38 +818,40 @@
         setLoading(true, "Checking the weather…");
         setStatus("Checking the weather…");
 
+        const units = inferUnitSystem();
         const prefShift = Number(el("tempPref").value || 0);
-        const w = await fetchWeather(state.lat, state.lon);
+        const w = await fetchWeather(state.lat, state.lon, units);
 
         const current = w.current || {};
         const daily = w.daily || {};
         const sunrise = (daily.sunrise && daily.sunrise[0]) ? daily.sunrise[0] : null;
         const sunset = (daily.sunset && daily.sunset[0]) ? daily.sunset[0] : null;
 
-        const feelsF = Number(current.apparent_temperature);
-        const windMph = Number(current.wind_speed_10m);
+        const feels = Number(current.apparent_temperature);
+        const wind = Number(current.wind_speed_10m);
 
-        if (![feelsF, windMph].every(Number.isFinite)) throw new Error("Bad weather payload");
+        if (![feels, wind].every(Number.isFinite)) throw new Error("Bad weather payload");
 
         const night = (sunrise && sunset) ? isNightNow(current.time, sunrise, sunset) : false;
 
         const { verdict, adjusted } = computeDecision({
-          feelsF,
-          windMph,
+          feels,
+          wind,
           isNight: night,
-          tempPrefShift: prefShift
+          tempPrefShift: prefShift,
+          usesF: units.usesF
         });
 
-        const needsLayerUp = (verdict === "Hoodie" && adjusted <= 50);
+        const needsLayerUp = (verdict === "Hoodie" && adjusted <= (units.usesF ? 50 : 10));
 
         const place = state.placeName || "Near you";
         setLocPill(place);
 
         const metaParts = [
-          `Feels like ${round(feelsF)}°F`,
-          `Wind ${round(windMph)} mph`,
+          `Feels like ${round(feels)}${units.tempSymbol}`,
+          `Wind ${round(wind)} ${units.windSymbol}`,
           night ? "Night" : "Day",
-          `Adjusted ${round(adjusted)}°F`
+          `Adjusted ${round(adjusted)}${units.tempSymbol}`
         ];
 
         if (needsLayerUp) metaParts.push("Layer up");
@@ -882,14 +860,14 @@
 
         let explanation = "";
         if (verdict === "Hoodie"){
-          explanation = `It feels like ${round(feelsF)}°F ${where}. Hoodie weather.`;
+          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Hoodie weather.`;
           if (needsLayerUp) explanation += " Layer up. You might want a jacket too.";
-          if (windMph > 10) explanation += " The wind makes it feel colder.";
+          if (wind > (units.usesF ? 10 : 16)) explanation += " The wind makes it feel colder.";
           if (night) explanation += " Nights cool off fast.";
         } else if (verdict === "Maybe"){
-          explanation = `It feels like ${round(feelsF)}°F ${where}. Could go either way. If you will be outside awhile, bring it.`;
+          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Could go either way. If you will be outside awhile, bring it.`;
         } else {
-          explanation = `It feels like ${round(feelsF)}°F ${where}. Probably no hoodie.`;
+          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Probably no hoodie.`;
           if (night) explanation += " If you are out late, a light layer might still help.";
         }
 
@@ -897,11 +875,13 @@
 
         setSnarkLine({
           verdict,
-          feelsLikeF: round(feelsF),
+          feelsLike: round(feels),
+          adjustedLike: round(adjusted),
+          units,
           forceNew
         });
 
-        state.last = { verdict, place, feelsF: round(feelsF), windMph: round(windMph) };
+        state.last = { verdict, place, feels: round(feels), wind: round(wind) };
 
         setLoading(false);
         setStatus(`Updated ${new Date(current.time).toLocaleString()}.`);
@@ -936,6 +916,7 @@
       }, (err) => {
         console.error(err);
         setLoading(false);
+        clearSnarkLine();
         setLocPill("GPS blocked");
         setStatus("Allow location access or enter a city/ZIP.");
       }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
@@ -986,7 +967,7 @@
         state.lastPickedLabel = null;
       }
 
-      if (q.length < 3) {
+      if (q.length < 3){
         clearSuggestions();
         return;
       }
@@ -1081,12 +1062,8 @@
     el("useCityBtn").addEventListener("click", useCity);
     el("useGpsBtn").addEventListener("click", useGps);
 
-    // Refresh should pick a new line
     el("refreshBtn").addEventListener("click", () => requestRender({ forceNewSnark: true }));
-
     el("randomBtn").addEventListener("click", randomLocation);
-
-    // Treat preference changes like a refresh (new result, new line)
     el("tempPref").addEventListener("change", () => requestRender({ forceNewSnark: true }));
 
     el("locPill").addEventListener("click", useGps);
