@@ -54,8 +54,8 @@
 
       /* Brand typography (tighter pairing) */
       --brand-font: ui-rounded, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      --brand-weight: 800;
-      --brand-track: .12px;
+      --brand-weight: 860;
+      --brand-track: .22px;
     }
 
     @media (prefers-color-scheme: light){
@@ -119,12 +119,14 @@
     .brandWrap{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:12px;
       min-width: 0;
     }
+
+    /* Increased header icon button size */
     .brandIconBtn{
-      width:34px;
-      height:34px;
+      width:44px;
+      height:44px;
       border-radius:999px;
       border:1px solid var(--border);
       background: rgba(255,255,255,.04);
@@ -134,6 +136,7 @@
       padding:0;
       cursor:pointer;
       transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .2s ease;
+      flex: 0 0 auto;
     }
 
     /* Very subtle glow on hover */
@@ -153,20 +156,25 @@
       box-shadow: var(--focus);
     }
 
+    /* Increased SVG size */
     .brandIconSvg{
-      width:28px;
-      height:28px;
+      width:36px;
+      height:36px;
       display:block;
     }
 
+    /* Tighter, deliberate wordmark */
     .brandText{
       font-family: var(--brand-font);
       font-weight: var(--brand-weight);
       letter-spacing: var(--brand-track);
-      font-size:18px;
-      opacity:.95;
+      font-size: 19px;
+      opacity:.96;
       white-space: nowrap;
       line-height: 1;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      font-kerning: normal;
     }
 
     /* Location pill (clickable) */
@@ -432,28 +440,6 @@
       border-bottom: none;
     }
 
-    /* Footer stamp logo */
-    .footerStamp{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 0;
-    }
-    .footerStamp svg{
-      width:34px;
-      height:34px;
-      opacity:.35;
-      filter: saturate(.95) contrast(.98);
-      flex: 0 0 auto;
-    }
-    .footerStamp span{
-      opacity:.70;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 52ch;
-    }
-
     /* Mark rendering */
     .mark-stroke{ stroke: var(--mark-stroke); }
     .mark-fill{ fill: var(--mark-fill); }
@@ -484,17 +470,12 @@
 </head>
 
 <body>
-  <!--
-    Clean SVG mark for ultra-sharp scaling.
-    You can later export this <symbol> as its own .svg file if you want.
-  -->
+  <!-- Clean SVG mark for ultra-sharp scaling -->
   <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
     <defs>
       <symbol id="hoodieMark" viewBox="0 0 64 64">
-        <!-- Outer soft badge -->
         <circle class="mark-fill" cx="32" cy="32" r="28" />
 
-        <!-- Hoodie outline -->
         <path
           class="mark-stroke"
           d="M22 24
@@ -515,7 +496,6 @@
           stroke-linejoin="round"
         />
 
-        <!-- Hood opening -->
         <path
           class="mark-muted"
           d="M25 26
@@ -526,7 +506,6 @@
           stroke-linecap="round"
         />
 
-        <!-- Pocket -->
         <path
           class="mark-muted"
           d="M24 43
@@ -537,7 +516,6 @@
           stroke-linecap="round"
         />
 
-        <!-- Question mark (animated on load if visible) -->
         <g id="qmarkGroup" class="qmark" fill="none">
           <path
             class="mark-stroke"
@@ -569,7 +547,9 @@
             <use href="#hoodieMark"></use>
           </svg>
         </button>
-        <div class="brandText">hoodieornah</div>
+
+        <!-- Updated header text -->
+        <div class="brandText">Hoodie or Nah</div>
       </div>
 
       <button class="pill" id="locPill" type="button">Locating…</button>
@@ -633,12 +613,8 @@
     </main>
 
     <footer>
-      <div class="footerStamp">
-        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-          <use href="#hoodieMark"></use>
-        </svg>
-        <span>Made to settle the daily hoodie debate.</span>
-      </div>
+      <!-- Removed footer stamp icon -->
+      <div style="opacity:.70;">Made to settle the daily hoodie debate.</div>
 
       <div>
         <a
@@ -661,7 +637,7 @@
       lon: null,
       placeName: null,
       last: null,
-      suggestionMap: new Map(), // label -> {lat, lon, name}
+      suggestionMap: new Map(),
       lastPickedLabel: null,
       didAnimateQmark: false
     };
@@ -908,7 +884,6 @@
         setLoading(false);
         setStatus(`Updated ${new Date(current.time).toLocaleString()}.`);
 
-        /* Animate the question mark once, very lightly, only if visible */
         tryAnimateQuestionMarkOnceIfVisible();
       }catch(err){
         console.error(err);
@@ -973,7 +948,6 @@
     async function autocomplete(){
       const q = el("city").value.trim();
 
-      /* If user picked a suggestion, auto-run immediately */
       if (state.suggestionMap.has(q) && state.lastPickedLabel !== q){
         const picked = state.suggestionMap.get(q);
         state.lastPickedLabel = q;
@@ -987,7 +961,6 @@
         return;
       }
 
-      /* If they are typing something new, allow them to pick again */
       if (!state.suggestionMap.has(q)){
         state.lastPickedLabel = null;
       }
@@ -1046,7 +1019,6 @@
       }
     }
 
-    /* Random location button */
     const RANDOM_PLACES = [
       { name: "Reykjavík, Iceland", lat: 64.1466, lon: -21.9426 },
       { name: "Dublin, Ireland", lat: 53.3498, lon: -6.2603 },
@@ -1112,17 +1084,13 @@
       await render();
     }
 
-    /* Event bindings */
     el("useCityBtn").addEventListener("click", useCity);
     el("useGpsBtn").addEventListener("click", useGps);
     el("refreshBtn").addEventListener("click", render);
     el("randomBtn").addEventListener("click", randomLocation);
     el("tempPref").addEventListener("change", render);
 
-    /* Clicking the location pill re-runs GPS (acts as "reset to me") */
     el("locPill").addEventListener("click", useGps);
-
-    /* Clicking the brand icon also re-runs GPS (home behavior) */
     el("brandHomeBtn").addEventListener("click", useGps);
 
     el("city").addEventListener("keydown", (e) => {
@@ -1134,15 +1102,12 @@
       acTimer = setTimeout(autocomplete, 200);
     });
 
-    /* Some browsers finalize datalist selection on change/blur */
     el("city").addEventListener("change", () => {
       autocomplete();
     });
 
-    /* Start on GPS */
     useGps();
 
-    /* In case the page loads with content already in view */
     window.addEventListener("load", () => {
       tryAnimateQuestionMarkOnceIfVisible();
     }, { once: true });
