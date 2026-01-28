@@ -5,14 +5,12 @@ export async function onRequest({ request }) {
   const verdict = (url.searchParams.get("verdict") || "Maybe").slice(0, 16);
   const place = (url.searchParams.get("place") || "Somewhere").slice(0, 60);
 
-  const og = new URL("/og", url.origin);
-  og.searchParams.set("temp", temp);
-  og.searchParams.set("verdict", verdict);
-  og.searchParams.set("place", place);
-
   const title = "hoodieornah";
   const desc = `${verdict.toUpperCase()} - feels like ${temp}°F in ${place}.`;
 
+  const og = new URL("/og.png", url.origin);
+
+  // Humans should land on the app
   const redirectTo = url.origin + "/";
 
   const html = `<!doctype html>
