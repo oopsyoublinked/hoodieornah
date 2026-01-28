@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -43,7 +44,50 @@
       --lift: translateY(-1px);
       --press: translateY(0.5px);
       --focus: 0 0 0 3px rgba(255,255,255,.12);
+
+      /* Mark colors (dark mode default) */
+      --mark-stroke: rgba(244,244,246,.92);
+      --mark-fill: rgba(255,255,255,.03);
+      --mark-shadow: rgba(130,170,255,.22);
+      --mark-shadow-2: rgba(0,220,255,.14);
+      --mark-muted: rgba(255,255,255,.55);
+
+      /* Brand typography (tighter pairing) */
+      --brand-font: ui-rounded, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --brand-weight: 800;
+      --brand-track: .12px;
     }
+
+    @media (prefers-color-scheme: light){
+      :root{
+        color-scheme: light;
+
+        --bg:#f7f7fb;
+        --text:#101015;
+        --muted:#4b4b57;
+        --border:rgba(0,0,0,.12);
+        --shadow: 0 14px 30px rgba(0,0,0,.12);
+
+        /* Monochrome mark in light mode */
+        --mark-stroke: rgba(16,16,21,.92);
+        --mark-fill: rgba(0,0,0,.02);
+        --mark-shadow: rgba(40,80,255,.16);
+        --mark-shadow-2: rgba(0,160,255,.10);
+        --mark-muted: rgba(16,16,21,.55);
+      }
+      body{
+        background:
+          radial-gradient(1200px 800px at 50% -20%, rgba(0,0,0,.05), transparent 60%),
+          radial-gradient(900px 600px at 20% 10%, rgba(120,100,255,.10), transparent 55%),
+          radial-gradient(900px 600px at 80% 15%, rgba(0,200,255,.10), transparent 55%),
+          var(--bg);
+      }
+      select option{
+        background-color:#ffffff;
+        color:#101015;
+      }
+    }
+
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -60,7 +104,9 @@
       justify-content:center;
       padding:18px;
     }
+
     .wrap{width:min(860px, 100%);}
+
     header{
       display:flex;
       align-items:center;
@@ -69,7 +115,7 @@
       gap:12px;
     }
 
-    /* Brand with logo */
+    /* Brand with inline SVG mark */
     .brandWrap{
       display:flex;
       align-items:center;
@@ -87,11 +133,17 @@
       justify-content:center;
       padding:0;
       cursor:pointer;
-      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .2s ease;
     }
+
+    /* Very subtle glow on hover */
     .brandIconBtn:hover{
       background: rgba(255,255,255,.08);
       transform: var(--lift);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.06),
+        0 0 18px var(--mark-shadow),
+        0 0 28px var(--mark-shadow-2);
     }
     .brandIconBtn:active{
       transform: var(--press);
@@ -100,19 +152,21 @@
     .brandIconBtn:focus-visible{
       box-shadow: var(--focus);
     }
-    .brandIcon{
+
+    .brandIconSvg{
       width:28px;
       height:28px;
-      border-radius:999px;
       display:block;
-      object-fit:cover;
     }
+
     .brandText{
-      font-weight:750;
-      letter-spacing:.2px;
+      font-family: var(--brand-font);
+      font-weight: var(--brand-weight);
+      letter-spacing: var(--brand-track);
       font-size:18px;
       opacity:.95;
       white-space: nowrap;
+      line-height: 1;
     }
 
     /* Location pill (clickable) */
@@ -130,11 +184,10 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
       cursor: pointer;
       appearance: none;
       outline: none;
-      transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
     }
     .pill:hover{
       background: rgba(255,255,255,.08);
@@ -175,6 +228,39 @@
       justify-content:center;
       min-height: 260px;
       transition: background-color .15s ease, border-color .15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Minimal loading state using the hoodie icon */
+    .answerBox.loading{
+      background: rgba(0,0,0,.16);
+    }
+    .loaderRow{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom: 10px;
+    }
+    .loaderIcon{
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      opacity: .9;
+      filter: saturate(.98) contrast(.98);
+    }
+    .loaderText{
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .pulse{
+      animation: pulse 1.25s ease-in-out infinite;
+      transform-origin: 50% 50%;
+    }
+    @keyframes pulse{
+      0%{ transform: scale(1); opacity: .78; }
+      50%{ transform: scale(1.03); opacity: .98; }
+      100%{ transform: scale(1); opacity: .78; }
     }
 
     /* Verdict tinting (subtle) */
@@ -270,7 +356,6 @@
       margin-top:4px;
     }
 
-    /* Buttons + link buttons */
     button, a.btn{
       appearance:none;
       border: 1px solid var(--border);
@@ -286,7 +371,6 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-
       transition:
         transform .15s ease,
         background-color .15s ease,
@@ -345,7 +429,7 @@
       border-bottom: 1px solid rgba(255,255,255,.25);
     }
     footer a.btn{
-      border-bottom: none; /* keep footer button clean */
+      border-bottom: none;
     }
 
     /* Footer stamp logo */
@@ -353,33 +437,137 @@
       display:flex;
       align-items:center;
       gap:10px;
+      min-width: 0;
     }
-    .footerStamp img{
+    .footerStamp svg{
       width:34px;
       height:34px;
-      border-radius:999px;
-      object-fit:cover;
       opacity:.35;
       filter: saturate(.95) contrast(.98);
+      flex: 0 0 auto;
     }
     .footerStamp span{
-      opacity:.65;
+      opacity:.70;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 52ch;
+    }
+
+    /* Mark rendering */
+    .mark-stroke{ stroke: var(--mark-stroke); }
+    .mark-fill{ fill: var(--mark-fill); }
+    .mark-muted{ stroke: var(--mark-muted); }
+
+    /* Question mark animation (one time, very light) */
+    .qmark{
+      transform-origin: 50% 50%;
+      opacity: .92;
+    }
+    .qmark.animate-once{
+      animation: qmark-pop 850ms cubic-bezier(.2,.8,.2,1) 1 both;
+    }
+    @keyframes qmark-pop{
+      0%{ transform: translateY(0px) scale(1); filter: blur(0px); opacity: .85; }
+      35%{ transform: translateY(-1.5px) scale(1.02); opacity: 1; }
+      100%{ transform: translateY(0px) scale(1); opacity: .92; }
     }
 
     @media (prefers-reduced-motion: reduce){
-      button, a.btn, .pill, select, input[type="text"]{
+      button, a.btn, .pill, select, input[type="text"], .brandIconBtn{
         transition: none;
       }
+      .pulse{ animation: none; }
+      .qmark.animate-once{ animation: none; }
     }
   </style>
 </head>
 
 <body>
+  <!--
+    Clean SVG mark for ultra-sharp scaling.
+    You can later export this <symbol> as its own .svg file if you want.
+  -->
+  <svg width="0" height="0" style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="hoodieMark" viewBox="0 0 64 64">
+        <!-- Outer soft badge -->
+        <circle class="mark-fill" cx="32" cy="32" r="28" />
+
+        <!-- Hoodie outline -->
+        <path
+          class="mark-stroke"
+          d="M22 24
+             C22 17.8 26.6 14 32 14
+             C37.4 14 42 17.8 42 24
+             V27
+             C46.3 30 49 34.8 49 40.2
+             V46
+             C49 48.2 47.2 50 45 50
+             H19
+             C16.8 50 15 48.2 15 46
+             V40.2
+             C15 34.8 17.7 30 22 27
+             Z"
+          fill="none"
+          stroke-width="2.4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+        <!-- Hood opening -->
+        <path
+          class="mark-muted"
+          d="M25 26
+             C26.6 22 29.3 20 32 20
+             C34.7 20 37.4 22 39 26"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+
+        <!-- Pocket -->
+        <path
+          class="mark-muted"
+          d="M24 43
+             C26.2 41 29 40 32 40
+             C35 40 37.8 41 40 43"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+
+        <!-- Question mark (animated on load if visible) -->
+        <g id="qmarkGroup" class="qmark" fill="none">
+          <path
+            class="mark-stroke"
+            d="M30.3 29.2
+               C30.3 27.4 31.7 26 33.5 26
+               C35.3 26 36.7 27.3 36.7 29.1
+               C36.7 31.2 34.7 31.7 33.8 32.7
+               C33.2 33.4 33.2 34 33.2 35.1"
+            stroke-width="2.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <path
+            class="mark-stroke"
+            d="M33.2 38.7 L33.2 38.7"
+            stroke-width="3.2"
+            stroke-linecap="round"
+          />
+        </g>
+      </symbol>
+    </defs>
+  </svg>
+
   <div class="wrap">
     <header>
       <div class="brandWrap">
         <button class="brandIconBtn" id="brandHomeBtn" type="button" aria-label="Use my GPS">
-          <img class="brandIcon" src="/logo-mark.png" alt="hoodieornah logo" />
+          <svg class="brandIconSvg" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+            <use href="#hoodieMark"></use>
+          </svg>
         </button>
         <div class="brandText">hoodieornah</div>
       </div>
@@ -389,7 +577,14 @@
 
     <main class="card">
       <section class="hero">
-        <div class="answerBox verdict-maybe" id="answerBox">
+        <div class="answerBox verdict-maybe loading" id="answerBox">
+          <div class="loaderRow" id="loaderRow" aria-live="polite">
+            <svg class="loaderIcon pulse" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <use href="#hoodieMark"></use>
+            </svg>
+            <div class="loaderText" id="loaderText">Getting your local weather…</div>
+          </div>
+
           <div class="answer" id="answer">…</div>
           <div class="reason" id="reason">Getting your local weather.</div>
           <div class="meta" id="meta"></div>
@@ -439,7 +634,9 @@
 
     <footer>
       <div class="footerStamp">
-        <img src="/logo-mark.png" alt="" aria-hidden="true" />
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <use href="#hoodieMark"></use>
+        </svg>
         <span>Made to settle the daily hoodie debate.</span>
       </div>
 
@@ -465,7 +662,8 @@
       placeName: null,
       last: null,
       suggestionMap: new Map(), // label -> {lat, lon, name}
-      lastPickedLabel: null
+      lastPickedLabel: null,
+      didAnimateQmark: false
     };
 
     function round(n){
@@ -475,6 +673,21 @@
 
     function setStatus(msg){ el("status").textContent = msg || ""; }
     function setLocPill(text){ el("locPill").textContent = text; }
+
+    function setLoading(isLoading, text){
+      const box = el("answerBox");
+      const row = el("loaderRow");
+      const t = el("loaderText");
+
+      if (isLoading){
+        box.classList.add("loading");
+        row.style.display = "flex";
+        if (text) t.textContent = text;
+      } else {
+        box.classList.remove("loading");
+        row.style.display = "none";
+      }
+    }
 
     function applyVerdictClass(verdict){
       const box = el("answerBox");
@@ -589,13 +802,55 @@
       return now >= sunset || now < sunrise;
     }
 
+    function tryAnimateQuestionMarkOnceIfVisible(){
+      if (state.didAnimateQmark) return;
+
+      const qmark = document.getElementById("qmarkGroup");
+      if (!qmark) return;
+
+      const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) return;
+
+      const isVisibleNow = () => {
+        const box = el("answerBox");
+        if (!box) return false;
+        const rect = box.getBoundingClientRect();
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        const vw = window.innerWidth || document.documentElement.clientWidth;
+        const inViewport = rect.bottom > 0 && rect.right > 0 && rect.top < vh && rect.left < vw;
+        const shown = box.offsetParent !== null && getComputedStyle(box).visibility !== "hidden" && getComputedStyle(box).display !== "none";
+        return inViewport && shown;
+      };
+
+      if ("IntersectionObserver" in window){
+        const obs = new IntersectionObserver((entries) => {
+          for (const entry of entries){
+            if (entry.isIntersecting && isVisibleNow() && !state.didAnimateQmark){
+              state.didAnimateQmark = true;
+              qmark.classList.add("animate-once");
+              obs.disconnect();
+              break;
+            }
+          }
+        }, { threshold: 0.25 });
+
+        obs.observe(el("answerBox"));
+      } else {
+        if (isVisibleNow()){
+          state.didAnimateQmark = true;
+          qmark.classList.add("animate-once");
+        }
+      }
+    }
+
     async function render(){
       if (state.lat == null || state.lon == null) return;
 
       try{
+        setLoading(true, "Checking the weather…");
         setStatus("Checking the weather…");
-        const prefShift = Number(el("tempPref").value || 0);
 
+        const prefShift = Number(el("tempPref").value || 0);
         const w = await fetchWeather(state.lat, state.lon);
 
         const current = w.current || {};
@@ -649,9 +904,15 @@
         setAnswer(verdict, explanation, metaParts);
 
         state.last = { verdict, place, feelsF: round(feelsF), windMph: round(windMph) };
+
+        setLoading(false);
         setStatus(`Updated ${new Date(current.time).toLocaleString()}.`);
+
+        /* Animate the question mark once, very lightly, only if visible */
+        tryAnimateQuestionMarkOnceIfVisible();
       }catch(err){
         console.error(err);
+        setLoading(false);
         setAnswer("…", "Could not load weather right now.", []);
         setStatus("Try refresh, GPS, or manual location.");
         setLocPill("Location");
@@ -661,8 +922,10 @@
     async function useGps(){
       setLocPill("Locating…");
       setStatus("");
+      setLoading(true, "Locating you…");
 
       if (!navigator.geolocation){
+        setLoading(false);
         setLocPill("No GPS");
         setStatus("Your browser does not support location.");
         return;
@@ -676,6 +939,7 @@
         await render();
       }, (err) => {
         console.error(err);
+        setLoading(false);
         setLocPill("GPS blocked");
         setStatus("Allow location access or enter a city/ZIP.");
       }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
@@ -709,7 +973,7 @@
     async function autocomplete(){
       const q = el("city").value.trim();
 
-      // If user picked a suggestion, auto-run immediately
+      /* If user picked a suggestion, auto-run immediately */
       if (state.suggestionMap.has(q) && state.lastPickedLabel !== q){
         const picked = state.suggestionMap.get(q);
         state.lastPickedLabel = q;
@@ -717,12 +981,13 @@
         state.lon = picked.lon;
         state.placeName = picked.name;
         setLocPill(picked.name);
+        setLoading(true, "Loading weather…");
         setStatus("Loading weather…");
         await render();
         return;
       }
 
-      // If they are typing something new, allow them to pick again
+      /* If they are typing something new, allow them to pick again */
       if (!state.suggestionMap.has(q)){
         state.lastPickedLabel = null;
       }
@@ -755,6 +1020,7 @@
 
       try{
         setLocPill("Searching…");
+        setLoading(true, "Finding that location…");
         setStatus("Finding that location…");
 
         if (picked){
@@ -774,12 +1040,13 @@
         await render();
       }catch(err){
         console.error(err);
+        setLoading(false);
         setLocPill("Not found");
         setStatus("Could not find that location. Try: City, Country (example: Sydney, Australia).");
       }
     }
 
-    // Random location button
+    /* Random location button */
     const RANDOM_PLACES = [
       { name: "Reykjavík, Iceland", lat: 64.1466, lon: -21.9426 },
       { name: "Dublin, Ireland", lat: 53.3498, lon: -6.2603 },
@@ -826,7 +1093,6 @@
     async function randomLocation(){
       if (!RANDOM_PLACES.length) return;
 
-      // Pick a different place than last click
       let idx = Math.floor(Math.random() * RANDOM_PLACES.length);
       if (RANDOM_PLACES.length > 1 && idx === lastRandomIndex){
         idx = (idx + 1) % RANDOM_PLACES.length;
@@ -841,21 +1107,22 @@
       state.lastPickedLabel = null;
 
       setLocPill(p.name);
+      setLoading(true, "Teleporting…");
       setStatus("Teleporting…");
       await render();
     }
 
-    // Event bindings
+    /* Event bindings */
     el("useCityBtn").addEventListener("click", useCity);
     el("useGpsBtn").addEventListener("click", useGps);
     el("refreshBtn").addEventListener("click", render);
     el("randomBtn").addEventListener("click", randomLocation);
     el("tempPref").addEventListener("change", render);
 
-    // Clicking the location pill re-runs GPS (acts as "reset to me")
+    /* Clicking the location pill re-runs GPS (acts as "reset to me") */
     el("locPill").addEventListener("click", useGps);
 
-    // Clicking the brand icon also re-runs GPS (home behavior)
+    /* Clicking the brand icon also re-runs GPS (home behavior) */
     el("brandHomeBtn").addEventListener("click", useGps);
 
     el("city").addEventListener("keydown", (e) => {
@@ -867,13 +1134,19 @@
       acTimer = setTimeout(autocomplete, 200);
     });
 
-    // Some browsers finalize datalist selection on change/blur
+    /* Some browsers finalize datalist selection on change/blur */
     el("city").addEventListener("change", () => {
       autocomplete();
     });
 
-    // Start on GPS
+    /* Start on GPS */
     useGps();
+
+    /* In case the page loads with content already in view */
+    window.addEventListener("load", () => {
+      tryAnimateQuestionMarkOnceIfVisible();
+    }, { once: true });
   </script>
 </body>
 </html>
+```
