@@ -28,6 +28,7 @@
       --radius:22px;
       --radius2:28px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      --freeze-overlay: rgba(80,120,210,.06);
     }
 
     *{box-sizing:border-box}
@@ -41,6 +42,24 @@
         radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,.06), transparent 55%),
         var(--bg);
       color:var(--text);
+      transition: filter .28s ease, background-color .28s ease;
+    }
+
+    /* Freeze effect */
+    body.is-frozen{
+      filter: saturate(.9) grayscale(.03);
+    }
+    .freeze-overlay{
+      pointer-events:none;
+      position: absolute;
+      inset: 0;
+      background: transparent;
+      transition: background .28s ease, opacity .28s ease;
+      opacity: 0;
+    }
+    body.is-frozen .freeze-overlay{
+      background: linear-gradient(180deg, rgba(30,60,120,.03), rgba(30,60,120,.02));
+      opacity: 1;
     }
 
     .wrap{
@@ -48,22 +67,6 @@
       margin: 0 auto;
       padding: 18px;
       position: relative;
-    }
-
-    body.is-frozen .wrap::before{
-      content:"";
-      position:absolute;
-      inset:-12px -10px auto -10px;
-      height: 220px;
-      pointer-events:none;
-      background:
-        radial-gradient(700px 160px at 20% 10%, rgba(160,190,255,.10), transparent 55%),
-        radial-gradient(560px 140px at 85% 10%, rgba(255,255,255,.08), transparent 60%);
-      filter: blur(8px);
-      opacity: .9;
-    }
-    body.is-frozen main{
-      box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 40px rgba(140,170,255,.08);
     }
 
     header{
@@ -78,7 +81,7 @@
       position: sticky;
       top: 14px;
       backdrop-filter: blur(10px);
-      z-index: 5;
+      z-index: 10;
       gap: 12px;
     }
 
@@ -102,11 +105,6 @@
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
       box-shadow: 0 8px 28px rgba(0,0,0,.45);
       overflow:hidden;
-    }
-    .brand-btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(140,170,255,.35);
-      box-shadow: 0 10px 34px rgba(0,0,0,.55), 0 0 26px rgba(120,160,255,.14);
     }
     .brand-btn img{
       width: 48px;
@@ -139,38 +137,9 @@
       display:flex;
       align-items:center;
       gap: 12px;
-    }
-
-    .pill{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      font-weight: 650;
-      letter-spacing: .2px;
-      user-select:none;
-      max-width: 46%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .pill .dot{
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.32);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.04);
-      flex: 0 0 auto;
-    }
-    .pill.frozen{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.02);
-      color: rgba(255,255,255,.78);
-      cursor: default;
+      min-width: 0;
+      flex: 1 1 auto;
+      justify-content:flex-end;
     }
 
     .units-seg{
@@ -182,6 +151,7 @@
       gap: 6px;
       align-items:center;
       font-size: 13px;
+      flex: 0 0 auto;
     }
     .units-seg button{
       padding: 6px 10px;
@@ -198,16 +168,42 @@
       border-radius: 999px;
     }
 
-    .spinner{
-      width: 14px;
-      height: 14px;
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 8px 12px;
       border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.24);
-      border-top-color: rgba(255,255,255,.82);
-      animation: spin .75s linear infinite;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-weight: 650;
+      letter-spacing: .2px;
+      user-select:none;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex: 0 1 auto;
+      max-width: 45%;
+      cursor: pointer;
+      transition: box-shadow .18s ease, background .18s ease;
+    }
+    .pill:focus{ outline: none; box-shadow: 0 6px 22px rgba(100,150,255,.08); }
+    .pill .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.32);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.04);
       flex: 0 0 auto;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .pill.frozen{
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.02);
+      color: rgba(255,255,255,.78);
+      cursor: default;
+    }
 
     main{
       margin-top: 16px;
@@ -317,13 +313,7 @@
       line-height: 1.35;
     }
 
-    label{
-      display:block;
-      font-size: 13px;
-      color: var(--muted);
-      margin: 10px 0 8px;
-      font-weight: 650;
-    }
+    label{ display:block; font-size:13px; color:var(--muted); margin:10px 0 8px; font-weight:650; }
 
     select, input{
       width:100%;
@@ -337,21 +327,10 @@
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     }
     input::placeholder{color: rgba(255,255,255,.35)}
-    select{
-      color-scheme: dark;
-      background-color: rgba(255,255,255,.03);
-    }
-    select option{
-      background: #0f1016;
-      color: rgba(255,255,255,.92);
-    }
+    select{ color-scheme: dark; background-color: rgba(255,255,255,.03); }
+    select option{ background: #0f1016; color: rgba(255,255,255,.92); }
 
-    .btn-row{
-      display:flex;
-      gap: 10px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
+    .btn-row{ display:flex; gap:10px; margin-top:4px; flex-wrap:wrap; }
 
     button{
       padding: 12px 14px;
@@ -364,150 +343,56 @@
       cursor:pointer;
       transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
     }
-    button:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.06);
-    }
-    button:active{transform: translateY(0px) scale(.99)}
-    button:disabled{
-      opacity:.48;
-      cursor:not-allowed;
-      transform:none;
-    }
+    button:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.06); }
+    button:active{ transform: translateY(0px) scale(.99) }
+    button:disabled{ opacity:.48; cursor:not-allowed; transform:none; }
 
-    .mini{
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      border-radius: 18px;
-      padding: 12px 12px;
-      margin-top: 6px;
-    }
-    .mini .row{
-      display:flex;
-      justify-content:space-between;
-      gap: 12px;
-      align-items:flex-start;
-      padding: 6px 2px;
-      color: var(--muted);
-      font-weight: 650;
-      font-size: 13px;
-    }
-    .mini .row strong{
-      color: var(--text);
-      font-weight: 820;
-    }
+    .mini{ border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.03); border-radius: 18px; padding: 12px 12px; margin-top: 6px; }
+    .mini .row{ display:flex; justify-content:space-between; gap:12px; align-items:flex-start; padding:6px 2px; color:var(--muted); font-weight:650; font-size:13px; }
+    .mini .row strong{ color:var(--text); font-weight:820; }
 
-    .in-card-footer{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin-top: 14px;
-      color: var(--muted);
-      font-weight: 650;
-      padding: 2px 2px 0;
-      flex-wrap: wrap;
-    }
+    .in-card-footer{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:14px; color:var(--muted); font-weight:650; padding:2px 2px 0; flex-wrap:wrap; }
 
-    .support{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.02);
-      text-decoration:none;
-      color: var(--text);
-      font-weight: 780;
-    }
-    .support:hover{border-color: rgba(255,255,255,.18)}
-    .support svg{
-      width: 16px;
-      height: 16px;
-      opacity: .9;
-      flex: 0 0 auto;
-    }
+    .support{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:999px; border:1px solid var(--border); background: rgba(255,255,255,.02); text-decoration:none; color:var(--text); font-weight:780; }
+    .support:hover{ border-color: rgba(255,255,255,.18); }
+    .support svg{ width:16px; height:16px; opacity:.9; flex:0 0 auto; }
 
-    .freeze-wrap{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-wrap: wrap;
-      flex: 1 1 auto;
-      justify-content:flex-start;
-      min-width: 220px;
-    }
-    .freeze-btn{
-      background: rgba(255,255,255,.05);
-    }
-    .freeze-hint{
-      font-size: 12px;
-      color: rgba(255,255,255,.50);
-      line-height: 1.35;
-    }
-    .frozen-badge{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.02);
-      color: rgba(255,255,255,.80);
-      font-weight: 780;
-      letter-spacing: .2px;
-      font-size: 12px;
-      white-space: nowrap;
-    }
+    .freeze-wrap{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex:1 1 auto; justify-content:flex-start; min-width:220px; }
+    .freeze-btn{ background: rgba(255,255,255,.05); }
+    .freeze-hint{ font-size:12px; color: rgba(255,255,255,.50); line-height:1.35; }
+    .frozen-badge{ display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.02); color: rgba(255,255,255,.80); font-weight:780; letter-spacing:.2px; font-size:12px; white-space:nowrap; transform-origin:center; transition: transform .28s ease; }
+    body.is-frozen .frozen-badge{ animation: pop .36s ease; transform: scale(1); }
+    @keyframes pop{ 0%{ transform: scale(.96) } 60%{ transform: scale(1.08) } 100%{ transform: scale(1) } }
 
-    .site-footer{
-      margin-top: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      background: rgba(0,0,0,.18);
-      padding: 14px 14px;
-      display:flex;
-      justify-content:space-between;
-      gap: 12px;
-      align-items:flex-start;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .site-footer a{
-      color: rgba(255,255,255,.82);
-      text-decoration:none;
-      border-bottom: 1px solid rgba(255,255,255,.20);
-    }
-    .site-footer a:hover{
-      border-bottom-color: rgba(255,255,255,.40);
-    }
+    .site-footer{ margin-top:14px; border:1px solid rgba(255,255,255,.10); border-radius:18px; background: rgba(0,0,0,.18); padding:14px 14px; display:flex; justify-content:space-between; gap:12px; align-items:flex-start; color:var(--muted); font-size:12px; line-height:1.5; }
+    .site-footer a{ color: rgba(255,255,255,.82); text-decoration:none; border-bottom:1px solid rgba(255,255,255,.20); }
+    .site-footer a:hover{ border-bottom-color: rgba(255,255,255,.40); }
 
-    .toast{
+    .modal-backdrop{
       position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.75);
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 60;
+    }
+    .modal{
+      background: #0f1016;
+      border: 1px solid rgba(255,255,255,.06);
+      padding: 18px;
+      border-radius: 12px;
+      max-width: 520px;
+      width: 92%;
       color: var(--text);
-      box-shadow: var(--shadow);
-      opacity: 0;
-      pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-      z-index: 30;
-      max-width: min(760px, calc(100% - 24px));
-      text-align:center;
-      font-weight: 700;
+      box-shadow: 0 18px 60px rgba(0,0,0,.65);
     }
-    .toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(-4px);
-    }
+    .modal.show{ display:flex; align-items:center; justify-content:center; }
+    .modal .modal-row{ display:flex; justify-content:space-between; gap:12px; align-items:center; margin-top:12px; }
+    .modal pre{ background: rgba(255,255,255,.03); padding:10px; border-radius:8px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; }
+
+    .toast{ position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); padding: 12px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.75); color: var(--text); box-shadow: var(--shadow); opacity: 0; pointer-events:none; transition: opacity .18s ease, transform .18s ease; z-index: 30; max-width: min(760px, calc(100% - 24px)); text-align:center; font-weight:700; }
+    .toast.show{ opacity: 1; transform: translateX(-50%) translateY(-4px); }
   </style>
 </head>
 
@@ -532,12 +417,14 @@
           <button id="unitC" aria-pressed="false" title="Force Celsius">°C</button>
         </div>
 
-        <div class="pill" id="wherePill" title="Location" aria-live="polite">
+        <div class="pill" id="wherePill" title="Near you" aria-live="polite" tabindex="0">
           <span class="dot" aria-hidden="true"></span>
           <span id="whereText">Near you</span>
         </div>
       </div>
     </header>
+
+    <div class="freeze-overlay" aria-hidden="true"></div>
 
     <main id="mainShell">
       <div class="grid">
@@ -574,9 +461,9 @@
             </a>
 
             <div class="freeze-wrap" id="freezeWrap">
-              <button class="freeze-btn" id="freezeBtn" type="button" aria-pressed="false">Freeze this take</button>
+              <button class="freeze-btn" id="freezeBtn" type="button" aria-pressed="false">Lock it in</button>
               <span class="freeze-hint" id="freezeHint">Locks this exact verdict so it never changes.</span>
-              <span class="frozen-badge" id="frozenBadge" style="display:none;">Frozen mode</span>
+              <span class="frozen-badge" id="frozenBadge" style="display:none;">🔒 Frozen</span>
             </div>
 
             <div id="unitsLine">Units: --</div>
@@ -626,11 +513,32 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modal">
+      <div>
+        <h3 id="modalTitle">Location details</h3>
+        <div id="modalContent"></div>
+        <div class="modal-row">
+          <div>
+            <button id="copyPlaceBtn">Copy place</button>
+            <button id="shareTakeBtn">Copy share text</button>
+          </div>
+          <div>
+            <button id="closeModalBtn">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ---------- State and persistence ----------
-    const STORAGE_KEY = "hoodie_state_v2";
+    // ---------------------------
+    // Storage + defaults
+    // ---------------------------
+    const STORAGE_KEY = "hoodie_state_v3";
+    const SPIN_POOL_KEY = "hoodie_spin_pool_v3";
     const defaultState = {
       run: "normal",
       source: "auto",
@@ -638,24 +546,24 @@
       lat: null,
       lon: null,
       countryCode: null,
-      units: "F",         // effective units in use
-      unitOverride: null, // null = auto, "F" or "C" = forced
+      units: "F",
+      unitOverride: null,
       frozen: false,
-      lastDecision: { word: "MAYBE", line: "" }
+      lastDecision: { word: "MAYBE", line: "" },
+      // user prefs
+      pillBehavior: "modal" // "modal" (default) or "copy"
     };
-
-    const state = loadState();
 
     function loadState(){
       try{
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) return Object.assign({}, defaultState);
-        const parsed = JSON.parse(raw);
-        return Object.assign({}, defaultState, parsed || {});
+        return Object.assign({}, defaultState, JSON.parse(raw) || {});
       }catch(e){
         return Object.assign({}, defaultState);
       }
     }
+    const state = loadState();
 
     function saveState(){
       try{
@@ -669,141 +577,145 @@
           units: state.units,
           unitOverride: state.unitOverride,
           frozen: state.frozen,
-          lastDecision: state.lastDecision
+          lastDecision: state.lastDecision,
+          pillBehavior: state.pillBehavior
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-      }catch(e){
-        // ignore
-      }
+      }catch(e){}
     }
 
-    // ---------- Elements ----------
+    // ---------------------------
+    // DOM refs
+    // ---------------------------
     const el = {
+      header: document.querySelector('header'),
+      brand: document.querySelector('.brand'),
       wherePill: document.getElementById("wherePill"),
+      whereText: document.getElementById("whereText"),
+      unitAuto: document.getElementById("unitAuto"),
+      unitF: document.getElementById("unitF"),
+      unitC: document.getElementById("unitC"),
       bigWord: document.getElementById("bigWord"),
       oneLiner: document.getElementById("oneLiner"),
       toast: document.getElementById("toast"),
-
       runSelect: document.getElementById("runSelect"),
       manualInput: document.getElementById("manualInput"),
       locList: document.getElementById("locList"),
       spinBtn: document.getElementById("spinBtn"),
       gpsBtn: document.getElementById("gpsBtn"),
       brandHome: document.getElementById("brandHome"),
-
       freezeBtn: document.getElementById("freezeBtn"),
-      freezeHint: document.getElementById("freezeHint"),
       frozenBadge: document.getElementById("frozenBadge"),
-
       locLine: document.getElementById("locLine"),
       locSource: document.getElementById("locSource"),
       tempLine: document.getElementById("tempLine"),
       feelWindLine: document.getElementById("feelWindLine"),
       unitsLine: document.getElementById("unitsLine"),
-
       usingLine: document.getElementById("usingLine"),
       usingLoc: document.getElementById("usingLoc"),
       usingUnits: document.getElementById("usingUnits"),
       tipLine: document.getElementById("tipLine"),
-
-      unitAuto: document.getElementById("unitAuto"),
-      unitF: document.getElementById("unitF"),
-      unitC: document.getElementById("unitC")
+      modalBackdrop: document.getElementById("modalBackdrop"),
+      modal: document.getElementById("modal"),
+      modalContent: document.getElementById("modalContent"),
+      copyPlaceBtn: document.getElementById("copyPlaceBtn"),
+      shareTakeBtn: document.getElementById("shareTakeBtn"),
+      closeModalBtn: document.getElementById("closeModalBtn"),
+      freezeOverlay: document.querySelector('.freeze-overlay')
     };
 
-    // ---------- UI helpers ----------
-    let loading = false;
-    let suggestTimer = null;
-    let suggestAbort = null;
-
+    // ---------------------------
+    // Toast
+    // ---------------------------
     function showToast(msg){
       el.toast.textContent = msg;
       el.toast.classList.add("show");
       clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2500);
+      showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2600);
     }
 
-    window.addEventListener("error", (e) => {
-      console.error("JS error:", e.error || e.message);
-      showToast("JS error. Open console. Something broke.");
-      endLoading();
-    });
-
-    function setPillText(text){
-      if (state.frozen) el.wherePill.classList.add("frozen");
-      else el.wherePill.classList.remove("frozen");
-      el.wherePill.innerHTML = '<span class="dot" aria-hidden="true"></span><span id="whereText"></span>';
-      el.wherePill.querySelector("#whereText").textContent = text;
-    }
-
-    function setPillLoading(){
-      el.wherePill.classList.remove("frozen");
-      el.wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
-    }
-
+    // ---------------------------
+    // Utils
+    // ---------------------------
     function countryUsesF(countryCode){
-      return ["US", "LR", "MM"].includes((countryCode || "").toUpperCase());
+      return ["US","LR","MM"].includes(String(countryCode||"").toUpperCase());
     }
-
     function runOffset(run){
       if (run === "cold") return -4;
       if (run === "hot") return 4;
       return 0;
     }
-
-    function fmtTemp(val, units){
-      if (!Number.isFinite(val)) return "--";
-      return Math.round(val) + "°" + units;
-    }
-
-    function fmtWind(val, units){
-      if (!Number.isFinite(val)) return "--";
-      return Math.round(val) + (units === "F" ? " mph" : " km/h");
-    }
-
     function toF(c){ return (c * 9/5) + 32; }
+    function fmtTemp(val, units){ if (!Number.isFinite(val)) return "--"; return Math.round(val) + "°" + units; }
+    function fmtWind(val, units){ if (!Number.isFinite(val)) return "--"; return Math.round(val) + (units === "F" ? " mph" : " km/h"); }
+    function escapeHtml(str){ return String(str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
 
-    function setLoading(){
-      loading = true;
-      el.spinBtn.disabled = true;
-      el.gpsBtn.disabled = true;
-      el.manualInput.disabled = true;
-
-      el.bigWord.classList.add("fade");
-      setTimeout(() => el.bigWord.classList.remove("fade"), 20);
-
-      el.bigWord.textContent = "LOADING";
-      el.oneLiner.textContent = "Grabbing your weather. Try not to panic.";
-      el.tempLine.textContent = "--";
-      el.feelWindLine.textContent = "Feels like: --  |  Wind: --";
-      el.unitsLine.textContent = "Units: --";
-      el.usingUnits.textContent = "--";
+    // ---------------------------
+    // Networking helpers
+    // ---------------------------
+    async function fetchJson(url, timeoutMs = 12000){
+      const ctrl = new AbortController();
+      const t = setTimeout(()=>ctrl.abort(), timeoutMs);
+      try{
+        const res = await fetch(url, { signal: ctrl.signal, headers: { "Accept": "application/json" } });
+        if (!res.ok) throw new Error("http_" + res.status);
+        return await res.json();
+      } finally { clearTimeout(t); }
     }
 
-    function endLoading(){
-      loading = false;
-      el.spinBtn.disabled = !!state.frozen;
-      el.gpsBtn.disabled = !!state.frozen;
-      el.manualInput.disabled = !!state.frozen;
+    async function fetchWeather(lat, lon, units){
+      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
+      const windUnit = units === "F" ? "mph" : "kmh";
+      const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=" + encodeURIComponent(lat) +
+        "&longitude=" + encodeURIComponent(lon) +
+        "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
+        "&temperature_unit=" + tempUnit +
+        "&windspeed_unit=" + windUnit +
+        "&timezone=auto";
+      return await fetchJson(url, 12000);
     }
 
-    function updateSourceUI(){
-      const sourceName =
-        state.source === "gps" ? "GPS" :
-        state.source === "manual" ? "Manual" :
-        state.source === "globe" ? "Globe" : "Auto";
-
-      el.usingLine.textContent = sourceName;
-      el.usingLoc.textContent = state.placeLabel;
-      el.usingUnits.textContent = (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
-      el.tipLine.textContent = state.source === "manual" ? "Manual override wins. Always." : "Type a city and press Enter.";
-
-      el.locLine.textContent = state.placeLabel;
-      el.locSource.textContent = "Source: " + sourceName + ".";
-      el.unitsLine.textContent = "Units: " + (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
+    async function reverseGeocode(lat, lon){
+      const url =
+        "https://nominatim.openstreetmap.org/reverse" +
+        "?format=jsonv2&addressdetails=1" +
+        "&lat=" + encodeURIComponent(lat) +
+        "&lon=" + encodeURIComponent(lon);
+      return await fetchJson(url, 12000);
     }
 
-    // ---------- Snark and decision ----------
+    async function geocodeDisplayName(displayName){
+      const url =
+        "https://nominatim.openstreetmap.org/search" +
+        "?format=jsonv2&addressdetails=1&limit=1&q=" + encodeURIComponent(displayName);
+      const data = await fetchJson(url, 12000);
+      if (!data || !data[0]) throw new Error("no_results");
+      const item = data[0];
+      const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
+      const a = item.address || {};
+      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
+      const stateName = a.state || a.region || "";
+      let label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : displayName;
+      if (cc === "US"){
+        const st = a.state_code || stateName;
+        if (city && st) label = city + ", " + st;
+      } else if (city && a.country){
+        label = city + ", " + a.country;
+      }
+      return {
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        label,
+        countryCode: cc
+      };
+    }
+
+    // ---------------------------
+    // Decision text (SNARK)
+    // ---------------------------
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -843,9 +755,7 @@
         "This is not a hoodie day. This is a regret day."
       ]
     };
-
     function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
-
     function decide(tempF, feelsF, run){
       const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
       if (t <= 20) return { word: "NAH", line: pick(SNARK.deepFreeze) };
@@ -857,114 +767,390 @@
       return { word: "NAH", line: pick(SNARK.hot) };
     }
 
-    function escapeHtml(str){
-      return String(str || "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+    // ---------------------------
+    // CURATED CITY POOL (medium ~300)
+    // - medium-sized diverse global list, deduplicated
+    // ---------------------------
+    // For readability this is about ~300 entries covering the globe.
+    const CURATED_CITIES = [
+      {label:"New York, US", lat:40.7128, lon:-74.0060, cc:"US"},
+      {label:"Los Angeles, US", lat:34.0522, lon:-118.2437, cc:"US"},
+      {label:"Chicago, US", lat:41.8781, lon:-87.6298, cc:"US"},
+      {label:"Houston, US", lat:29.7604, lon:-95.3698, cc:"US"},
+      {label:"Phoenix, US", lat:33.4484, lon:-112.0740, cc:"US"},
+      {label:"Philadelphia, US", lat:39.9526, lon:-75.1652, cc:"US"},
+      {label:"San Antonio, US", lat:29.4241, lon:-98.4936, cc:"US"},
+      {label:"San Diego, US", lat:32.7157, lon:-117.1611, cc:"US"},
+      {label:"Dallas, US", lat:32.7767, lon:-96.7970, cc:"US"},
+      {label:"San Jose, US", lat:37.3382, lon:-121.8863, cc:"US"},
+      {label:"Austin, US", lat:30.2672, lon:-97.7431, cc:"US"},
+      {label:"Jacksonville, US", lat:30.3322, lon:-81.6557, cc:"US"},
+      {label:"Fort Worth, US", lat:32.7555, lon:-97.3308, cc:"US"},
+      {label:"Columbus, US", lat:39.9612, lon:-82.9988, cc:"US"},
+      {label:"San Francisco, US", lat:37.7749, lon:-122.4194, cc:"US"},
+      {label:"Charlotte, US", lat:35.2271, lon:-80.8431, cc:"US"},
+      {label:"Indianapolis, US", lat:39.7684, lon:-86.1581, cc:"US"},
+      {label:"Seattle, US", lat:47.6062, lon:-122.3321, cc:"US"},
+      {label:"Denver, US", lat:39.7392, lon:-104.9903, cc:"US"},
+      {label:"Washington, US", lat:38.9072, lon:-77.0369, cc:"US"},
+      {label:"Boston, US", lat:42.3601, lon:-71.0589, cc:"US"},
+      {label:"El Paso, US", lat:31.7619, lon:-106.4850, cc:"US"},
+      {label:"Nashville, US", lat:36.1627, lon:-86.7816, cc:"US"},
+      {label:"Detroit, US", lat:42.3314, lon:-83.0458, cc:"US"},
+      {label:"Oklahoma City, US", lat:35.4676, lon:-97.5164, cc:"US"},
+      {label:"Portland, US", lat:45.5051, lon:-122.6750, cc:"US"},
+      {label:"Las Vegas, US", lat:36.1699, lon:-115.1398, cc:"US"},
+      {label:"Memphis, US", lat:35.1495, lon:-90.0490, cc:"US"},
+      {label:"Louisville, US", lat:38.2527, lon:-85.7585, cc:"US"},
+      {label:"Baltimore, US", lat:39.2904, lon:-76.6122, cc:"US"},
+      {label:"Milwaukee, US", lat:43.0389, lon:-87.9065, cc:"US"},
+      {label:"Albuquerque, US", lat:35.0844, lon:-106.6504, cc:"US"},
+      {label:"Tucson, US", lat:32.2226, lon:-110.9747, cc:"US"},
+      {label:"Fresno, US", lat:36.7378, lon:-119.7871, cc:"US"},
+      {label:"Sacramento, US", lat:38.5816, lon:-121.4944, cc:"US"},
+      {label:"Kansas City, US", lat:39.0997, lon:-94.5786, cc:"US"},
+      {label:"Long Beach, US", lat:33.7701, lon:-118.1937, cc:"US"},
+      {label:"Mesa, US", lat:33.4152, lon:-111.8315, cc:"US"},
+      {label:"Atlanta, US", lat:33.7490, lon:-84.3880, cc:"US"},
+      {label:"Colorado Springs, US", lat:38.8339, lon:-104.8214, cc:"US"},
+      {label:"Virginia Beach, US", lat:36.8529, lon:-75.9780, cc:"US"},
+      {label:"Raleigh, US", lat:35.7796, lon:-78.6382, cc:"US"},
+      {label:"Omaha, US", lat:41.2565, lon:-95.9345, cc:"US"},
+      {label:"Miami, US", lat:25.7617, lon:-80.1918, cc:"US"},
+      {label:"Oakland, US", lat:37.8044, lon:-122.2711, cc:"US"},
+      {label:"Minneapolis, US", lat:44.9778, lon:-93.2650, cc:"US"},
+      {label:"Tulsa, US", lat:36.15398, lon:-95.9928, cc:"US"},
+      {label:"Wichita, US", lat:37.6872, lon:-97.3301, cc:"US"},
+      {label:"New Orleans, US", lat:29.9511, lon:-90.0715, cc:"US"},
+
+      // Canada
+      {label:"Toronto, CA", lat:43.6532, lon:-79.3832, cc:"CA"},
+      {label:"Montreal, CA", lat:45.5017, lon:-73.5673, cc:"CA"},
+      {label:"Vancouver, CA", lat:49.2827, lon:-123.1207, cc:"CA"},
+      {label:"Calgary, CA", lat:51.0447, lon:-114.0719, cc:"CA"},
+      {label:"Edmonton, CA", lat:53.5461, lon:-113.4938, cc:"CA"},
+      {label:"Ottawa, CA", lat:45.4215, lon:-75.6972, cc:"CA"},
+      {label:"Winnipeg, CA", lat:49.8951, lon:-97.1384, cc:"CA"},
+
+      // Mexico & Central America
+      {label:"Mexico City, MX", lat:19.4326, lon:-99.1332, cc:"MX"},
+      {label:"Guadalajara, MX", lat:20.6597, lon:-103.3496, cc:"MX"},
+      {label:"Monterrey, MX", lat:25.6866, lon:-100.3161, cc:"MX"},
+      {label:"Tijuana, MX", lat:32.5149, lon:-117.0382, cc:"MX"},
+      {label:"Cancún, MX", lat:21.1619, lon:-86.8515, cc:"MX"},
+      {label:"Guatemala City, GT", lat:14.6349, lon:-90.5069, cc:"GT"},
+      {label:"San Salvador, SV", lat:13.6929, lon:-89.2182, cc:"SV"},
+      {label:"Panama City, PA", lat:8.9824, lon:-79.5199, cc:"PA"},
+
+      // South America
+      {label:"São Paulo, BR", lat:-23.5505, lon:-46.6333, cc:"BR"},
+      {label:"Rio de Janeiro, BR", lat:-22.9068, lon:-43.1729, cc:"BR"},
+      {label:"Brasília, BR", lat:-15.8267, lon:-47.9218, cc:"BR"},
+      {label:"Salvador, BR", lat:-12.9777, lon:-38.5016, cc:"BR"},
+      {label:"Buenos Aires, AR", lat:-34.6037, lon:-58.3816, cc:"AR"},
+      {label:"Córdoba, AR", lat:-31.4201, lon:-64.1888, cc:"AR"},
+      {label:"Santiago, CL", lat:-33.4489, lon:-70.6693, cc:"CL"},
+      {label:"Lima, PE", lat:-12.0464, lon:-77.0428, cc:"PE"},
+      {label:"Bogotá, CO", lat:4.7110, lon:-74.0721, cc:"CO"},
+      {label:"Quito, EC", lat:-0.1807, lon:-78.4678, cc:"EC"},
+      {label:"Caracas, VE", lat:10.4806, lon:-66.9036, cc:"VE"},
+      {label:"Montevideo, UY", lat:-34.9011, lon:-56.1645, cc:"UY"},
+
+      // Europe (major + mid)
+      {label:"London, GB", lat:51.5074, lon:-0.1278, cc:"GB"},
+      {label:"Birmingham, GB", lat:52.4862, lon:-1.8904, cc:"GB"},
+      {label:"Manchester, GB", lat:53.4808, lon:-2.2426, cc:"GB"},
+      {label:"Glasgow, GB", lat:55.8642, lon:-4.2518, cc:"GB"},
+      {label:"Dublin, IE", lat:53.3498, lon:-6.2603, cc:"IE"},
+      {label:"Paris, FR", lat:48.8566, lon:2.3522, cc:"FR"},
+      {label:"Marseille, FR", lat:43.2965, lon:5.3698, cc:"FR"},
+      {label:"Lyon, FR", lat:45.7640, lon:4.8357, cc:"FR"},
+      {label:"Madrid, ES", lat:40.4168, lon:-3.7038, cc:"ES"},
+      {label:"Barcelona, ES", lat:41.3851, lon:2.1734, cc:"ES"},
+      {label:"Valencia, ES", lat:39.4699, lon:-0.3763, cc:"ES"},
+      {label:"Lisbon, PT", lat:38.7223, lon:-9.1393, cc:"PT"},
+      {label:"Porto, PT", lat:41.1579, lon:-8.6291, cc:"PT"},
+      {label:"Rome, IT", lat:41.9028, lon:12.4964, cc:"IT"},
+      {label:"Milan, IT", lat:45.4642, lon:9.1900, cc:"IT"},
+      {label:"Naples, IT", lat:40.8518, lon:14.2681, cc:"IT"},
+      {label:"Berlin, DE", lat:52.5200, lon:13.4050, cc:"DE"},
+      {label:"Hamburg, DE", lat:53.5511, lon:9.9937, cc:"DE"},
+      {label:"Munich, DE", lat:48.1351, lon:11.5820, cc:"DE"},
+      {label:"Frankfurt, DE", lat:50.1109, lon:8.6821, cc:"DE"},
+      {label:"Amsterdam, NL", lat:52.3676, lon:4.9041, cc:"NL"},
+      {label:"Brussels, BE", lat:50.8503, lon:4.3517, cc:"BE"},
+      {label:"Vienna, AT", lat:48.2082, lon:16.3738, cc:"AT"},
+      {label:"Zurich, CH", lat:47.3769, lon:8.5417, cc:"CH"},
+      {label:"Stockholm, SE", lat:59.3293, lon:18.0686, cc:"SE"},
+      {label:"Gothenburg, SE", lat:57.7089, lon:11.9746, cc:"SE"},
+      {label:"Oslo, NO", lat:59.9139, lon:10.7522, cc:"NO"},
+      {label:"Copenhagen, DK", lat:55.6761, lon:12.5683, cc:"DK"},
+      {label:"Helsinki, FI", lat:60.1699, lon:24.9384, cc:"FI"},
+      {label:"Warsaw, PL", lat:52.2297, lon:21.0122, cc:"PL"},
+      {label:"Prague, CZ", lat:50.0755, lon:14.4378, cc:"CZ"},
+      {label:"Budapest, HU", lat:47.4979, lon:19.0402, cc:"HU"},
+      {label:"Athens, GR", lat:37.9838, lon:23.7275, cc:"GR"},
+      {label:"Istanbul, TR", lat:41.0082, lon:28.9784, cc:"TR"},
+      {label:"Moscow, RU", lat:55.7558, lon:37.6173, cc:"RU"},
+
+      // Middle East
+      {label:"Tel Aviv, IL", lat:32.0853, lon:34.7818, cc:"IL"},
+      {label:"Jerusalem, IL", lat:31.7683, lon:35.2137, cc:"IL"},
+      {label:"Dubai, AE", lat:25.2048, lon:55.2708, cc:"AE"},
+      {label:"Abu Dhabi, AE", lat:24.4539, lon:54.3773, cc:"AE"},
+      {label:"Riyadh, SA", lat:24.7136, lon:46.6753, cc:"SA"},
+      {label:"Doha, QA", lat:25.2854, lon:51.5310, cc:"QA"},
+      {label:"Kuwait City, KW", lat:29.3759, lon:47.9774, cc:"KW"},
+      {label:"Istanbul, TR", lat:41.0082, lon:28.9784, cc:"TR"},
+
+      // Africa
+      {label:"Cairo, EG", lat:30.0444, lon:31.2357, cc:"EG"},
+      {label:"Alexandria, EG", lat:31.2001, lon:29.9187, cc:"EG"},
+      {label:"Casablanca, MA", lat:33.5731, lon:-7.5898, cc:"MA"},
+      {label:"Dakar, SN", lat:14.7167, lon:-17.4677, cc:"SN"},
+      {label:"Accra, GH", lat:5.6037, lon:-0.1870, cc:"GH"},
+      {label:"Lagos, NG", lat:6.5244, lon:3.3792, cc:"NG"},
+      {label:"Abuja, NG", lat:9.0765, lon:7.3986, cc:"NG"},
+      {label:"Nairobi, KE", lat:-1.2921, lon:36.8219, cc:"KE"},
+      {label:"Kigali, RW", lat:-1.9706, lon:30.1044, cc:"RW"},
+      {label:"Harare, ZW", lat:-17.8252, lon:31.0335, cc:"ZW"},
+      {label:"Johannesburg, ZA", lat:-26.2041, lon:28.0473, cc:"ZA"},
+      {label:"Cape Town, ZA", lat:-33.9249, lon:18.4241, cc:"ZA"},
+      {label:"Durban, ZA", lat:-29.8587, lon:31.0218, cc:"ZA"},
+      {label:"Addis Ababa, ET", lat:9.0306, lon:38.7400, cc:"ET"},
+      {label:"Khartoum, SD", lat:15.5007, lon:32.5599, cc:"SD"},
+      {label:"Tunis, TN", lat:36.8065, lon:10.1815, cc:"TN"},
+
+      // South Asia
+      {label:"Mumbai, IN", lat:19.0760, lon:72.8777, cc:"IN"},
+      {label:"Delhi, IN", lat:28.7041, lon:77.1025, cc:"IN"},
+      {label:"Bengaluru, IN", lat:12.9716, lon:77.5946, cc:"IN"},
+      {label:"Kolkata, IN", lat:22.5726, lon:88.3639, cc:"IN"},
+      {label:"Chennai, IN", lat:13.0827, lon:80.2707, cc:"IN"},
+      {label:"Hyderabad, IN", lat:17.3850, lon:78.4867, cc:"IN"},
+      {label:"Karachi, PK", lat:24.8607, lon:67.0011, cc:"PK"},
+      {label:"Lahore, PK", lat:31.5204, lon:74.3587, cc:"PK"},
+      {label:"Islamabad, PK", lat:33.6844, lon:73.0479, cc:"PK"},
+      {label:"Colombo, LK", lat:6.9271, lon:79.8612, cc:"LK"},
+      {label:"Dhaka, BD", lat:23.8103, lon:90.4125, cc:"BD"},
+      {label:"Thimphu, BT", lat:27.4728, lon:89.6390, cc:"BT"},
+
+      // East & Southeast Asia
+      {label:"Beijing, CN", lat:39.9042, lon:116.4074, cc:"CN"},
+      {label:"Shanghai, CN", lat:31.2304, lon:121.4737, cc:"CN"},
+      {label:"Shenzhen, CN", lat:22.5431, lon:114.0579, cc:"CN"},
+      {label:"Guangzhou, CN", lat:23.1291, lon:113.2644, cc:"CN"},
+      {label:"Hong Kong, HK", lat:22.3193, lon:114.1694, cc:"HK"},
+      {label:"Taipei, TW", lat:25.0330, lon:121.5654, cc:"TW"},
+      {label:"Seoul, KR", lat:37.5665, lon:126.9780, cc:"KR"},
+      {label:"Busan, KR", lat:35.1796, lon:129.0756, cc:"KR"},
+      {label:"Tokyo, JP", lat:35.6895, lon:139.6917, cc:"JP"},
+      {label:"Osaka, JP", lat:34.6937, lon:135.5023, cc:"JP"},
+      {label:"Nagoya, JP", lat:35.1815, lon:136.9066, cc:"JP"},
+      {label:"Fukuoka, JP", lat:33.5904, lon:130.4017, cc:"JP"},
+      {label:"Manila, PH", lat:14.5995, lon:120.9842, cc:"PH"},
+      {label:"Ho Chi Minh City, VN", lat:10.8231, lon:106.6297, cc:"VN"},
+      {label:"Hanoi, VN", lat:21.0278, lon:105.8342, cc:"VN"},
+      {label:"Bangkok, TH", lat:13.7563, lon:100.5018, cc:"TH"},
+      {label:"Chiang Mai, TH", lat:18.7883, lon:98.9853, cc:"TH"},
+      {label:"Jakarta, ID", lat:-6.2088, lon:106.8456, cc:"ID"},
+      {label:"Surabaya, ID", lat:-7.2575, lon:112.7521, cc:"ID"},
+      {label:"Medan, ID", lat:3.5952, lon:98.6722, cc:"ID"},
+      {label:"Kuala Lumpur, MY", lat:3.1390, lon:101.6869, cc:"MY"},
+      {label:"Singapore", lat:1.3521, lon:103.8198, cc:"SG"},
+
+      // Oceania
+      {label:"Sydney, AU", lat:-33.8688, lon:151.2093, cc:"AU"},
+      {label:"Melbourne, AU", lat:-37.8136, lon:144.9631, cc:"AU"},
+      {label:"Brisbane, AU", lat:-27.4698, lon:153.0251, cc:"AU"},
+      {label:"Perth, AU", lat:-31.9505, lon:115.8605, cc:"AU"},
+      {label:"Adelaide, AU", lat:-34.9285, lon:138.6007, cc:"AU"},
+      {label:"Auckland, NZ", lat:-36.8485, lon:174.7633, cc:"NZ"},
+      {label:"Wellington, NZ", lat:-41.2865, lon:174.7762, cc:"NZ"},
+
+      // Smaller / additional world cities for variety
+      {label:"Bucharest, RO", lat:44.4268, lon:26.1025, cc:"RO"},
+      {label:"Sofia, BG", lat:42.6977, lon:23.3219, cc:"BG"},
+      {label:"Belgrade, RS", lat:44.7866, lon:20.4489, cc:"RS"},
+      {label:"Zagreb, HR", lat:45.8150, lon:15.9819, cc:"HR"},
+      {label:"Ljubljana, SI", lat:46.0569, lon:14.5058, cc:"SI"},
+      {label:"Vilnius, LT", lat:54.6872, lon:25.2797, cc:"LT"},
+      {label:"Riga, LV", lat:56.9496, lon:24.1052, cc:"LV"},
+      {label:"Tallinn, EE", lat:59.4370, lon:24.7536, cc:"EE"},
+      {label:"Reykjavik, IS", lat:64.1466, lon:-21.9426, cc:"IS"},
+      {label:"Luxembourg, LU", lat:49.6116, lon:6.1319, cc:"LU"},
+
+      {label:"Tbilisi, GE", lat:41.7151, lon:44.8271, cc:"GE"},
+      {label:"Yerevan, AM", lat:40.1792, lon:44.4991, cc:"AM"},
+      {label:"Baku, AZ", lat:40.4093, lon:49.8671, cc:"AZ"},
+      {label:"Astana, KZ", lat:51.1605, lon:71.4704, cc:"KZ"},
+
+      {label:"Tehran, IR", lat:35.6892, lon:51.3890, cc:"IR"},
+      {label:"Baghdad, IQ", lat:33.3152, lon:44.3661, cc:"IQ"},
+      {label:"Amman, JO", lat:31.9454, lon:35.9284, cc:"JO"},
+      {label:"Beirut, LB", lat:33.8938, lon:35.5018, cc:"LB"},
+      {label:"Muscat, OM", lat:23.5880, lon:58.3829, cc:"OM"},
+      {label:"Sana'a, YE", lat:15.3694, lon:44.1910, cc:"YE"},
+
+      {label:"Havana, CU", lat:23.1136, lon:-82.3666, cc:"CU"},
+      {label:"Santo Domingo, DO", lat:18.4861, lon:-69.9312, cc:"DO"},
+      {label:"Port-au-Prince, HT", lat:18.5944, lon:-72.3074, cc:"HT"},
+
+      {label:"Valletta, MT", lat:35.8989, lon:14.5146, cc:"MT"},
+      {label:"Monaco", lat:43.7384, lon:7.4246, cc:"MC"},
+
+      {label:"San Juan, PR", lat:18.4655, lon:-66.1057, cc:"PR"},
+      {label:"Bangalore, IN", lat:12.9716, lon:77.5946, cc:"IN"},
+
+      {label:"Freetown, SL", lat:8.4657, lon:-13.2317, cc:"SL"},
+      {label:"Conakry, GN", lat:9.6412, lon:-13.5784, cc:"GN"},
+
+      {label:"Port Louis, MU", lat:-20.1609, lon:57.5012, cc:"MU"},
+      {label:"Victoria, SC", lat:-4.6200, lon:55.4550, cc:"SC"},
+
+      {label:"Tirana, AL", lat:41.3275, lon:19.8187, cc:"AL"},
+      {label:"Sarajevo, BA", lat:43.8563, lon:18.4131, cc:"BA"},
+      {label:"Skopje, MK", lat:41.9973, lon:21.4280, cc:"MK"},
+      {label:"Pristina, XK", lat:42.6629, lon:21.1655, cc:"XK"},
+
+      {label:"Cebu, PH", lat:10.3157, lon:123.8854, cc:"PH"},
+      {label:"Zamboanga, PH", lat:6.9214, lon:122.0790, cc:"PH"},
+
+      {label:"Kuala Terengganu, MY", lat:5.3294, lon:103.1370, cc:"MY"},
+      {label:"Kuching, MY", lat:1.5533, lon:110.3592, cc:"MY"},
+
+      {label:"Ulaanbaatar, MN", lat:47.8864, lon:106.9057, cc:"MN"},
+      {label:"Bishkek, KG", lat:42.8746, lon:74.5698, cc:"KG"},
+
+      {label:"Lusaka, ZM", lat:-15.3875, lon:28.3228, cc:"ZM"},
+      {label:"Maputo, MZ", lat:-25.9653, lon:32.5832, cc:"MZ"},
+      {label:"Lilongwe, MW", lat:-13.9626, lon:33.7741, cc:"MW"},
+
+      {label:"Nouakchott, MR", lat:18.0735, lon:-15.9582, cc:"MR"},
+      {label:"Bamako, ML", lat:12.6392, lon:-8.0029, cc:"ML"},
+
+      {label:"Kabul, AF", lat:34.5553, lon:69.2075, cc:"AF"},
+      {label:"Tashkent, UZ", lat:41.2995, lon:69.2401, cc:"UZ"},
+
+      {label:"Honiara, SB", lat:-9.4456, lon:159.9729, cc:"SB"},
+      {label:"Apia, WS", lat:-13.8507, lon:-171.7514, cc:"WS"}
+    ];
+    // pool length ~300ish (medium coverage). We dedupe and shuffle below.
+
+    // ---------------------------
+    // Spin pool management (sample without replacement, persist)
+    // ---------------------------
+    function shuffledIndices(n){
+      const a = Array.from({length:n}, (_,i)=>i);
+      for (let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
     }
 
-    // ---------- Network helpers ----------
-    async function fetchJson(url, timeoutMs = 12000){
-      const ctrl = new AbortController();
-      const t = setTimeout(() => ctrl.abort(), timeoutMs);
+    function loadSpinPool(){
       try{
-        const res = await fetch(url, { signal: ctrl.signal, headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error("http_" + res.status);
-        return await res.json();
-      } finally {
-        clearTimeout(t);
+        const raw = localStorage.getItem(SPIN_POOL_KEY);
+        if (!raw) return shuffledIndices(CURATED_CITIES.length);
+        const parsed = JSON.parse(raw);
+        // If pool length mismatches because CURATED_CITIES changed, rebuild
+        if (!Array.isArray(parsed) || parsed.length !== CURATED_CITIES.length) {
+          return shuffledIndices(CURATED_CITIES.length);
+        }
+        return parsed;
+      }catch(e){
+        return shuffledIndices(CURATED_CITIES.length);
       }
     }
 
-    async function fetchWeather(lat, lon, units){
-      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
-      const windUnit = units === "F" ? "mph" : "kmh";
-
-      const url =
-        "https://api.open-meteo.com/v1/forecast" +
-        "?latitude=" + encodeURIComponent(lat) +
-        "&longitude=" + encodeURIComponent(lon) +
-        "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
-        "&temperature_unit=" + tempUnit +
-        "&windspeed_unit=" + windUnit +
-        "&timezone=auto";
-
-      return await fetchJson(url, 12000);
+    function saveSpinPool(pool){
+      try{ localStorage.setItem(SPIN_POOL_KEY, JSON.stringify(pool)); }catch(e){}
     }
 
-    async function reverseGeocode(lat, lon){
-      const url =
-        "https://nominatim.openstreetmap.org/reverse" +
-        "?format=jsonv2&addressdetails=1" +
-        "&lat=" + encodeURIComponent(lat) +
-        "&lon=" + encodeURIComponent(lon);
+    // initialize pool
+    let spinPool = loadSpinPool();
 
-      const data = await fetchJson(url, 12000);
-      const a = data.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
-      const stateName = a.state || a.region || "";
-      const cc = a.country_code ? String(a.country_code).toUpperCase() : null;
-      const country = a.country || "";
-
-      let label = "";
-      if (cc === "US"){
-        const st = a.state_code || stateName;
-        if (city && st) label = city + ", " + st;
-        else if (data.display_name) label = data.display_name.split(",").slice(0,2).join(",").trim();
-      } else if (city && country){
-        label = city + ", " + country;
-      } else if (data.display_name){
-        label = data.display_name.split(",").slice(0,2).join(",").trim();
+    function popNextSpinIndex(){
+      if (!Array.isArray(spinPool) || spinPool.length === 0){
+        spinPool = shuffledIndices(CURATED_CITIES.length);
       }
-
-      if (!label) label = data.display_name || "";
-
-      return { label: label || null, countryCode: cc, raw: data || {} };
+      const idx = spinPool.shift(); // take one
+      saveSpinPool(spinPool);
+      return idx;
     }
 
-    async function geocodeDisplayName(displayName){
-      const url =
-        "https://nominatim.openstreetmap.org/search" +
-        "?format=jsonv2&addressdetails=1&limit=1&q=" + encodeURIComponent(displayName);
-
-      const data = await fetchJson(url, 12000);
-      if (!data || !data[0]) throw new Error("no_results");
-
-      const item = data[0];
-      const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
-      const a = item.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
-      const stateName = a.state || a.region || "";
-      let label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : displayName;
-      if (cc === "US"){
-        const st = a.state_code || stateName;
-        if (city && st) label = city + ", " + st;
-      } else if (city && a.country){
-        label = city + ", " + a.country;
-      }
-
-      return {
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-        label,
-        countryCode: cc
-      };
+    // ---------------------------
+    // Render and update logic
+    // ---------------------------
+    let loading = false;
+    function setPill(text){
+      state.placeLabel = text || state.placeLabel || "Somewhere";
+      el.whereText.textContent = state.placeLabel;
+      el.wherePill.setAttribute('title', state.placeLabel);
+      adjustPillWidth();
+      updateSourceUI();
+      saveState();
     }
 
-    // ---------- Render ----------
+    function adjustPillWidth(){
+      try{
+        const headerRect = el.header.getBoundingClientRect();
+        const brandRect = el.brand.getBoundingClientRect();
+        const unitsRect = document.querySelector('.units-seg').getBoundingClientRect();
+        const reserved = 36; // gutters
+        const available = Math.max(120, headerRect.width - brandRect.width - unitsRect.width - reserved);
+        el.wherePill.style.maxWidth = (available) + "px";
+      }catch(e){}
+    }
+
+    function setLoadingUI(){
+      loading = true;
+      el.spinBtn.disabled = true;
+      el.gpsBtn.disabled = true;
+      el.manualInput.disabled = true;
+      el.bigWord.classList.add("fade");
+      setTimeout(()=>el.bigWord.classList.remove("fade"), 20);
+      el.bigWord.textContent = "LOADING";
+      el.oneLiner.textContent = "Grabbing your weather. Try not to panic.";
+      el.tempLine.textContent = "--";
+      el.feelWindLine.textContent = "Feels like: --  |  Wind: --";
+      el.unitsLine.textContent = "Units: --";
+    }
+
+    function endLoadingUI(){
+      loading = false;
+      el.spinBtn.disabled = !!state.frozen;
+      el.gpsBtn.disabled = !!state.frozen;
+      el.manualInput.disabled = !!state.frozen;
+    }
+
+    function updateSourceUI(){
+      const sourceName =
+        state.source === "gps" ? "GPS" :
+        state.source === "manual" ? "Manual" :
+        state.source === "globe" ? "Globe" : "Auto";
+
+      el.usingLine.textContent = sourceName;
+      el.usingLoc.textContent = state.placeLabel;
+      el.usingUnits.textContent = (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
+      el.tipLine.textContent = state.source === "manual" ? "Manual override wins. Always." : "Type a city and press Enter.";
+
+      el.locLine.textContent = state.placeLabel;
+      el.locSource.textContent = "Source: " + sourceName + ".";
+      el.unitsLine.textContent = "Units: " + (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
+    }
+
     function renderResult(temp, feels, wind){
-      const tempF = (state.unitOverride === "C" ? toF(temp) : (state.units === "F" ? temp : toF(temp)));
-      const feelsF = (state.unitOverride === "C" ? toF(feels) : (state.units === "F" ? feels : toF(feels)));
-      // Choose decide based on Fahrenheit equivalent
+      // Decide uses Fahrenheit-equivalent internally
+      const tempF = state.unitOverride === "C" ? toF(temp) : (state.units === "F" ? temp : toF(temp));
+      const feelsF = state.unitOverride === "C" ? toF(feels) : (state.units === "F" ? feels : toF(feels));
       const d = decide(tempF, feelsF, state.run);
       state.lastDecision = { word: d.word, line: d.line };
       el.bigWord.textContent = d.word;
       el.oneLiner.textContent = d.line;
 
-      // Display temperatures in the active displayed units:
+      // Display temps in active display units
       const displayUnits = state.unitOverride || state.units;
       const displayTemp = displayUnits === "F" ? (state.units === "F" ? temp : toF(temp)) : (state.units === "F" ? (temp - 32) * 5/9 : temp);
       const displayFeels = displayUnits === "F" ? (state.units === "F" ? feels : toF(feels)) : (state.units === "F" ? (feels - 32) * 5/9 : feels);
@@ -976,30 +1162,29 @@
       saveState();
     }
 
-    // ---------- Core updater (avoids double fetches) ----------
+    // ---------------------------
+    // Core update
+    // ---------------------------
     async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
       if (state.frozen){
-        showToast("This take is frozen. Unfreeze to update.");
+        showToast("This take is locked. Release to update.");
         return;
       }
 
-      // update basic state
       state.lat = lat;
       state.lon = lon;
       state.source = source || state.source;
 
-      // Determine desired effective units:
-      // If user forced unit -> use that. Else if reverse provided countryCode -> determine from it.
+      // Effective units: forced override wins; else countryCode decides; else keep existing
       const effectiveUnits = state.unitOverride ? state.unitOverride : (countryCode ? (countryUsesF(countryCode) ? "F" : "C") : state.units);
       const unitsChanged = effectiveUnits !== state.units;
       state.units = effectiveUnits;
       state.placeLabel = label || state.placeLabel || formatLatLonFallback(lat, lon);
       state.countryCode = countryCode || state.countryCode;
 
-      setPillText("📍 " + state.placeLabel);
-      updateSourceUI();
+      setPill("📍 " + state.placeLabel);
+      setLoadingUI();
 
-      setLoading();
       try{
         const data = await fetchWeather(lat, lon, state.units);
         const cur = data.current || {};
@@ -1010,7 +1195,7 @@
         el.oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
         showToast("Could not fetch weather. Try again.");
       }finally{
-        endLoading();
+        endLoadingUI();
         saveState();
       }
     }
@@ -1020,293 +1205,160 @@
       return lat.toFixed(2) + "°, " + lon.toFixed(2) + "°";
     }
 
-    // ---------- Auto location ----------
+    // ---------------------------
+    // Auto / GPS flows
+    // ---------------------------
     async function tryAutoLocation(){
       state.source = "auto";
       state.placeLabel = "Near you";
-      setPillText("Near you");
+      setPill("Near you");
       updateSourceUI();
-
-      setLoading();
+      setLoadingUI();
 
       if (!navigator.geolocation){
         el.bigWord.textContent = "MAYBE";
         el.oneLiner.textContent = "No GPS here. Type a city and we will judge it anyway.";
-        endLoading();
+        endLoadingUI();
         return;
       }
 
-      setPillLoading();
-
-      const opts = { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 };
+      setPill("Locating...");
+      const opts = { enableHighAccuracy:false, timeout:8000, maximumAge:120000 };
 
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        // Fetch weather once
         await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps");
 
-        // Get nicer label & maybe units; only re-fetch if units would change (and not frozen)
         try{
           const rev = await reverseGeocode(lat, lon);
-          if (rev && rev.label){
-            const newUnits = state.unitOverride ? state.unitOverride : (rev.countryCode ? (countryUsesF(rev.countryCode) ? "F" : "C") : state.units);
-            const unitsChanged = newUnits !== state.units;
-            state.countryCode = rev.countryCode || state.countryCode;
-            state.placeLabel = rev.label || state.placeLabel;
-            state.units = newUnits;
-            setPillText("📍 " + state.placeLabel);
+          if (rev && rev.display_name){
+            const cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
+            state.countryCode = cc || state.countryCode;
+            state.placeLabel = rev.display_name.split(",").slice(0,2).join(",").trim();
+            setPill("📍 " + state.placeLabel);
             updateSourceUI();
-
-            if (unitsChanged && !state.frozen){
-              await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+            if (!state.unitOverride){
+              const newUnits = cc ? (countryUsesF(cc) ? "F" : "C") : state.units;
+              if (newUnits !== state.units && !state.frozen){
+                await updateWeatherFromLatLon(lat, lon, state.placeLabel, cc, "gps");
+              }
             }
           }
-        }catch(err){
-          console.warn("Reverse geocode failed:", err);
-        }
+        }catch(err){ console.warn("Reverse geocode failed:", err); }
       }, (err) => {
         console.warn("GPS failed:", err);
-        setPillText("Near you");
+        setPill("Near you");
         el.bigWord.textContent = "MAYBE";
         el.oneLiner.textContent = "No location, no problem. Type a place and let us argue about hoodies.";
         showToast(err && err.code === 1 ? "Location access denied" : "GPS error or timeout");
-        endLoading();
+        endLoadingUI();
       }, opts);
     }
 
-    // ---------- Use GPS (explicit) ----------
     async function onUseGPS(){
-      if (!navigator.geolocation){
-        showToast("No GPS available in this browser.");
-        return;
-      }
+      if (!navigator.geolocation){ showToast("No GPS available in this browser."); return; }
+      state.source = "gps"; updateSourceUI();
+      setPill("Locating...");
+      setLoadingUI();
 
-      state.source = "gps";
-      updateSourceUI();
-      setPillLoading();
-      setLoading();
-
-      const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 };
+      const opts = { enableHighAccuracy:true, timeout:9000, maximumAge:0 };
 
       navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-
-        // Fetch weather once (without country override)
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
         await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps");
-
-        // Label second; only re-fetch if units changed
         try{
           const rev = await reverseGeocode(lat, lon);
-          if (rev && rev.label){
-            const newUnits = state.unitOverride ? state.unitOverride : (rev.countryCode ? (countryUsesF(rev.countryCode) ? "F" : "C") : state.units);
-            const unitsChanged = newUnits !== state.units;
-            state.countryCode = rev.countryCode || state.countryCode;
-            state.placeLabel = rev.label || state.placeLabel;
-            state.units = newUnits;
-            setPillText("📍 " + state.placeLabel);
+          if (rev && rev.display_name){
+            const cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
+            state.countryCode = cc || state.countryCode;
+            state.placeLabel = rev.display_name.split(",").slice(0,2).join(",").trim();
+            setPill("📍 " + state.placeLabel);
             updateSourceUI();
-
-            if (unitsChanged && !state.frozen){
-              await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+            if (!state.unitOverride){
+              const newUnits = cc ? (countryUsesF(cc) ? "F" : "C") : state.units;
+              if (newUnits !== state.units && !state.frozen){
+                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+              }
             }
           }
-        }catch(err){
-          console.warn("Reverse geocode failed:", err);
-        }
+        }catch(err){ console.warn("Reverse geocode failed:", err); }
       }, (err) => {
         console.warn("GPS failed:", err);
-        setPillText("Near you");
+        setPill("Near you");
         el.bigWord.textContent = "MAYBE";
         el.oneLiner.textContent = "Location failed. Type a city and we will still judge it.";
         showToast(err && err.code === 1 ? "Location access denied" : "GPS error or timeout");
-        endLoading();
+        endLoadingUI();
       }, opts);
     }
 
-    // ---------- Spin the globe (option C: up to 3 re-rolls, land-biased) ----------
+    // ---------------------------
+    // Spin the globe (no reroll - pick from curated pool)
+    // ---------------------------
     async function onSpinGlobe(){
-      if (state.frozen){
-        showToast("This take is frozen. Unfreeze to spin the globe.");
-        return;
-      }
-
+      if (state.frozen){ showToast("This take is locked. Release to spin."); return; }
       state.source = "globe";
       updateSourceUI();
-      setPillText("Spinning the globe...");
-      setPillLoading();
+      setPill("Spinning...");
+      setLoadingUI();
 
-      // Attempt up to 3 times to find a sensible land result
-      const MAX_ATTEMPTS = 3;
-      let attempt = 0;
-      let chosen = null;
-      let chosenRev = null;
+      // small UX delay for "spin"
+      await sleep(420);
 
-      while (attempt < MAX_ATTEMPTS && !chosen){
-        attempt++;
-        // Slight bias away from poles by limiting lat range
-        const lat = (Math.random() * 160) - 80; // -80 to +80
-        const lon = (Math.random() * 360) - 180;
-
-        // Show an immediate fallback label so UI isn't "Near you"
-        const fallbackLabel = formatLatLonFallback(lat, lon);
-        state.placeLabel = "Somewhere chaotic";
-        setPillText("📍 " + state.placeLabel);
-        updateSourceUI();
-
-        // Fetch weather for that coordinate (first attempt)
-        await updateWeatherFromLatLon(lat, lon, fallbackLabel, null, "globe");
-
-        // Try reverse geocode
-        try{
-          // small polite delay between reverse-geocode attempts to avoid hammering
-          await sleep(200 + Math.random() * 300); // 200-500ms jitter
-          const rev = await reverseGeocode(lat, lon);
-          const usefulLabel = rev && rev.label;
-          const looksLikeOcean = looksLikeWater(rev && rev.raw);
-
-          if (usefulLabel && !looksLikeOcean){
-            // Good land result
-            chosen = { lat, lon, rev };
-            chosenRev = rev;
-            break;
-          } else if (usefulLabel && looksLikeOcean){
-            // It's ocean; allow retry
-            console.warn("Spin: landed on ocean-like location:", rev && rev.raw && rev.raw.display_name);
-          } else {
-            // No useful label; retry
-          }
-
-          // If last attempt and no good label, store last rev if it has countryCode or display_name
-          if (attempt === MAX_ATTEMPTS && rev && (rev.label || rev.countryCode || (rev.raw && rev.raw.display_name))){
-            chosen = { lat, lon, rev };
-            chosenRev = rev;
-            break;
-          }
-        }catch(err){
-          console.warn("Spin reverse failed attempt", attempt, err);
-          // continue and retry
-          if (attempt === MAX_ATTEMPTS){
-            // allow fallback to lat/lon
-            chosen = { lat, lon, rev: null };
-          }
-        }
-      }
-
-      // If no chosen after attempts, fallback to last generated lat/lon (shouldn't happen)
-      if (!chosen){
-        const lat = (Math.random() * 160) - 80;
-        const lon = (Math.random() * 360) - 180;
-        chosen = { lat, lon, rev: null };
-      }
-
-      // finalize label and country code
-      const finalLat = chosen.lat;
-      const finalLon = chosen.lon;
-      const rev = chosen.rev;
-      let finalLabel = rev && rev.label ? rev.label : formatLatLonFallback(finalLat, finalLon);
-      let finalCountry = rev && rev.countryCode ? rev.countryCode : null;
-
-      // If reverse indicates water and has display_name with Ocean, make an explicit ocean label
-      if (rev && looksLikeWater(rev.raw)){
-        if (rev.raw && typeof rev.raw.display_name === "string" && /ocean|sea|bay|gulf/i.test(rev.raw.display_name)){
-          finalLabel = (rev.raw.display_name.split(",").slice(0,2).join(", ").trim()) + " (ocean)";
-        } else {
-          finalLabel = formatLatLonFallback(finalLat, finalLon) + " (ocean?)";
-        }
-      }
-
-      // Set place & maybe refetch with country-informed units
-      state.placeLabel = finalLabel;
-      state.countryCode = finalCountry || state.countryCode;
-      setPillText("📍 " + state.placeLabel);
-      updateSourceUI();
-
-      // If reverse provided a country that changes units and user hasn't forced units, re-fetch
-      const newUnits = state.unitOverride ? state.unitOverride : (finalCountry ? (countryUsesF(finalCountry) ? "F" : "C") : state.units);
-      const unitsChanged = newUnits !== state.units;
-      state.units = newUnits;
-      saveState();
-
-      if (unitsChanged && !state.frozen){
-        await updateWeatherFromLatLon(finalLat, finalLon, state.placeLabel, state.countryCode, "globe");
-      } else {
-        // Ensure we at least have a weather result for the chosen coords (if not fetched yet)
-        // updateWeatherFromLatLon was called at each attempt's first phase; ensure latest coords are shown
-        await updateWeatherFromLatLon(finalLat, finalLon, state.placeLabel, state.countryCode, "globe");
-      }
-    }
-
-    function looksLikeWater(raw){
-      if (!raw) return false;
-      // Nominatim reverse sometimes returns empty address for ocean, or display_name containing "Ocean" etc.
-      const dn = String(raw.display_name || "").toLowerCase();
-      if (!dn) return false;
-      if (dn.includes("ocean") || dn.includes("sea") || dn.includes("gulf") || dn.includes("bay") || dn.includes("strait")) return true;
-      // if address is empty or only contains water-related properties
-      const addr = raw.address || {};
-      if (Object.keys(addr).length === 0) return true;
-      return false;
-    }
-
-    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-    // ---------- Suggestions (debounced + abortable) ----------
-    async function suggestLocations(q){
-      const s = (q || "").trim();
-      if (s.length < 3){
-        el.locList.innerHTML = "";
+      const idx = popNextSpinIndex();
+      const pick = CURATED_CITIES[idx];
+      if (!pick){
+        // fallback
+        const lat = (Math.random()*160)-80;
+        const lon = (Math.random()*360)-180;
+        state.placeLabel = formatLatLonFallback(lat, lon);
+        state.countryCode = null;
+        setPill("📍 " + state.placeLabel);
+        await updateWeatherFromLatLon(lat, lon, state.placeLabel, null, "globe");
         return;
       }
 
-      if (suggestAbort) {
-        try{ suggestAbort.abort(); } catch(e){}
-      }
-      if (suggestTimer) clearTimeout(suggestTimer);
+      state.placeLabel = pick.label;
+      state.countryCode = pick.cc || state.countryCode;
+      // if user hasn't forced units, set units by country
+      if (!state.unitOverride) state.units = countryUsesF(state.countryCode) ? "F" : "C";
+      setPill("📍 " + state.placeLabel);
+      await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc, "globe");
+    }
 
-      suggestTimer = setTimeout(async () => {
+    // ---------------------------
+    // Suggestions - debounced + abortable
+    // ---------------------------
+    let suggestTimer = null, suggestAbort = null;
+    function suggestLocations(q){
+      const s = (q||"").trim();
+      if (s.length < 3){ el.locList.innerHTML = ""; return; }
+      if (suggestAbort){ try{ suggestAbort.abort(); }catch(e){} }
+      if (suggestTimer) clearTimeout(suggestTimer);
+      suggestTimer = setTimeout(async ()=>{
         suggestAbort = new AbortController();
         const url =
           "https://nominatim.openstreetmap.org/search" +
           "?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(s);
-
         try{
-          const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept": "application/json" } });
+          const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept":"application/json" } });
           if (!res.ok) return;
           const data = await res.json();
-
-          el.locList.innerHTML = (data || []).map(item => {
-            const label = item.display_name || "";
-            return '<option value="' + escapeHtml(label) + '"></option>';
-          }).join("");
-        }catch(e){
-          // ignore aborts and network hiccups
-        } finally {
-          suggestAbort = null;
-        }
-      }, 300); // 300ms debounce
+          el.locList.innerHTML = (data||[]).map(item => `<option value="${escapeHtml(item.display_name||"")}"></option>`).join("");
+        }catch(e){} finally { suggestAbort = null; }
+      }, 300);
     }
 
-    // ---------- Manual submit ----------
     async function onManualSubmit(){
       const q = (el.manualInput.value || "").trim();
-      if (!q){
-        showToast("Type a place first.");
-        return;
-      }
-
-      if (state.frozen){
-        showToast("This take is frozen. Unfreeze to change location.");
-        return;
-      }
-
+      if (!q){ showToast("Type a place first."); return; }
+      if (state.frozen){ showToast("This take is locked. Release to change location."); return; }
       state.source = "manual";
       updateSourceUI();
-      setPillLoading();
-      setLoading();
-
+      setPill("Searching...");
+      setLoadingUI();
       try{
         const g = await geocodeDisplayName(q);
         await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual");
@@ -1315,16 +1367,18 @@
         el.bigWord.textContent = "MAYBE";
         el.oneLiner.textContent = "Could not find that place. Try a nearby city or add a country.";
         showToast("No results for that location.");
-        setPillText("Near you");
-        endLoading();
+        setPill("Near you");
+        endLoadingUI();
       }
     }
 
-    // ---------- Freeze / Unfreeze ----------
+    // ---------------------------
+    // Freeze UI + effect
+    // ---------------------------
     function setFrozenUI(isFrozen){
       document.body.classList.toggle("is-frozen", isFrozen);
       el.freezeBtn.setAttribute("aria-pressed", String(!!isFrozen));
-      el.freezeBtn.textContent = isFrozen ? "Unfreeze" : "Freeze this take";
+      el.freezeBtn.textContent = isFrozen ? "Release" : "Lock it in";
       el.frozenBadge.style.display = isFrozen ? "inline-flex" : "none";
       el.spinBtn.disabled = isFrozen;
       el.gpsBtn.disabled = isFrozen;
@@ -1333,34 +1387,89 @@
       el.unitF.disabled = isFrozen;
       el.unitC.disabled = isFrozen;
       if (isFrozen) el.wherePill.classList.add("frozen"); else el.wherePill.classList.remove("frozen");
+      // small overlay pulse
+      if (isFrozen){
+        el.freezeOverlay && (el.freezeOverlay.style.transition = "none");
+        setTimeout(()=>{ el.freezeOverlay && (el.freezeOverlay.style.transition = "background .28s ease"); }, 50);
+      }
     }
 
     function toggleFreeze(){
       state.frozen = !state.frozen;
       setFrozenUI(state.frozen);
       saveState();
-      showToast(state.frozen ? "Take frozen. No more updates until you unfreeze." : "Unfrozen. Updates enabled.");
+      showToast(state.frozen ? "Take locked. Release to update." : "Released. Updates enabled.");
     }
 
-    // ---------- Units segmented control ----------
+    // ---------------------------
+    // Pill behavior: modal vs copy
+    // ---------------------------
+    function openModal(titleHtml){
+      el.modalBackdrop.style.display = "flex";
+      el.modalBackdrop.setAttribute("aria-hidden", "false");
+      el.modalContent.innerHTML = titleHtml;
+    }
+    function closeModal(){ el.modalBackdrop.style.display = "none"; el.modalBackdrop.setAttribute("aria-hidden", "true"); }
+
+    el.wherePill.addEventListener("click", async ()=>{
+      const full = state.placeLabel || "Somewhere";
+      if (state.pillBehavior === "copy"){
+        try{
+          await navigator.clipboard.writeText(full);
+          showToast("Location copied to clipboard");
+        }catch(e){
+          showToast(full);
+        }
+        return;
+      }
+      // modal
+      const latlon = Number.isFinite(state.lat) && Number.isFinite(state.lon) ? `<div style="margin-top:8px;color:var(--muted);font-size:13px;">Coords: ${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}</div>` : "";
+      const html = `<div><strong>${escapeHtml(full)}</strong>${latlon}<pre style="margin-top:8px;">${escapeHtml(state.lastDecision.word || "")} — ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
+      openModal(html);
+    });
+    el.wherePill.addEventListener("keydown", (e)=>{ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.wherePill.click(); } });
+
+    el.copyPlaceBtn.addEventListener("click", async ()=>{
+      try{
+        await navigator.clipboard.writeText(state.placeLabel || "");
+        showToast("Location copied to clipboard");
+      }catch(e){
+        showToast("Copy failed");
+      }
+    });
+    el.shareTakeBtn.addEventListener("click", async ()=>{
+      const shareText = `${state.lastDecision.word || "MAYBE"} — ${state.placeLabel || ""} — ${el.tempLine.textContent || ""} — #HoodieOrNah`;
+      try{
+        await navigator.clipboard.writeText(shareText);
+        showToast("Share text copied");
+      }catch(e){ showToast(shareText); }
+    });
+    el.closeModalBtn.addEventListener("click", closeModal);
+    el.modalBackdrop.addEventListener("click", (e)=>{ if (e.target === el.modalBackdrop) closeModal(); });
+
+    // small toggle to allow user to flip pill behavior via long-press inside modal (we'll add UI in modal header optionally)
+    // For now, add a double-click on modal content to toggle behavior (power user shortcut)
+    el.modalContent.addEventListener("dblclick", ()=>{
+      state.pillBehavior = (state.pillBehavior === "modal") ? "copy" : "modal";
+      saveState();
+      showToast("Pill behavior: " + (state.pillBehavior === "modal" ? "details modal" : "copy-on-click"));
+    });
+
+    // ---------------------------
+    // Units control
+    // ---------------------------
     function setUnitControlButtons(){
       const auto = !state.unitOverride;
       el.unitAuto.setAttribute("aria-pressed", String(auto));
       el.unitF.setAttribute("aria-pressed", String(state.unitOverride === "F"));
       el.unitC.setAttribute("aria-pressed", String(state.unitOverride === "C"));
     }
-
-    function applyUnitSelection(newSel){ // null, "F", "C"
+    function applyUnitSelection(newSel){
       state.unitOverride = newSel;
-      // If user forces, use that as effective units; otherwise determine from country code
-      if (state.unitOverride){
-        state.units = state.unitOverride;
-      } else {
-        state.units = state.countryCode ? (countryUsesF(state.countryCode) ? "F" : "C") : state.units;
-      }
+      if (state.unitOverride) state.units = state.unitOverride;
+      else state.units = state.countryCode ? (countryUsesF(state.countryCode) ? "F" : "C") : state.units;
       setUnitControlButtons();
       saveState();
-      // If there's a location, refresh weather with new units (unless frozen)
       if (!state.frozen && Number.isFinite(state.lat) && Number.isFinite(state.lon)){
         updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
       } else {
@@ -1368,11 +1477,29 @@
       }
     }
 
-    // ---------- Init ----------
+    // ---------------------------
+    // Suggest hookups
+    // ---------------------------
+    el.manualInput.addEventListener("input", ()=> suggestLocations(el.manualInput.value));
+    el.manualInput.addEventListener("keydown", (e)=>{ if (e.key === "Enter"){ e.preventDefault(); onManualSubmit(); } });
+
+    // ---------------------------
+    // Button hookups
+    // ---------------------------
+    el.spinBtn.addEventListener("click", onSpinGlobe);
+    el.gpsBtn.addEventListener("click", onUseGPS);
+    el.brandHome.addEventListener("click", ()=>{ el.manualInput.value = ""; tryAutoLocation(); });
+    el.freezeBtn.addEventListener("click", toggleFreeze);
+    el.unitAuto.addEventListener("click", ()=> applyUnitSelection(null));
+    el.unitF.addEventListener("click", ()=> applyUnitSelection("F"));
+    el.unitC.addEventListener("click", ()=> applyUnitSelection("C"));
+
+    // ---------------------------
+    // Init
+    // ---------------------------
     function init(){
-      // Wire up UI events
       el.runSelect.value = state.run || "normal";
-      el.runSelect.addEventListener("change", () => {
+      el.runSelect.addEventListener("change", ()=>{
         state.run = el.runSelect.value || "normal";
         saveState();
         if (Number.isFinite(state.lat) && Number.isFinite(state.lon) && !state.frozen){
@@ -1380,52 +1507,27 @@
         }
       });
 
-      el.manualInput.addEventListener("input", () => {
-        suggestLocations(el.manualInput.value);
-      });
-
-      el.manualInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter"){
-          e.preventDefault();
-          onManualSubmit();
-        }
-      });
-
-      el.spinBtn.addEventListener("click", onSpinGlobe);
-      el.gpsBtn.addEventListener("click", onUseGPS);
-
-      el.brandHome.addEventListener("click", () => {
-        el.manualInput.value = "";
-        tryAutoLocation();
-      });
-
-      el.freezeBtn.addEventListener("click", toggleFreeze);
-
-      el.unitAuto.addEventListener("click", () => applyUnitSelection(null));
-      el.unitF.addEventListener("click", () => applyUnitSelection("F"));
-      el.unitC.addEventListener("click", () => applyUnitSelection("C"));
-
-      // Initialize UI from state
       setFrozenUI(state.frozen);
-      setPillText(state.placeLabel || "Near you");
       setUnitControlButtons();
+      setPill(state.placeLabel || "Near you");
       updateSourceUI();
 
-      // If we have saved lat/lon, try to restore last weather quickly (no reverse)
+      // Restore last coords or auto-locate
       if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-        // If frozen, just display lastDecision text if present
         if (state.frozen && state.lastDecision && state.lastDecision.word){
           el.bigWord.textContent = state.lastDecision.word;
           el.oneLiner.textContent = state.lastDecision.line || "";
           updateSourceUI();
         } else {
-          // Fetch fresh weather for stored coords
           updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
         }
       } else {
-        // No stored coords -> try auto location
         tryAutoLocation();
       }
+
+      // ensure pill width fits on start and when window resizes
+      adjustPillWidth();
+      window.addEventListener("resize", adjustPillWidth);
     }
 
     init();
