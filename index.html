@@ -93,7 +93,6 @@
       cursor:pointer;
       box-shadow: 0 10px 22px rgba(0,0,0,.28);
       transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-      overflow:hidden;
     }
 
     .brand button:hover{
@@ -102,13 +101,10 @@
       box-shadow: 0 14px 28px rgba(0,0,0,.40);
     }
 
-    /* Bigger PNG logo (not SVG) */
-    .brandLogo{
-      width:38px;
-      height:38px;
+    .mark{
+      width:34px;
+      height:34px;
       display:block;
-      object-fit:contain;
-      border-radius: 999px;
     }
 
     .locPill{
@@ -288,6 +284,13 @@
       background: rgba(255,255,255,.07);
     }
 
+    .tip{
+      color: rgba(255,255,255,.60);
+      line-height:1.45;
+      font-size: 15px;
+      margin: 2px 0 0;
+    }
+
     .footer{
       margin-top:14px;
       display:flex;
@@ -374,7 +377,15 @@
     <header>
       <div class="brand">
         <button id="brandBtn" title="Refresh">
-          <img class="brandLogo" src="/android-chrome-192x192.png" alt="Hoodie or Nah logo" />
+          <!-- simple hoodie mark -->
+          <svg class="mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M20 22c3-7 9-11 12-11s9 4 12 11" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
+            <path d="M16 26c-3 8-3 19 1 28 4 4 10 6 15 6h0c5 0 11-2 15-6 4-9 4-20 1-28" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
+            <path d="M25 34c2-2 5-3 7-3s5 1 7 3" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="32" cy="25" r="6" stroke="rgba(255,255,255,.9)" stroke-width="3"/>
+            <path id="qm" d="M30 23c0-1.7 1.3-3 3-3 1.5 0 2.7 1 2.7 2.4 0 2-2 2.2-2.6 3.6-.2.5-.1.9-.1 1.2" stroke="rgba(255,255,255,.9)" stroke-width="2.4" stroke-linecap="round"/>
+            <circle id="qdot" cx="33" cy="31.2" r="1.3" fill="rgba(255,255,255,.9)"/>
+          </svg>
         </button>
         Hoodie or Nah
       </div>
@@ -416,9 +427,16 @@
           </div>
 
           <div class="btnRow">
-            <!-- Removed "Use this location" per request -->
-            <button class="action" id="spinGlobe">Spin the globe</button>
+            <button class="action" id="useManual">Use this location</button>
             <button class="action" id="useGps">Use my GPS</button>
+          </div>
+
+          <p class="tip" id="tip">Tip: pick a suggestion to auto-run. Otherwise click Use this location.</p>
+
+          <h2 class="sectionTitle" style="margin-top:6px;">Explore</h2>
+          <div class="btnRow">
+            <button class="action" id="spinGlobe">Spin the globe</button>
+            <button class="action" id="refreshBtn">Refresh</button>
           </div>
         </aside>
       </div>
@@ -426,7 +444,7 @@
 
     <div class="footer">
       <div class="coffee">
-        <a href="https://www.buymeacoffee.com/hoodieornah" target="_blank" rel="noopener">Support the hoodie science ☕</a>
+        <a href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">Buy me a coffee</a>
       </div>
       <div>Hoodie judgment, delivered.</div>
     </div>
@@ -452,8 +470,10 @@
   const manualInput = el("manualInput");
   const suggestBox = el("suggestBox");
 
+  const useManual = el("useManual");
   const useGps = el("useGps");
   const spinGlobe = el("spinGlobe");
+  const refreshBtn = el("refreshBtn");
   const brandBtn = el("brandBtn");
 
   const toast = el("toast");
@@ -475,11 +495,12 @@
     lat: null,
     lon: null,
     label: "Near you",
+    resolvingLabel: false,
     lastWeather: null,
     lastUpdated: null
   };
 
-  // Random globe locations (expanded + truly random)
+  // Random globe locations (good spread)
   const randomSpots = [
     { label:"Reykjavik, IS", lat:64.1466, lon:-21.9426 },
     { label:"Chicago, IL", lat:41.8781, lon:-87.6298 },
@@ -489,73 +510,7 @@
     { label:"Oslo, NO", lat:59.9139, lon:10.7522 },
     { label:"Tokyo, JP", lat:35.6762, lon:139.6503 },
     { label:"Sydney, AU", lat:-33.8688, lon:151.2093 },
-    { label:"Cape Town, ZA", lat:-33.9249, lon:18.4241 },
-
-    /* +50 more */
-    { label:"Tulsa, OK", lat:36.1540, lon:-95.9928 },
-    { label:"Oklahoma City, OK", lat:35.4676, lon:-97.5164 },
-    { label:"Austin, TX", lat:30.2672, lon:-97.7431 },
-    { label:"Seattle, WA", lat:47.6062, lon:-122.3321 },
-    { label:"San Diego, CA", lat:32.7157, lon:-117.1611 },
-    { label:"San Francisco, CA", lat:37.7749, lon:-122.4194 },
-    { label:"New York, NY", lat:40.7128, lon:-74.0060 },
-    { label:"Boston, MA", lat:42.3601, lon:-71.0589 },
-    { label:"Miami, FL", lat:25.7617, lon:-80.1918 },
-    { label:"Atlanta, GA", lat:33.7490, lon:-84.3880 },
-    { label:"Nashville, TN", lat:36.1627, lon:-86.7816 },
-    { label:"Minneapolis, MN", lat:44.9778, lon:-93.2650 },
-    { label:"Detroit, MI", lat:42.3314, lon:-83.0458 },
-    { label:"Phoenix, AZ", lat:33.4484, lon:-112.0740 },
-    { label:"Salt Lake City, UT", lat:40.7608, lon:-111.8910 },
-    { label:"Albuquerque, NM", lat:35.0844, lon:-106.6504 },
-    { label:"New Orleans, LA", lat:29.9511, lon:-90.0715 },
-    { label:"Anchorage, AK", lat:61.2181, lon:-149.9003 },
-    { label:"Honolulu, HI", lat:21.3069, lon:-157.8583 },
-    { label:"Toronto, ON", lat:43.6532, lon:-79.3832 },
-    { label:"Vancouver, BC", lat:49.2827, lon:-123.1207 },
-    { label:"Montreal, QC", lat:45.5017, lon:-73.5673 },
-    { label:"Mexico City, MX", lat:19.4326, lon:-99.1332 },
-    { label:"Guadalajara, MX", lat:20.6597, lon:-103.3496 },
-    { label:"Bogotá, CO", lat:4.7110, lon:-74.0721 },
-    { label:"Lima, PE", lat:-12.0464, lon:-77.0428 },
-    { label:"Santiago, CL", lat:-33.4489, lon:-70.6693 },
-    { label:"Buenos Aires, AR", lat:-34.6037, lon:-58.3816 },
-    { label:"São Paulo, BR", lat:-23.5558, lon:-46.6396 },
-    { label:"Rio de Janeiro, BR", lat:-22.9068, lon:-43.1729 },
-    { label:"Dublin, IE", lat:53.3498, lon:-6.2603 },
-    { label:"Edinburgh, UK", lat:55.9533, lon:-3.1883 },
-    { label:"Paris, FR", lat:48.8566, lon:2.3522 },
-    { label:"Berlin, DE", lat:52.5200, lon:13.4050 },
-    { label:"Munich, DE", lat:48.1351, lon:11.5820 },
-    { label:"Rome, IT", lat:41.9028, lon:12.4964 },
-    { label:"Barcelona, ES", lat:41.3851, lon:2.1734 },
-    { label:"Lisbon, PT", lat:38.7223, lon:-9.1393 },
-    { label:"Amsterdam, NL", lat:52.3676, lon:4.9041 },
-    { label:"Copenhagen, DK", lat:55.6761, lon:12.5683 },
-    { label:"Stockholm, SE", lat:59.3293, lon:18.0686 },
-    { label:"Helsinki, FI", lat:60.1699, lon:24.9384 },
-    { label:"Warsaw, PL", lat:52.2297, lon:21.0122 },
-    { label:"Prague, CZ", lat:50.0755, lon:14.4378 },
-    { label:"Vienna, AT", lat:48.2082, lon:16.3738 },
-    { label:"Athens, GR", lat:37.9838, lon:23.7275 },
-    { label:"Istanbul, TR", lat:41.0082, lon:28.9784 },
-    { label:"Cairo, EG", lat:30.0444, lon:31.2357 },
-    { label:"Marrakesh, MA", lat:31.6295, lon:-7.9811 },
-    { label:"Nairobi, KE", lat:-1.2921, lon:36.8219 },
-    { label:"Lagos, NG", lat:6.5244, lon:3.3792 },
-    { label:"Dubai, AE", lat:25.2048, lon:55.2708 },
-    { label:"Riyadh, SA", lat:24.7136, lon:46.6753 },
-    { label:"Mumbai, IN", lat:19.0760, lon:72.8777 },
-    { label:"Delhi, IN", lat:28.6139, lon:77.2090 },
-    { label:"Bangkok, TH", lat:13.7563, lon:100.5018 },
-    { label:"Singapore, SG", lat:1.3521, lon:103.8198 },
-    { label:"Hong Kong, HK", lat:22.3193, lon:114.1694 },
-    { label:"Seoul, KR", lat:37.5665, lon:126.9780 },
-    { label:"Auckland, NZ", lat:-36.8485, lon:174.7633 },
-    { label:"Wellington, NZ", lat:-41.2865, lon:174.7762 },
-    { label:"Perth, AU", lat:-31.9523, lon:115.8613 },
-    { label:"Melbourne, AU", lat:-37.8136, lon:144.9631 },
-    { label:"Hobart, AU", lat:-42.8821, lon:147.3272 }
+    { label:"Cape Town, ZA", lat:-33.9249, lon:18.4241 }
   ];
 
   function showToast(msg){
@@ -577,20 +532,25 @@
     locPillInner.textContent = "📍 " + label;
   }
 
+  function clamp(n, min, max){ return Math.min(max, Math.max(min, n)); }
+
   function formatTime(d){
+    // Your screenshot shows a local timestamp format, keep it simple.
     return d.toLocaleString(undefined, { year:"numeric", month:"numeric", day:"numeric", hour:"numeric", minute:"2-digit", second:"2-digit" });
   }
 
   function pickDecision(adjustedTemp){
-    // Conservative so we do not call 25°F a sweet spot.
-    if (adjustedTemp <= 40) return { label:"HOODIE", vibe:"Layer up." };
-    if (adjustedTemp <= 55) return { label:"HOODIE", vibe:"You are probably fine." };
+    // Simple decision bands that do not lie to the user.
+    // These are intentionally conservative so we do not call 25°F a sweet spot.
+    if (adjustedTemp <= 40) return { label:"HOODIE", vibe:"Hoodie weather. Do not try to be tough." };
+    if (adjustedTemp <= 55) return { label:"HOODIE", vibe:"Hoodie, and you are probably fine." };
     if (adjustedTemp <= 62) return { label:"MAYBE", vibe:"Borderline. Hoodie if you are dramatic." };
     if (adjustedTemp <= 68) return { label:"MAYBE", vibe:"Light layer if you want. No one cares." };
     return { label:"NAH", vibe:"Nah. Put the hoodie down." };
   }
 
   function pickSnark(temp, wind, isNight){
+    // Make quips consistent with reality, especially when cold.
     if (temp <= 25) return "This is not a debate. Wear the hoodie. Also consider regret-proofing.";
     if (temp <= 35) return "Cold enough that your hoodie is doing community service.";
     if (temp <= 45) return "Hoodie weather. Layer up if you respect your future self.";
@@ -623,13 +583,11 @@
 
     answer.textContent = decision.label;
 
-    // This must not fall back to "near you" once resolved
+    // IMPORTANT: this is one of the two spots that must NEVER say "near you" after location resolves.
     const locationPhrase = (state.label && state.label !== "Near you") ? state.label : "your area";
 
     line1.textContent = `It feels like ${feels}${unitSymbol} in ${locationPhrase}. ${decision.label === "HOODIE" ? "Hoodie weather." : decision.label === "MAYBE" ? "Maybe hoodie." : "No hoodie."}`;
-
-    // Removed the redundant extra line and kept it tight
-    line2.textContent = "";
+    line2.textContent = decision.vibe;
 
     quip.textContent = pickSnark(adjusted, wind, isNight);
 
@@ -645,10 +603,8 @@
     updated.textContent = `Updated ${formatTime(state.lastUpdated)}.`;
   }
 
-  // Locale-based unit selection
-  const unit = isMostlyFahrenheitLocale() ? "fahrenheit" : "celsius";
-
   async function fetchWeather(lat, lon){
+    // Open-Meteo forecast with correct units
     const tempUnit = unit === "fahrenheit" ? "fahrenheit" : "celsius";
     const windSpeedUnit = unit === "fahrenheit" ? "mph" : "kmh";
 
@@ -666,6 +622,7 @@
   }
 
   async function reverseGeocode(lat, lon){
+    // Use Nominatim first (works with CORS in most browsers)
     try{
       const url = new URL("https://nominatim.openstreetmap.org/reverse");
       url.searchParams.set("format", "jsonv2");
@@ -687,10 +644,14 @@
         if (city) return city;
       }
     }catch{}
+
+    // Fallback: best effort label
     return "Your area";
   }
 
   async function forwardGeocode(query){
+    // Suggestions + resolve manual city
+    // Use Nominatim search endpoint.
     const url = new URL("https://nominatim.openstreetmap.org/search");
     url.searchParams.set("format", "jsonv2");
     url.searchParams.set("q", query);
@@ -700,7 +661,6 @@
     const r = await fetch(url.toString());
     if (!r.ok) throw new Error("geocode_failed");
     const list = await r.json();
-
     return (Array.isArray(list) ? list : []).map(item => {
       const a = item.address || {};
       const city = a.city || a.town || a.village || a.hamlet || a.county;
@@ -725,15 +685,6 @@
     suggestBox.innerHTML = "";
   }
 
-  function escapeHtml(str){
-    return String(str || "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
   function openSuggest(items){
     if (!items.length){
       closeSuggest();
@@ -756,6 +707,15 @@
     });
   }
 
+  function escapeHtml(str){
+    return String(str || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
   async function applyLocation(lat, lon, label, source, alreadyResolvedLabel){
     state.lat = lat;
     state.lon = lon;
@@ -765,6 +725,7 @@
       state.label = label;
       setPillToLabel(label);
     } else {
+      // show spinner while reverse geocode resolves
       setPillToSpinner();
       state.label = "Near you";
       try{
@@ -890,6 +851,7 @@
   });
 
   manualInput.addEventListener("blur", () => {
+    // small delay so click registers
     window.setTimeout(closeSuggest, 120);
   });
 
@@ -897,19 +859,21 @@
   useGps.addEventListener("click", useGPS);
   locPill.addEventListener("click", useGPS);
 
-  // Keep Enter-to-run manual (autofill stays)
+  useManual.addEventListener("click", useManualLocation);
   manualInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") useManualLocation();
   });
 
-  // Also run manual when user picks a suggestion (already handled) or leaves input and hits Enter
-  manualInput.addEventListener("change", () => {
-    // no auto-run on blur; just keep UX consistent
-  });
-
   spinGlobe.addEventListener("click", spin);
 
-  // Brand button just refreshes current location
+  refreshBtn.addEventListener("click", () => {
+    if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+      applyLocation(state.lat, state.lon, state.label, state.source, true);
+    } else {
+      useGPS();
+    }
+  });
+
   brandBtn.addEventListener("click", () => {
     if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
       applyLocation(state.lat, state.lon, state.label, state.source, true);
@@ -921,6 +885,27 @@
   runPref.addEventListener("change", () => {
     if (state.lastWeather) renderWeather(state.lastWeather);
   });
+
+  // Light, one-time question-mark animation
+  (function animateMarkOnce(){
+    const qm = document.getElementById("qm");
+    const qdot = document.getElementById("qdot");
+    if (!qm || !qdot) return;
+
+    qm.style.transition = "transform .7s ease, opacity .7s ease";
+    qdot.style.transition = "transform .7s ease, opacity .7s ease";
+    qm.style.transform = "translateY(-1px)";
+    qdot.style.transform = "translateY(-1px)";
+    qm.style.opacity = "0.94";
+    qdot.style.opacity = "0.94";
+
+    window.setTimeout(() => {
+      qm.style.transform = "translateY(0px)";
+      qdot.style.transform = "translateY(0px)";
+      qm.style.opacity = "1";
+      qdot.style.opacity = "1";
+    }, 60);
+  })();
 
   // Boot
   useGPS();
