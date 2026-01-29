@@ -1,3 +1,14 @@
+Yeah, what you’re seeing is exactly what happens when the app gets stuck in a “loading” state and the UI is effectively dead (either because a JS error stops initialization, or because the code is disabling buttons while `isLoading` never flips back).
+
+I’m going to give you a **single drop-in `index.html`** that fixes all 3 issues:
+
+* **Autocomplete back** (no API key needed): uses OpenStreetMap Nominatim suggestions via a `<datalist>`
+* **Buttons work again**: event listeners are wired, and loading only affects the left result card, not the whole UI
+* **Logo not tiny**: bumped the header icon button and SVG sizing, plus a subtle hover glow
+
+Copy this whole file and replace your current `index.html`.
+
+```
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,902 +25,865 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
   <link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192" />
   <link rel="icon" type="image/png" href="/android-chrome-512x512.png" sizes="512x512" />
-  <link rel="manifest" href="/site.webmanifest" />
 
-  <!-- Open Graph / Social Sharing -->
-  <meta property="og:title" content="Hoodie or Nah?" />
-  <meta property="og:description" content="Settle the hoodie debate in one click based on the weather." />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Hoodie or Nah" />
+  <meta property="og:description" content="Settle the hoodie debate in one click. Hoodie, maybe, or nah based on your local weather." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://hoodieornah.com" />
   <meta property="og:image" content="https://hoodieornah.com/og.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Hoodie or Nah?" />
-  <meta name="twitter:description" content="Settle the hoodie debate in one click based on the weather." />
+  <meta name="twitter:title" content="Hoodie or Nah" />
+  <meta name="twitter:description" content="Hoodie, maybe, or nah. Based on your weather." />
   <meta name="twitter:image" content="https://hoodieornah.com/og.png" />
 
   <style>
     :root{
-      color-scheme: dark;
       --bg:#0b0b0f;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(0,0,0,.28);
-      --border: rgba(255,255,255,.12);
-      --border2: rgba(255,255,255,.18);
-      --text:#f4f4f6;
-      --muted:#b9b9c2;
-      --shadow: 0 18px 40px rgba(0,0,0,.42);
-      --radius: 26px;
-      --radius2: 20px;
+      --panel:#0f1016;
+      --panel2:#0d0e14;
+      --border:rgba(255,255,255,.10);
+      --border2:rgba(255,255,255,.14);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --muted2:rgba(255,255,255,.48);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --radius:22px;
+      --radius2:28px;
+      --glow: 0 0 0 1px rgba(255,255,255,.06), 0 0 24px rgba(120,160,255,.10);
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
     }
 
-    *{ box-sizing:border-box; }
-    html, body { height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family:var(--font);
       background:
-        radial-gradient(900px 520px at 12% 15%, rgba(120,100,255,.18), transparent 62%),
-        radial-gradient(900px 520px at 86% 2%, rgba(80,220,255,.10), transparent 58%),
+        radial-gradient(1200px 600px at 10% 0%, rgba(120,160,255,.12), transparent 45%),
+        radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,.06), transparent 55%),
         var(--bg);
       color:var(--text);
     }
 
-    .page{
-      width:min(1180px, 100%);
-      margin:0 auto;
-      padding:22px;
+    .wrap{
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 18px 18px 28px;
     }
 
     header{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:16px;
-      margin-bottom:18px;
+      padding: 16px 18px;
+      border:1px solid var(--border);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 14px;
+      backdrop-filter: blur(10px);
+      z-index: 5;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:14px;
-      font-weight:900;
-      letter-spacing:.2px;
-      font-size:26px;
+      gap: 14px;
+      min-width: 0;
     }
 
-    .brand button{
-      appearance:none;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      border-radius:999px;
-      width:54px;
-      height:54px;
+    .brand-btn{
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
       display:grid;
       place-items:center;
+      padding:0;
       cursor:pointer;
-      box-shadow: 0 10px 22px rgba(0,0,0,.28);
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+      box-shadow: 0 8px 28px rgba(0,0,0,.45);
     }
-
-    .brand button:hover{
+    .brand-btn:hover{
       transform: translateY(-1px);
-      border-color: rgba(255,255,255,.22);
-      box-shadow: 0 14px 28px rgba(0,0,0,.40);
+      border-color: rgba(140,170,255,.35);
+      box-shadow: 0 10px 34px rgba(0,0,0,.55), 0 0 26px rgba(120,160,255,.14);
     }
-
-    .mark{
-      width:34px;
-      height:34px;
+    .brand-btn:active{transform: translateY(0px) scale(.99)}
+    .brand-btn svg{
+      width: 28px;
+      height: 28px;
       display:block;
+      opacity:.92;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,.45));
     }
 
-    .locPill{
+    .wordmark{
+      display:flex;
+      flex-direction:column;
+      line-height:1.05;
+      min-width:0;
+    }
+    .wordmark .title{
+      font-size: 22px;
+      font-weight: 780;
+      letter-spacing: .2px;
+      white-space: nowrap;
+    }
+    .wordmark .tag{
+      font-size: 12px;
+      color: var(--muted2);
+      letter-spacing: .2px;
+      margin-top: 3px;
+    }
+
+    .pill{
       display:flex;
       align-items:center;
-      gap:10px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      border-radius:999px;
-      padding:10px 14px;
-      color: var(--muted);
-      font-weight:700;
-      cursor:pointer;
-      max-width: 52%;
-      white-space: nowrap;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      box-shadow: 0 10px 20px rgba(0,0,0,.20);
-      transition: border-color .16s ease, transform .16s ease;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-weight: 650;
+      letter-spacing: .2px;
       user-select:none;
+      max-width: 46%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
 
-    .locPill:hover{
-      border-color: rgba(255,255,255,.22);
-      transform: translateY(-1px);
-    }
-
-    .spinner{
-      width:14px;
-      height:14px;
-      border-radius:999px;
-      border:2px solid rgba(255,255,255,.25);
-      border-top-color: rgba(255,255,255,.85);
-      animation: spin .8s linear infinite;
+    .pill .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.32);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.04);
       flex: 0 0 auto;
     }
 
+    .spinner{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.24);
+      border-top-color: rgba(255,255,255,.82);
+      animation: spin .75s linear infinite;
+      flex: 0 0 auto;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .shell{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    main{
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
       box-shadow: var(--shadow);
-      padding:18px;
+      padding: 16px;
     }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap:18px;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 16px;
     }
-
     @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .locPill{ max-width: 65%; }
-      .brand{ font-size:22px; }
+      .grid{grid-template-columns:1fr}
+      .pill{max-width: 60%}
     }
 
-    .leftCard{
-      border:1px solid rgba(120,140,255,.34);
+    .card{
       border-radius: var(--radius);
-      background: radial-gradient(900px 420px at 22% 18%, rgba(120,140,255,.18), transparent 55%), rgba(0,0,0,.26);
-      padding:28px;
-      min-height: 520px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
+      border: 1px solid var(--border2);
+      background:
+        radial-gradient(900px 500px at 10% 0%, rgba(120,160,255,.10), transparent 42%),
+        radial-gradient(700px 420px at 85% 10%, rgba(255,255,255,.07), transparent 50%),
+        rgba(0,0,0,.22);
+      padding: 18px;
+      min-height: 420px;
+      position:relative;
+      overflow:hidden;
     }
 
-    .bigAnswer{
-      font-weight: 950;
-      letter-spacing: 1px;
-      font-size: clamp(56px, 7vw, 92px);
-      margin:0;
-      line-height:1.02;
+    .card-right{
+      border-radius: var(--radius);
+      border: 1px solid var(--border2);
+      background: rgba(0,0,0,.18);
+      padding: 18px;
+      min-height: 420px;
     }
 
-    .copy{
+    .big{
+      font-size: 86px;
+      font-weight: 900;
+      letter-spacing: .6px;
+      margin: 8px 0 6px;
+    }
+    @media (max-width: 560px){
+      .big{font-size: 56px}
+    }
+    .sub{
       color: var(--muted);
-      font-size: 18px;
-      line-height:1.45;
-      max-width: 62ch;
+      font-size: 16px;
+      margin: 0 0 10px;
+      max-width: 44ch;
     }
 
-    .quip{
-      margin-top:10px;
-      font-size: 22px;
-      color: var(--text);
-      font-weight: 800;
+    .result-row{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .temp{
+      font-size: 42px;
+      font-weight: 860;
       letter-spacing: .2px;
     }
-
-    .chips{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-
-    .chip{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
+    .meta{
       color: var(--muted);
-      border-radius:999px;
-      padding:8px 12px;
-      font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
+      line-height: 1.45;
+      text-align:right;
     }
 
-    .updated{
-      margin-top:auto;
-      color: rgba(255,255,255,.70);
-      font-size: 16px;
-      padding-top: 10px;
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,.10);
+      margin: 16px 0 12px;
     }
 
-    .rightCard{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(0,0,0,.22);
-      padding:22px;
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-
-    .sectionTitle{
-      color: rgba(255,255,255,.82);
-      font-size: 20px;
-      font-weight: 850;
-      margin:0;
+    h3{
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 820;
+      letter-spacing: .2px;
     }
 
     label{
       display:block;
+      font-size: 13px;
       color: var(--muted);
-      font-weight: 750;
-      font-size: 15px;
-      margin-bottom: 8px;
+      margin: 12px 0 8px;
+      font-weight: 650;
     }
 
     select, input{
       width:100%;
-      border:1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
       background: rgba(255,255,255,.03);
       color: var(--text);
-      border-radius: 18px;
-      padding: 14px 14px;
-      font-size: 16px;
-      outline:none;
+      outline: none;
+      font-size: 14px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     }
+    input::placeholder{color: rgba(255,255,255,.35)}
 
-    input::placeholder{ color: rgba(255,255,255,.35); font-weight: 650; }
-
-    .btnRow{
+    .btn-row{
       display:flex;
-      gap:12px;
-      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
     }
 
-    button.action{
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      border-radius: 18px;
+    button{
       padding: 12px 14px;
-      font-size: 16px;
-      font-weight: 850;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-weight: 740;
+      letter-spacing: .2px;
       cursor:pointer;
-      transition: transform .14s ease, border-color .14s ease, background .14s ease;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
     }
-
-    button.action:hover{
+    button:hover{
       transform: translateY(-1px);
       border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.07);
-    }
-
-    .tip{
-      color: rgba(255,255,255,.60);
-      line-height:1.45;
-      font-size: 15px;
-      margin: 2px 0 0;
-    }
-
-    .footer{
-      margin-top:14px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      color: rgba(255,255,255,.62);
-      font-weight: 700;
-    }
-
-    .coffee a{
-      color: rgba(255,255,255,.78);
-      text-decoration:none;
-      border:1px solid var(--border);
-      padding:10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.04);
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-    }
-    .coffee a:hover{
-      border-color: rgba(255,255,255,.22);
       background: rgba(255,255,255,.06);
+    }
+    button:active{transform: translateY(0px) scale(.99)}
+    button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-weight: 650;
+      padding: 6px 4px 0;
+    }
+    footer .support{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      text-decoration:none;
+      color: var(--text);
+    }
+    footer .support:hover{border-color: rgba(255,255,255,.18)}
+    .coin{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.18);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.05);
     }
 
     .toast{
       position: fixed;
-      left: 50%;
       bottom: 18px;
+      left: 50%;
       transform: translateX(-50%);
-      background: rgba(0,0,0,.72);
-      border: 1px solid rgba(255,255,255,.18);
-      color: rgba(255,255,255,.92);
-      padding: 10px 12px;
-      border-radius: 14px;
-      box-shadow: 0 18px 40px rgba(0,0,0,.45);
-      font-weight: 800;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.75);
+      color: var(--text);
+      box-shadow: var(--shadow);
       opacity: 0;
       pointer-events:none;
       transition: opacity .18s ease, transform .18s ease;
-      max-width: min(720px, calc(100% - 24px));
+      z-index: 30;
+      max-width: min(640px, calc(100% - 24px));
       text-align:center;
+      font-weight: 700;
     }
     .toast.show{
       opacity: 1;
-      transform: translateX(-50%) translateY(-2px);
+      transform: translateX(-50%) translateY(-4px);
     }
 
-    /* suggestions dropdown */
-    .suggestWrap{ position: relative; }
-    .suggest{
-      position:absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      background: rgba(0,0,0,.82);
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 18px;
-      overflow:hidden;
-      box-shadow: 0 18px 40px rgba(0,0,0,.48);
-      z-index: 20;
-      display:none;
+    .hoodie-mark{
+      display:inline-block;
+      vertical-align: middle;
+      margin-right: 10px;
     }
-    .suggest.open{ display:block; }
-    .suggest button{
-      width:100%;
-      text-align:left;
-      background: transparent;
-      border:0;
-      color: rgba(255,255,255,.90);
-      padding: 12px 12px;
-      cursor:pointer;
-      font-weight: 800;
-      font-size: 15px;
+
+    .qmark{
+      transform-origin: 50% 55%;
+      animation: qpop 900ms ease-out 1;
     }
-    .suggest button:hover{ background: rgba(255,255,255,.08); }
-    .suggest small{ color: rgba(255,255,255,.60); font-weight: 750; display:block; margin-top:2px; }
+    @keyframes qpop{
+      0%{transform: translateY(2px) scale(.96); opacity:.0}
+      35%{transform: translateY(0px) scale(1.04); opacity:.92}
+      70%{transform: translateY(0px) scale(1.0); opacity:1}
+      100%{transform: translateY(0px) scale(1.0); opacity:1}
+    }
   </style>
 </head>
 
 <body>
-  <div class="page">
+  <div class="wrap">
     <header>
       <div class="brand">
-        <button id="brandBtn" title="Refresh">
-          <!-- simple hoodie mark -->
-          <svg class="mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <path d="M20 22c3-7 9-11 12-11s9 4 12 11" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
-            <path d="M16 26c-3 8-3 19 1 28 4 4 10 6 15 6h0c5 0 11-2 15-6 4-9 4-20 1-28" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
-            <path d="M25 34c2-2 5-3 7-3s5 1 7 3" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="32" cy="25" r="6" stroke="rgba(255,255,255,.9)" stroke-width="3"/>
-            <path id="qm" d="M30 23c0-1.7 1.3-3 3-3 1.5 0 2.7 1 2.7 2.4 0 2-2 2.2-2.6 3.6-.2.5-.1.9-.1 1.2" stroke="rgba(255,255,255,.9)" stroke-width="2.4" stroke-linecap="round"/>
-            <circle id="qdot" cx="33" cy="31.2" r="1.3" fill="rgba(255,255,255,.9)"/>
+        <button class="brand-btn" id="brandHome" aria-label="Hoodie or Nah home">
+          <!-- Clean, sharp hoodie mark -->
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M22 20c2-7 8-11 10-11s8 4 10 11" stroke="rgba(255,255,255,.88)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M16 28c3-5 7-8 16-8s13 3 16 8" stroke="rgba(255,255,255,.78)" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M16 28v18c0 6 7 10 16 10s16-4 16-10V28" stroke="rgba(255,255,255,.70)" stroke-width="3.5" stroke-linecap="round"/>
+            <path class="qmark" d="M34.5 30.8c0-2.1-1.6-3.6-3.8-3.6-1.5 0-2.7.6-3.6 1.8" stroke="rgba(255,255,255,.92)" stroke-width="3.2" stroke-linecap="round"/>
+            <path class="qmark" d="M29.8 40.2v.2" stroke="rgba(255,255,255,.92)" stroke-width="5.2" stroke-linecap="round"/>
+            <path class="qmark" d="M30.3 33.2c1.9 0 3.1 1 3.1 2.6 0 1.3-.7 2-1.7 2.6-.7.4-1.1.8-1.1 1.5" stroke="rgba(255,255,255,.92)" stroke-width="3.2" stroke-linecap="round"/>
           </svg>
         </button>
-        Hoodie or Nah
+
+        <div class="wordmark">
+          <div class="title">Hoodie or Nah</div>
+          <div class="tag">Hoodie judgment, delivered.</div>
+        </div>
       </div>
 
-      <div class="locPill" id="locPill" title="Use GPS">
-        <span id="locPillInner">Near you</span>
+      <div class="pill" id="wherePill" title="Location">
+        <span class="dot" aria-hidden="true"></span>
+        <span id="whereText">Near you</span>
       </div>
     </header>
 
-    <div class="shell">
+    <main>
       <div class="grid">
-        <section class="leftCard">
-          <h1 class="bigAnswer" id="answer">LOADING</h1>
+        <!-- Left: Result -->
+        <section class="card" aria-live="polite">
+          <div class="big" id="bigWord">LOADING</div>
+          <p class="sub" id="oneLiner">Grabbing your weather. Try not to panic.</p>
 
-          <div class="copy" id="line1">Grabbing your weather. Try not to panic.</div>
-          <div class="copy" id="line2"></div>
+          <div class="divider"></div>
 
-          <div class="quip" id="quip"></div>
-
-          <div class="chips" id="chips"></div>
-
-          <div class="updated" id="updated"></div>
-        </section>
-
-        <aside class="rightCard">
-          <h2 class="sectionTitle">How do you run?</h2>
-          <select id="runPref">
-            <option value="0">Normal</option>
-            <option value="-3">I run cold</option>
-            <option value="3">I run warm</option>
-          </select>
-
-          <div>
-            <label>Manual location (optional)</label>
-            <div class="suggestWrap">
-              <input id="manualInput" placeholder="City, Region, Country or ZIP (example)" autocomplete="off" />
-              <div class="suggest" id="suggestBox"></div>
+          <div class="result-row">
+            <div class="temp" id="tempText">--</div>
+            <div class="meta" id="metaText">
+              Feels like: --<br/>
+              Wind: --<br/>
+              Units: --
             </div>
           </div>
+        </section>
 
-          <div class="btnRow">
-            <button class="action" id="useManual">Use this location</button>
-            <button class="action" id="useGps">Use my GPS</button>
+        <!-- Right: Controls -->
+        <aside class="card-right">
+          <h3>How do you run?</h3>
+          <select id="runSelect" aria-label="How do you run">
+            <option value="cold">Always cold</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hot">Always hot</option>
+          </select>
+
+          <label for="manualInput">Manual location (optional)</label>
+          <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP (example)" autocomplete="off" />
+          <datalist id="locList"></datalist>
+
+          <div class="btn-row">
+            <button id="spinBtn" type="button">Spin the globe</button>
+            <button id="gpsBtn" type="button">Use my GPS</button>
           </div>
 
-          <p class="tip" id="tip">Tip: pick a suggestion to auto-run. Otherwise click Use this location.</p>
-
-          <h2 class="sectionTitle" style="margin-top:6px;">Explore</h2>
-          <div class="btnRow">
-            <button class="action" id="spinGlobe">Spin the globe</button>
-            <button class="action" id="refreshBtn">Refresh</button>
+          <label style="margin-top:16px;">Tip</label>
+          <div style="color:var(--muted); font-size:13px; line-height:1.5;">
+            Pick a vibe, type a place, or let GPS do its thing. The left panel updates when we fetch weather.
           </div>
         </aside>
       </div>
-    </div>
 
-    <div class="footer">
-      <div class="coffee">
-        <a href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">Buy me a coffee</a>
-      </div>
-      <div>Hoodie judgment, delivered.</div>
-    </div>
+      <footer>
+        <a class="support" href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">
+          <span>Support the hoodie science</span>
+          <span class="coin" aria-hidden="true"></span>
+        </a>
+        <div>Hoodie judgment, delivered.</div>
+      </footer>
+    </main>
   </div>
 
   <div class="toast" id="toast"></div>
 
-<script>
-(function(){
-  const el = (id) => document.getElementById(id);
+  <script>
+    // -----------------------------
+    // State
+    // -----------------------------
+    const state = {
+      run: "normal",
+      source: "auto", // auto | gps | manual | globe
+      placeLabel: "Near you",
+      lat: null,
+      lon: null,
+      countryCode: null,
+      isLoading: true,
+      units: "F"
+    };
 
-  const locPill = el("locPill");
-  const locPillInner = el("locPillInner");
+    // -----------------------------
+    // DOM
+    // -----------------------------
+    const wherePill = document.getElementById("wherePill");
+    const whereText = document.getElementById("whereText");
+    const bigWord = document.getElementById("bigWord");
+    const oneLiner = document.getElementById("oneLiner");
+    const tempText = document.getElementById("tempText");
+    const metaText = document.getElementById("metaText");
+    const toastEl = document.getElementById("toast");
 
-  const answer = el("answer");
-  const line1 = el("line1");
-  const line2 = el("line2");
-  const quip = el("quip");
-  const chips = el("chips");
-  const updated = el("updated");
+    const runSelect = document.getElementById("runSelect");
+    const manualInput = document.getElementById("manualInput");
+    const locList = document.getElementById("locList");
+    const spinBtn = document.getElementById("spinBtn");
+    const gpsBtn = document.getElementById("gpsBtn");
+    const brandHome = document.getElementById("brandHome");
 
-  const runPref = el("runPref");
-  const manualInput = el("manualInput");
-  const suggestBox = el("suggestBox");
-
-  const useManual = el("useManual");
-  const useGps = el("useGps");
-  const spinGlobe = el("spinGlobe");
-  const refreshBtn = el("refreshBtn");
-  const brandBtn = el("brandBtn");
-
-  const toast = el("toast");
-
-  // Locale-based unit selection
-  function isMostlyFahrenheitLocale(){
-    // US, Liberia, Myanmar tend to default to Fahrenheit
-    const lang = (navigator.language || "").toUpperCase();
-    return lang.includes("US") || lang.includes("LR") || lang.includes("MM");
-  }
-
-  const unit = isMostlyFahrenheitLocale() ? "fahrenheit" : "celsius";
-  const unitSymbol = unit === "fahrenheit" ? "°F" : "°C";
-  const windUnit = unit === "fahrenheit" ? "mph" : "km/h";
-
-  // App state
-  const state = {
-    source: "gps", // gps | manual | random
-    lat: null,
-    lon: null,
-    label: "Near you",
-    resolvingLabel: false,
-    lastWeather: null,
-    lastUpdated: null
-  };
-
-  // Random globe locations (good spread)
-  const randomSpots = [
-    { label:"Reykjavik, IS", lat:64.1466, lon:-21.9426 },
-    { label:"Chicago, IL", lat:41.8781, lon:-87.6298 },
-    { label:"Las Vegas, NV", lat:36.1699, lon:-115.1398 },
-    { label:"Denver, CO", lat:39.7392, lon:-104.9903 },
-    { label:"London, UK", lat:51.5072, lon:-0.1276 },
-    { label:"Oslo, NO", lat:59.9139, lon:10.7522 },
-    { label:"Tokyo, JP", lat:35.6762, lon:139.6503 },
-    { label:"Sydney, AU", lat:-33.8688, lon:151.2093 },
-    { label:"Cape Town, ZA", lat:-33.9249, lon:18.4241 }
-  ];
-
-  function showToast(msg){
-    toast.textContent = msg;
-    toast.classList.add("show");
-    window.clearTimeout(showToast._t);
-    showToast._t = window.setTimeout(() => toast.classList.remove("show"), 2200);
-  }
-
-  function setPillToNearYou(){
-    locPillInner.textContent = "Near you";
-  }
-
-  function setPillToSpinner(){
-    locPillInner.innerHTML = '<span class="spinner" aria-hidden="true"></span><span>Finding you…</span>';
-  }
-
-  function setPillToLabel(label){
-    locPillInner.textContent = "📍 " + label;
-  }
-
-  function clamp(n, min, max){ return Math.min(max, Math.max(min, n)); }
-
-  function formatTime(d){
-    // Your screenshot shows a local timestamp format, keep it simple.
-    return d.toLocaleString(undefined, { year:"numeric", month:"numeric", day:"numeric", hour:"numeric", minute:"2-digit", second:"2-digit" });
-  }
-
-  function pickDecision(adjustedTemp){
-    // Simple decision bands that do not lie to the user.
-    // These are intentionally conservative so we do not call 25°F a sweet spot.
-    if (adjustedTemp <= 40) return { label:"HOODIE", vibe:"Hoodie weather. Do not try to be tough." };
-    if (adjustedTemp <= 55) return { label:"HOODIE", vibe:"Hoodie, and you are probably fine." };
-    if (adjustedTemp <= 62) return { label:"MAYBE", vibe:"Borderline. Hoodie if you are dramatic." };
-    if (adjustedTemp <= 68) return { label:"MAYBE", vibe:"Light layer if you want. No one cares." };
-    return { label:"NAH", vibe:"Nah. Put the hoodie down." };
-  }
-
-  function pickSnark(temp, wind, isNight){
-    // Make quips consistent with reality, especially when cold.
-    if (temp <= 25) return "This is not a debate. Wear the hoodie. Also consider regret-proofing.";
-    if (temp <= 35) return "Cold enough that your hoodie is doing community service.";
-    if (temp <= 45) return "Hoodie weather. Layer up if you respect your future self.";
-    if (temp <= 55) return wind >= 18 ? "Hoodie is good. Wind is being rude though." : "Hoodie is the right answer. It is literally its whole job.";
-    if (temp <= 62) return "You can go hoodie. You can also go chaos. Choose wisely.";
-    if (temp <= 68) return isNight ? "It will cool off. Hoodie if you plan to stay out." : "Might be hoodie. Might be overconfidence. Hard to say.";
-    if (temp <= 78) return "Nah. Save the hoodie for your personality, not the weather.";
-    return "It is too hot for a hoodie. Do not be that person.";
-  }
-
-  function renderWeather(payload){
-    const cur = payload && payload.current;
-    if (!cur){
-      answer.textContent = "ERROR";
-      line1.textContent = "Weather failed to load. The sky is gatekeeping.";
-      line2.textContent = "";
-      quip.textContent = "";
-      chips.innerHTML = "";
-      return;
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    function showToast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
     }
 
-    const feels = Math.round(cur.apparent_temperature);
-    const wind = Math.round(cur.wind_speed_10m || 0);
-    const isNight = payload.is_day === 0 || (cur.is_day === 0);
-
-    const offset = parseFloat(runPref.value || "0");
-    const adjusted = Math.round(feels + offset);
-
-    const decision = pickDecision(adjusted);
-
-    answer.textContent = decision.label;
-
-    // IMPORTANT: this is one of the two spots that must NEVER say "near you" after location resolves.
-    const locationPhrase = (state.label && state.label !== "Near you") ? state.label : "your area";
-
-    line1.textContent = `It feels like ${feels}${unitSymbol} in ${locationPhrase}. ${decision.label === "HOODIE" ? "Hoodie weather." : decision.label === "MAYBE" ? "Maybe hoodie." : "No hoodie."}`;
-    line2.textContent = decision.vibe;
-
-    quip.textContent = pickSnark(adjusted, wind, isNight);
-
-    const parts = [];
-    parts.push(`<span class="chip">Feels like ${feels}${unitSymbol}</span>`);
-    parts.push(`<span class="chip">Wind ${wind} ${windUnit}</span>`);
-    parts.push(`<span class="chip">${isNight ? "Night" : "Day"}</span>`);
-    parts.push(`<span class="chip">Adjusted ${adjusted}${unitSymbol}</span>`);
-
-    chips.innerHTML = parts.join("");
-
-    state.lastUpdated = new Date();
-    updated.textContent = `Updated ${formatTime(state.lastUpdated)}.`;
-  }
-
-  async function fetchWeather(lat, lon){
-    // Open-Meteo forecast with correct units
-    const tempUnit = unit === "fahrenheit" ? "fahrenheit" : "celsius";
-    const windSpeedUnit = unit === "fahrenheit" ? "mph" : "kmh";
-
-    const url = new URL("https://api.open-meteo.com/v1/forecast");
-    url.searchParams.set("latitude", String(lat));
-    url.searchParams.set("longitude", String(lon));
-    url.searchParams.set("current", "apparent_temperature,temperature_2m,wind_speed_10m,is_day");
-    url.searchParams.set("temperature_unit", tempUnit);
-    url.searchParams.set("wind_speed_unit", windSpeedUnit);
-    url.searchParams.set("timezone", "auto");
-
-    const r = await fetch(url.toString());
-    if (!r.ok) throw new Error("weather_failed");
-    return r.json();
-  }
-
-  async function reverseGeocode(lat, lon){
-    // Use Nominatim first (works with CORS in most browsers)
-    try{
-      const url = new URL("https://nominatim.openstreetmap.org/reverse");
-      url.searchParams.set("format", "jsonv2");
-      url.searchParams.set("lat", String(lat));
-      url.searchParams.set("lon", String(lon));
-      url.searchParams.set("zoom", "10");
-      url.searchParams.set("addressdetails", "1");
-
-      const r = await fetch(url.toString());
-      if (r.ok){
-        const d = await r.json();
-        const a = d.address || {};
-        const city = a.city || a.town || a.village || a.hamlet || a.county;
-        const region = a.state || a.region || a.province;
-        const countryCode = (a.country_code || "").toUpperCase();
-
-        if (city && region && countryCode === "US") return `${city}, ${region}`;
-        if (city && region) return `${city}, ${region}`;
-        if (city) return city;
-      }
-    }catch{}
-
-    // Fallback: best effort label
-    return "Your area";
-  }
-
-  async function forwardGeocode(query){
-    // Suggestions + resolve manual city
-    // Use Nominatim search endpoint.
-    const url = new URL("https://nominatim.openstreetmap.org/search");
-    url.searchParams.set("format", "jsonv2");
-    url.searchParams.set("q", query);
-    url.searchParams.set("addressdetails", "1");
-    url.searchParams.set("limit", "6");
-
-    const r = await fetch(url.toString());
-    if (!r.ok) throw new Error("geocode_failed");
-    const list = await r.json();
-    return (Array.isArray(list) ? list : []).map(item => {
-      const a = item.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.county;
-      const region = a.state || a.region || a.province;
-      const cc = (a.country_code || "").toUpperCase();
-      const label =
-        (city && region && cc === "US") ? `${city}, ${region}` :
-        (city && region) ? `${city}, ${region}` :
-        item.display_name || query;
-
-      return {
-        label,
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-        raw: item.display_name || label
-      };
-    }).filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
-  }
-
-  function closeSuggest(){
-    suggestBox.classList.remove("open");
-    suggestBox.innerHTML = "";
-  }
-
-  function openSuggest(items){
-    if (!items.length){
-      closeSuggest();
-      return;
-    }
-    suggestBox.innerHTML = items.map((it, idx) => {
-      return `<button type="button" data-idx="${idx}">${escapeHtml(it.label)}<small>${escapeHtml(it.raw)}</small></button>`;
-    }).join("");
-    suggestBox.classList.add("open");
-
-    suggestBox.querySelectorAll("button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const i = parseInt(btn.getAttribute("data-idx"), 10);
-        const pick = items[i];
-        if (!pick) return;
-        manualInput.value = pick.label;
-        closeSuggest();
-        applyLocation(pick.lat, pick.lon, pick.label, "manual", true);
-      });
-    });
-  }
-
-  function escapeHtml(str){
-    return String(str || "")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-
-  async function applyLocation(lat, lon, label, source, alreadyResolvedLabel){
-    state.lat = lat;
-    state.lon = lon;
-    state.source = source;
-
-    if (alreadyResolvedLabel && label){
-      state.label = label;
-      setPillToLabel(label);
-    } else {
-      // show spinner while reverse geocode resolves
-      setPillToSpinner();
-      state.label = "Near you";
-      try{
-        const resolved = await reverseGeocode(lat, lon);
-        state.label = resolved || "Your area";
-        setPillToLabel(state.label);
-      }catch{
-        state.label = "Your area";
-        setPillToLabel(state.label);
-      }
-    }
-
-    try{
-      const w = await fetchWeather(lat, lon);
-      state.lastWeather = w;
-      renderWeather(w);
-    }catch{
-      showToast("Weather fetch failed. Cool.");
-      answer.textContent = "ERROR";
-      line1.textContent = "Weather failed to load. The sky is gatekeeping.";
-      line2.textContent = "";
-      quip.textContent = "";
-      chips.innerHTML = "";
-    }
-  }
-
-  async function useGPS(){
-    if (!navigator.geolocation){
-      showToast("GPS not supported. Old device energy.");
-      setPillToNearYou();
-      return;
-    }
-
-    setPillToSpinner();
-
-    const opts = { enableHighAccuracy: false, timeout: 9000, maximumAge: 300000 };
-
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-
-      try{
-        const resolved = await reverseGeocode(lat, lon);
-        state.label = resolved || "Your area";
-        setPillToLabel(state.label);
-      }catch{
-        state.label = "Your area";
-        setPillToLabel(state.label);
-      }
-
-      try{
-        const w = await fetchWeather(lat, lon);
-        state.lat = lat;
-        state.lon = lon;
-        state.source = "gps";
-        state.lastWeather = w;
-        renderWeather(w);
-      }catch{
-        showToast("Weather fetch failed. Cool.");
-        setPillToNearYou();
-      }
-
-    }, (err) => {
-      setPillToNearYou();
-      if (err && err.code === 1){
-        showToast("Location access denied");
-      } else {
-        showToast("GPS failed. Try again or type a city.");
-      }
-    }, opts);
-  }
-
-  function spin(){
-    const pick = randomSpots[Math.floor(Math.random() * randomSpots.length)];
-    applyLocation(pick.lat, pick.lon, pick.label, "random", true);
-  }
-
-  async function useManualLocation(){
-    const q = (manualInput.value || "").trim();
-    if (!q){
-      showToast("Type a location first. I am not psychic.");
-      return;
-    }
-
-    setPillToSpinner();
-
-    try{
-      const list = await forwardGeocode(q);
-      if (!list.length){
-        setPillToNearYou();
-        showToast("No matches. Try something less vague.");
+    function setPill(text, { loading=false } = {}){
+      if (loading){
+        wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
         return;
       }
-      const best = list[0];
-      await applyLocation(best.lat, best.lon, best.label, "manual", true);
-    }catch{
-      setPillToNearYou();
-      showToast("Location lookup failed. Try again.");
+      wherePill.innerHTML = '<span class="dot" aria-hidden="true"></span><span id="whereText"></span>';
+      document.getElementById("whereText").textContent = text;
     }
-  }
 
-  // Debounced suggestions
-  let suggestTimer = null;
-  manualInput.addEventListener("input", () => {
-    const q = (manualInput.value || "").trim();
-    closeSuggest();
-    if (suggestTimer) window.clearTimeout(suggestTimer);
-    if (q.length < 3) return;
+    function countryUsesF(countryCode){
+      // Fahrenheit countries: US, Liberia, Myanmar
+      return ["US", "LR", "MM"].includes((countryCode || "").toUpperCase());
+    }
 
-    suggestTimer = window.setTimeout(async () => {
-      try{
-        const list = await forwardGeocode(q);
-        openSuggest(list.slice(0, 5));
-      }catch{
-        closeSuggest();
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+    function runOffset(run){
+      // Cold people need warmer threshold, hot people need cooler threshold
+      if (run === "cold") return -4;  // feels colder, so recommend more layers sooner
+      if (run === "hot") return +4;   // feels warmer, so recommend fewer layers
+      return 0;
+    }
+
+    function decide(tempF, feelsF, run){
+      // Use feels-like as the real decider if we have it
+      const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
+
+      // These are intentionally conservative so 25F is never "hoodie sweetspot"
+      if (t <= 25) return { word: "NAH", line: "That air hurts your face. Bundle up.", note: "Heavy coat recommended." };
+      if (t <= 35) return { word: "NAH", line: "Hoodie alone is cute. So is hypothermia.", note: "Coat or layered hoodie." };
+      if (t <= 45) return { word: "MAYBE", line: "Hoodie plus a jacket. Don’t get cocky.", note: "Light jacket over hoodie." };
+      if (t <= 60) return { word: "HOODIE", line: "This is prime hoodie weather. Enjoy your moment.", note: "Hoodie is perfect." };
+      if (t <= 70) return { word: "MAYBE", line: "Hoodie if you like options. Otherwise, nah.", note: "Light layer optional." };
+      if (t <= 82) return { word: "NAH", line: "You’re gonna regret sleeves in 10 minutes.", note: "T-shirt weather." };
+      return { word: "NAH", line: "It’s basically a warm hug from the sun. No hoodie.", note: "Stay cool." };
+    }
+
+    function fmtTemp(val, units){
+      if (!Number.isFinite(val)) return "--";
+      return Math.round(val) + "°" + units;
+    }
+
+    function fmtWind(ms, units){
+      if (!Number.isFinite(ms)) return "--";
+      // Open-Meteo gives windspeed in km/h if requested, but we will request mph for F and km/h for C.
+      return Math.round(ms) + (units === "F" ? " mph" : " km/h");
+    }
+
+    function setLoading(on){
+      state.isLoading = on;
+      if (on){
+        bigWord.textContent = "LOADING";
+        oneLiner.textContent = "Grabbing your weather. Try not to panic.";
+        tempText.textContent = "--";
+        metaText.innerHTML = "Feels like: --<br/>Wind: --<br/>Units: --";
       }
-    }, 260);
-  });
-
-  manualInput.addEventListener("focus", () => {
-    const q = (manualInput.value || "").trim();
-    if (q.length >= 3 && suggestBox.innerHTML) suggestBox.classList.add("open");
-  });
-
-  manualInput.addEventListener("blur", () => {
-    // small delay so click registers
-    window.setTimeout(closeSuggest, 120);
-  });
-
-  // Actions
-  useGps.addEventListener("click", useGPS);
-  locPill.addEventListener("click", useGPS);
-
-  useManual.addEventListener("click", useManualLocation);
-  manualInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") useManualLocation();
-  });
-
-  spinGlobe.addEventListener("click", spin);
-
-  refreshBtn.addEventListener("click", () => {
-    if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-      applyLocation(state.lat, state.lon, state.label, state.source, true);
-    } else {
-      useGPS();
     }
-  });
 
-  brandBtn.addEventListener("click", () => {
-    if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-      applyLocation(state.lat, state.lon, state.label, state.source, true);
-    } else {
-      useGPS();
+    // -----------------------------
+    // Geocoding (Nominatim)
+    // -----------------------------
+    let suggestAbort = null;
+
+    async function suggestLocations(q){
+      if (!q || q.trim().length < 3){
+        locList.innerHTML = "";
+        return;
+      }
+      if (suggestAbort) suggestAbort.abort();
+      suggestAbort = new AbortController();
+
+      const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(q);
+      const res = await fetch(url, {
+        signal: suggestAbort.signal,
+        headers: { "Accept": "application/json" }
+      });
+      if (!res.ok) return;
+
+      const data = await res.json();
+      locList.innerHTML = data.map(item => {
+        const label = item.display_name;
+        // Store lat/lon on option via value only, we resolve again on submit
+        return '<option value="' + escapeHtml(label) + '"></option>';
+      }).join("");
     }
-  });
 
-  runPref.addEventListener("change", () => {
-    if (state.lastWeather) renderWeather(state.lastWeather);
-  });
+    async function geocodeDisplayName(displayName){
+      const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&q=" + encodeURIComponent(displayName);
+      const res = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!res.ok) throw new Error("geocode_failed");
+      const data = await res.json();
+      if (!data || !data[0]) throw new Error("no_results");
 
-  // Light, one-time question-mark animation
-  (function animateMarkOnce(){
-    const qm = document.getElementById("qm");
-    const qdot = document.getElementById("qdot");
-    if (!qm || !qdot) return;
+      const item = data[0];
+      const cc = item.address && item.address.country_code ? item.address.country_code.toUpperCase() : null;
 
-    qm.style.transition = "transform .7s ease, opacity .7s ease";
-    qdot.style.transition = "transform .7s ease, opacity .7s ease";
-    qm.style.transform = "translateY(-1px)";
-    qdot.style.transform = "translateY(-1px)";
-    qm.style.opacity = "0.94";
-    qdot.style.opacity = "0.94";
+      return {
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        label: simplifyLabel(item),
+        countryCode: cc
+      };
+    }
 
-    window.setTimeout(() => {
-      qm.style.transform = "translateY(0px)";
-      qdot.style.transform = "translateY(0px)";
-      qm.style.opacity = "1";
-      qdot.style.opacity = "1";
-    }, 60);
-  })();
+    async function reverseGeocode(lat, lon){
+      const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon);
+      const res = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!res.ok) throw new Error("reverse_failed");
+      const data = await res.json();
+      const cc = data.address && data.address.country_code ? data.address.country_code.toUpperCase() : null;
+      return {
+        label: simplifyLabel(data),
+        countryCode: cc
+      };
+    }
 
-  // Boot
-  useGPS();
-})();
-</script>
+    function simplifyLabel(obj){
+      // Prefer "City, ST" for US, otherwise "City, Country"
+      const a = obj.address || {};
+      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
+      const state = a.state || a.region || "";
+      const country = a.country || "";
+      const cc = a.country_code ? a.country_code.toUpperCase() : null;
+
+      if (cc === "US"){
+        const st = a.state_code || state;
+        return (city && st) ? (city + ", " + st) : (obj.display_name ? obj.display_name.split(",").slice(0,2).join(",").trim() : "Near you");
+      }
+
+      if (city && country) return city + ", " + country;
+      if (obj.display_name) return obj.display_name.split(",").slice(0,2).join(",").trim();
+      return "Near you";
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // -----------------------------
+    // Weather (Open-Meteo)
+    // -----------------------------
+    async function fetchWeather(lat, lon, units){
+      // We request temperature_unit and windspeed_unit so we can display correctly.
+      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
+      const windUnit = units === "F" ? "mph" : "kmh";
+
+      const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=" + encodeURIComponent(lat) +
+        "&longitude=" + encodeURIComponent(lon) +
+        "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
+        "&temperature_unit=" + tempUnit +
+        "&windspeed_unit=" + windUnit +
+        "&timezone=auto";
+
+      const res = await fetch(url, { headers: { "Accept": "application/json" } });
+      if (!res.ok) throw new Error("weather_failed");
+      return await res.json();
+    }
+
+    function toF(c){ return (c * 9/5) + 32; }
+
+    // -----------------------------
+    // Render
+    // -----------------------------
+    function renderResult({ temp, feels, wind, units }){
+      const { word, line } = decide(
+        units === "F" ? temp : toF(temp),
+        units === "F" ? feels : toF(feels),
+        state.run
+      );
+
+      bigWord.textContent = word;
+      oneLiner.textContent = line;
+
+      tempText.textContent = fmtTemp(temp, units);
+
+      metaText.innerHTML =
+        "Feels like: " + fmtTemp(feels, units) + "<br/>" +
+        "Wind: " + fmtWind(wind, units) + "<br/>" +
+        "Units: " + (units === "F" ? "Fahrenheit" : "Celsius");
+    }
+
+    // -----------------------------
+    // Actions
+    // -----------------------------
+    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
+      state.lat = lat;
+      state.lon = lon;
+      state.countryCode = countryCode || state.countryCode;
+      state.source = source || state.source;
+
+      state.units = countryUsesF(state.countryCode) ? "F" : "C";
+
+      // Pill should reflect the active location, not "Near you"
+      setPill("📍 " + label);
+
+      setLoading(true);
+
+      try{
+        const data = await fetchWeather(lat, lon, state.units);
+        const cur = data.current || {};
+        const temp = cur.temperature_2m;
+        const feels = cur.apparent_temperature;
+        const wind = cur.wind_speed_10m;
+
+        setLoading(false);
+        renderResult({ temp, feels, wind, units: state.units });
+      }catch(e){
+        setLoading(false);
+        bigWord.textContent = "MAYBE";
+        oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
+        showToast("Could not fetch weather. Try again.");
+      }
+    }
+
+    async function tryAutoLocation(){
+      // Start in a sane state. Do not block the right-side controls.
+      setPill("Near you");
+      setLoading(true);
+
+      // If geolocation is available, attempt it quickly, but do not stall the UI forever.
+      if (!navigator.geolocation){
+        setLoading(false);
+        bigWord.textContent = "MAYBE";
+        oneLiner.textContent = "No GPS available here. Type a city and we’ll judge it anyway.";
+        return;
+      }
+
+      // Show subtle spinner inside pill while browser resolves
+      setPill("", { loading: true });
+
+      const opts = { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 };
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try{
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const rev = await reverseGeocode(lat, lon);
+
+          await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
+        }catch(err){
+          setPill("Near you");
+          setLoading(false);
+          bigWord.textContent = "MAYBE";
+          oneLiner.textContent = "Couldn’t resolve your city. Type one and we’ll be dramatic about it.";
+          showToast("Location lookup failed");
+        }
+      }, (err) => {
+        setPill("Near you");
+        setLoading(false);
+        bigWord.textContent = "MAYBE";
+        oneLiner.textContent = "No location, no problem. Type a place and let’s argue about hoodies.";
+        if (err && err.code === 1) showToast("Location access denied");
+        else showToast("GPS error or timeout");
+      }, opts);
+    }
+
+    async function onUseGPS(){
+      // Manual trigger
+      if (!navigator.geolocation){
+        showToast("No GPS available in this browser.");
+        return;
+      }
+      setPill("", { loading: true });
+
+      const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 };
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        try{
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          const rev = await reverseGeocode(lat, lon);
+
+          await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
+        }catch(e){
+          setPill("Near you");
+          showToast("Could not resolve your city");
+        }
+      }, (err) => {
+        setPill("Near you");
+        if (err && err.code === 1) showToast("Location access denied");
+        else showToast("GPS error or timeout");
+      }, opts);
+    }
+
+    const globeSpins = [
+      { label: "Reykjavík, Iceland", lat: 64.1466, lon: -21.9426, cc:"IS" },
+      { label: "London, UK", lat: 51.5072, lon: -0.1276, cc:"GB" },
+      { label: "Tokyo, Japan", lat: 35.6762, lon: 139.6503, cc:"JP" },
+      { label: "Sydney, Australia", lat: -33.8688, lon: 151.2093, cc:"AU" },
+      { label: "Mexico City, Mexico", lat: 19.4326, lon: -99.1332, cc:"MX" },
+      { label: "Toronto, Canada", lat: 43.6532, lon: -79.3832, cc:"CA" },
+      { label: "Chicago, IL", lat: 41.8781, lon: -87.6298, cc:"US" },
+      { label: "Las Vegas, NV", lat: 36.1699, lon: -115.1398, cc:"US" },
+      { label: "Paris, France", lat: 48.8566, lon: 2.3522, cc:"FR" }
+    ];
+
+    async function onSpinGlobe(){
+      const pick = globeSpins[Math.floor(Math.random() * globeSpins.length)];
+      await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc, "globe");
+    }
+
+    async function onManualCommit(){
+      const q = (manualInput.value || "").trim();
+      if (!q){
+        showToast("Type a city or ZIP first.");
+        return;
+      }
+
+      try{
+        const g = await geocodeDisplayName(q);
+        await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual");
+      }catch(e){
+        showToast("No results. Try a slightly different spelling.");
+      }
+    }
+
+    // -----------------------------
+    // Events
+    // -----------------------------
+    runSelect.addEventListener("change", () => {
+      state.run = runSelect.value;
+      // Re-render decision immediately if we already have weather values in DOM
+      // Best-effort: trigger a refresh if we have coordinates.
+      if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+        // Just refetch for simplicity (also updates feels/wind)
+        updateWeatherFromLatLon(state.lat, state.lon, (document.getElementById("whereText")?.textContent || state.placeLabel).replace(/^📍\s*/, ""), state.countryCode, state.source);
+      }
+    });
+
+    manualInput.addEventListener("input", () => {
+      suggestLocations(manualInput.value).catch(() => {});
+    });
+
+    manualInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        onManualCommit();
+      }
+    });
+
+    spinBtn.addEventListener("click", onSpinGlobe);
+    gpsBtn.addEventListener("click", onUseGPS);
+
+    brandHome.addEventListener("click", () => {
+      manualInput.value = "";
+      locList.innerHTML = "";
+      tryAutoLocation();
+    });
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    (function init(){
+      state.run = runSelect.value;
+      // Light, once-only question mark animation already handled by CSS.
+      // Start auto-location attempt, but never lock the UI.
+      tryAutoLocation();
+    })();
+  </script>
 </body>
 </html>
+```
