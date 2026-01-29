@@ -1,14 +1,3 @@
-Yeah, what you’re seeing is exactly what happens when the app gets stuck in a “loading” state and the UI is effectively dead (either because a JS error stops initialization, or because the code is disabling buttons while `isLoading` never flips back).
-
-I’m going to give you a **single drop-in `index.html`** that fixes all 3 issues:
-
-* **Autocomplete back** (no API key needed): uses OpenStreetMap Nominatim suggestions via a `<datalist>`
-* **Buttons work again**: event listeners are wired, and loading only affects the left result card, not the whole UI
-* **Logo not tiny**: bumped the header icon button and SVG sizing, plus a subtle hover glow
-
-Copy this whole file and replace your current `index.html`.
-
-```
 <!doctype html>
 <html lang="en">
 <head>
@@ -886,4 +875,5 @@ Copy this whole file and replace your current `index.html`.
   </script>
 </body>
 </html>
-```
+
+
