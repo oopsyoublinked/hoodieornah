@@ -63,7 +63,6 @@
       position: relative;
     }
 
-    /* Frozen effect (subtle) */
     body.is-frozen .wrap::before{
       content:"";
       position:absolute;
@@ -78,14 +77,6 @@
     }
     body.is-frozen main{
       box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 40px rgba(140,170,255,.08);
-    }
-    .freeze-pop{
-      animation: freezePop 520ms ease-out 1;
-    }
-    @keyframes freezePop{
-      0%{ transform: translateY(0px) scale(1); }
-      45%{ transform: translateY(-2px) scale(1.01); }
-      100%{ transform: translateY(0px) scale(1); }
     }
 
     header{
@@ -110,7 +101,6 @@
       min-width: 0;
     }
 
-    /* Bigger logo button */
     .brand-btn{
       width: 72px;
       height: 72px;
@@ -135,7 +125,6 @@
       width: 60px;
       height: 60px;
       display:block;
-      image-rendering: auto;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
       border-radius: 14px;
     }
@@ -322,7 +311,6 @@
       font-weight: 650;
     }
 
-    /* Inputs */
     select, input{
       width:100%;
       padding: 12px 14px;
@@ -335,8 +323,6 @@
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
     }
     input::placeholder{color: rgba(255,255,255,.35)}
-
-    /* Make dropdown readable and prevent white menu on many browsers */
     select{
       color-scheme: dark;
       background-color: rgba(255,255,255,.03);
@@ -447,7 +433,6 @@
       color: rgba(255,255,255,.50);
       line-height: 1.35;
     }
-
     .frozen-badge{
       display:inline-flex;
       align-items:center;
@@ -534,14 +519,9 @@
 
     <main id="mainShell">
       <div class="grid">
-        <!-- Left: Result -->
         <section class="card" aria-live="polite">
           <div class="big" id="bigWord">LOADING</div>
           <p class="sub" id="oneLiner">Grabbing your weather. Try not to panic.</p>
-
-          <div id="frozenLine" class="sub" style="display:none; margin-top:-4px; color: rgba(255,255,255,.52); font-size: 13px;">
-            This take has been frozen in time.
-          </div>
 
           <div class="divider"></div>
 
@@ -581,7 +561,6 @@
           </div>
         </section>
 
-        <!-- Right: Controls -->
         <aside class="card-right">
           <div>
             <h3>How do you run?</h3>
@@ -606,20 +585,6 @@
             <div class="row"><span>Location</span><strong id="usingLoc">Near you</strong></div>
             <div class="row"><span>Units</span><strong id="usingUnits">--</strong></div>
             <div class="row"><span>Tip</span><strong id="tipLine">Type a city and press Enter.</strong></div>
-          </div>
-
-          <!-- Frozen panel (no Note section, no empty space) -->
-          <div class="mini" id="frozenPanel" style="display:none;">
-            <div class="row">
-              <span>Mode</span>
-              <strong><span class="frozen-badge">Frozen</span></strong>
-            </div>
-            <div class="row">
-              <span>Share</span>
-              <strong>
-                <button id="copyLinkBtn" type="button" style="padding:10px 12px;">Copy link</button>
-              </strong>
-            </div>
           </div>
         </aside>
       </div>
@@ -650,58 +615,63 @@
       lon: null,
       countryCode: null,
       units: "F",
-      last: { temp: null, feels: null, wind: null },
-      lastDecision: { word: "MAYBE", line: "" },
-      frozen: false
+      frozen: false,
+      lastDecision: { word: "MAYBE", line: "" }
     };
 
-    const wherePill = document.getElementById("wherePill");
-    const bigWord = document.getElementById("bigWord");
-    const oneLiner = document.getElementById("oneLiner");
-    const toastEl = document.getElementById("toast");
+    const el = {
+      wherePill: document.getElementById("wherePill"),
+      bigWord: document.getElementById("bigWord"),
+      oneLiner: document.getElementById("oneLiner"),
+      toast: document.getElementById("toast"),
 
-    const runSelect = document.getElementById("runSelect");
-    const manualInput = document.getElementById("manualInput");
-    const locList = document.getElementById("locList");
-    const spinBtn = document.getElementById("spinBtn");
-    const gpsBtn = document.getElementById("gpsBtn");
-    const brandHome = document.getElementById("brandHome");
+      runSelect: document.getElementById("runSelect"),
+      manualInput: document.getElementById("manualInput"),
+      locList: document.getElementById("locList"),
+      spinBtn: document.getElementById("spinBtn"),
+      gpsBtn: document.getElementById("gpsBtn"),
+      brandHome: document.getElementById("brandHome"),
 
-    const freezeBtn = document.getElementById("freezeBtn");
-    const freezeHint = document.getElementById("freezeHint");
-    const frozenBadge = document.getElementById("frozenBadge");
-    const frozenLine = document.getElementById("frozenLine");
-    const frozenPanel = document.getElementById("frozenPanel");
-    const copyLinkBtn = document.getElementById("copyLinkBtn");
-    const mainShell = document.getElementById("mainShell");
+      freezeBtn: document.getElementById("freezeBtn"),
+      freezeHint: document.getElementById("freezeHint"),
+      frozenBadge: document.getElementById("frozenBadge"),
 
-    const locLine = document.getElementById("locLine");
-    const locSource = document.getElementById("locSource");
-    const tempLine = document.getElementById("tempLine");
-    const feelWindLine = document.getElementById("feelWindLine");
-    const unitsLine = document.getElementById("unitsLine");
+      locLine: document.getElementById("locLine"),
+      locSource: document.getElementById("locSource"),
+      tempLine: document.getElementById("tempLine"),
+      feelWindLine: document.getElementById("feelWindLine"),
+      unitsLine: document.getElementById("unitsLine"),
 
-    const usingLine = document.getElementById("usingLine");
-    const usingLoc = document.getElementById("usingLoc");
-    const usingUnits = document.getElementById("usingUnits");
-    const tipLine = document.getElementById("tipLine");
+      usingLine: document.getElementById("usingLine"),
+      usingLoc: document.getElementById("usingLoc"),
+      usingUnits: document.getElementById("usingUnits"),
+      tipLine: document.getElementById("tipLine")
+    };
+
+    let loading = false;
+    let suggestAbort = null;
 
     function showToast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
+      el.toast.textContent = msg;
+      el.toast.classList.add("show");
       clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
+      showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2200);
     }
 
-    function setPill(text, { loading=false, frozen=false } = {}){
-      wherePill.classList.toggle("frozen", !!frozen);
+    window.addEventListener("error", (e) => {
+      console.error("JS error:", e.error || e.message);
+      showToast("JS error. Open console. Something broke.");
+      endLoading();
+    });
 
-      if (loading){
-        wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
-        return;
-      }
-      wherePill.innerHTML = '<span class="dot" aria-hidden="true"></span><span id="whereText"></span>';
-      document.getElementById("whereText").textContent = text;
+    function setPillText(text){
+      el.wherePill.classList.remove("frozen");
+      el.wherePill.innerHTML = '<span class="dot" aria-hidden="true"></span><span id="whereText"></span>';
+      el.wherePill.querySelector("#whereText").textContent = text;
+    }
+
+    function setPillLoading(){
+      el.wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
     }
 
     function countryUsesF(countryCode){
@@ -710,7 +680,7 @@
 
     function runOffset(run){
       if (run === "cold") return -4;
-      if (run === "hot") return +4;
+      if (run === "hot") return 4;
       return 0;
     }
 
@@ -726,56 +696,39 @@
 
     function toF(c){ return (c * 9/5) + 32; }
 
-    function setLoading(on){
-      if (on){
-        bigWord.textContent = "LOADING";
-        oneLiner.textContent = "Grabbing your weather. Try not to panic.";
-        tempLine.textContent = "--";
-        feelWindLine.textContent = "Feels like: --  |  Wind: --";
-        unitsLine.textContent = "Units: --";
-        usingUnits.textContent = "--";
-      }
+    function setLoading(){
+      loading = true;
+      el.spinBtn.disabled = true;
+      el.gpsBtn.disabled = true;
+
+      el.bigWord.textContent = "LOADING";
+      el.oneLiner.textContent = "Grabbing your weather. Try not to panic.";
+      el.tempLine.textContent = "--";
+      el.feelWindLine.textContent = "Feels like: --  |  Wind: --";
+      el.unitsLine.textContent = "Units: --";
+      el.usingUnits.textContent = "--";
+    }
+
+    function endLoading(){
+      loading = false;
+      el.spinBtn.disabled = false;
+      el.gpsBtn.disabled = false;
     }
 
     function updateSourceUI(){
       const sourceName =
         state.source === "gps" ? "GPS" :
         state.source === "manual" ? "Manual" :
-        state.source === "globe" ? "Globe" :
-        state.source === "frozen" ? "Frozen" : "Auto";
+        state.source === "globe" ? "Globe" : "Auto";
 
-      usingLine.textContent = sourceName;
-      usingLoc.textContent = state.placeLabel;
-      usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
+      el.usingLine.textContent = sourceName;
+      el.usingLoc.textContent = state.placeLabel;
+      el.usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
+      el.tipLine.textContent = state.source === "manual" ? "Manual override wins. Always." : "Type a city and press Enter.";
 
-      if (state.frozen){
-        tipLine.textContent = "Frozen results cannot be changed. Share it. Defend it. Stand by it.";
-      } else if (state.source === "manual"){
-        tipLine.textContent = "Manual override wins. Always.";
-      } else if (state.source === "gps"){
-        tipLine.textContent = "GPS did the work. Respect.";
-      } else if (state.source === "globe"){
-        tipLine.textContent = "Random place, real judgment.";
-      } else {
-        tipLine.textContent = "Type a city and press Enter.";
-      }
-
-      locLine.textContent = state.placeLabel;
-      locSource.textContent = "Source: " + sourceName + ".";
-      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
-    }
-
-    function lsGet(key, fallback){
-      try{
-        const raw = localStorage.getItem(key);
-        if (raw === null || raw === undefined) return fallback;
-        return JSON.parse(raw);
-      }catch(e){
-        return fallback;
-      }
-    }
-    function lsSet(key, val){
-      try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+      el.locLine.textContent = state.placeLabel;
+      el.locSource.textContent = "Source: " + sourceName + ".";
+      el.unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
     }
 
     const SNARK = {
@@ -784,176 +737,54 @@
         "If your breath is crunchy, it is coat season.",
         "Hoodie? Sure. Under the parka.",
         "The wind is auditioning to be your enemy.",
-        "This is how you end up texting: I cannot feel my hands.",
-        "If you step outside and instantly regret it, yeah, nah.",
-        "This is not hoodie weather. This is survival gear weather.",
-        "The air is trying to fight you. Do not let it win."
+        "This is not hoodie weather. This is survival gear weather."
       ],
       veryCold: [
         "Hoodie alone is cute. So is hypothermia.",
-        "If you wear only a hoodie, you are making a statement. A dumb one.",
-        "You can do hoodie only if you also enjoy suffering.",
-        "This is hoodie plus consequences.",
         "Nah. Add a real jacket and stop pretending.",
-        "Your ears called. They want protection.",
         "This is the part where you learn about wind chill."
       ],
       cold: [
         "Hoodie plus a jacket. Do not get cocky.",
         "Layer up. Hoodie needs a bodyguard today.",
-        "Hoodie is allowed, but bring backup.",
-        "If you go hoodie only, at least walk fast.",
-        "A light jacket over the hoodie and you are good.",
-        "This is a hoodie, but be responsible moment.",
-        "Hoodie is fine. The wind is not."
+        "Hoodie is allowed, but bring backup."
       ],
       prime: [
         "Prime hoodie weather. Enjoy your moment.",
         "This is the whole point of hoodies existing.",
-        "Congratulations, you found peak comfort.",
-        "Hoodie time. No notes.",
-        "This is the sweet spot. Do not waste it.",
-        "Yes. Hoodie. Obviously.",
-        "Hoodie season is in session.",
-        "Your hoodie has been waiting for this."
+        "Hoodie time. No notes."
       ],
       mild: [
         "Hoodie if you like options. Otherwise, nah.",
-        "You can wear a hoodie, but you might regret it at noon.",
-        "Light layer energy. Choose your fighter.",
         "This is borderline. Proceed with vibes.",
-        "Hoodie: optional. Confidence: required.",
-        "A thin hoodie works. A thick one is a mistake.",
-        "This is weather that changes its mind every hour."
+        "A thin hoodie works. A thick one is a mistake."
       ],
       warm: [
         "You are gonna regret sleeves in 10 minutes.",
-        "That hoodie is about to become a portable sauna.",
         "Nah. Let your arms experience freedom.",
-        "If you wear a hoodie, you are doing it for the look, not the comfort.",
-        "This is short sleeve territory. Do not overthink it.",
-        "Put the hoodie down and step away slowly.",
         "It is warm. Stop lying to yourself."
       ],
       hot: [
         "It is basically a warm hug from the sun. No hoodie.",
-        "Hoodie? In this heat? Bold. Wrong, but bold.",
         "Nah. Hydrate and stop layering like a villain.",
-        "If you wear a hoodie, you owe your sweat glands an apology.",
-        "This is the kind of heat that makes sleeves illegal.",
-        "The sun is doing too much. Do not join it.",
         "This is not a hoodie day. This is a regret day."
       ]
     };
 
-    function pickSnark(bucketKey){
-      const arr = SNARK[bucketKey] || [];
-      if (!arr.length) return "Hoodie. Maybe. Nah. We tried.";
-
-      const keep = Math.min(8, Math.max(4, Math.floor(arr.length / 2)));
-      const key = "hon_snark_hist_" + bucketKey;
-      const hist = lsGet(key, []);
-
-      let idx = -1;
-      for (let attempt = 0; attempt < 12; attempt++){
-        const candidate = Math.floor(Math.random() * arr.length);
-        if (!hist.includes(candidate)){
-          idx = candidate;
-          break;
-        }
-      }
-      if (idx === -1) idx = Math.floor(Math.random() * arr.length);
-
-      hist.unshift(idx);
-      hist.length = keep;
-      lsSet(key, hist);
-
-      return arr[idx];
+    function pick(arr){
+      return arr[Math.floor(Math.random() * arr.length)];
     }
 
     function decide(tempF, feelsF, run){
       const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
 
-      if (t <= 20) return { word: "NAH", line: pickSnark("deepFreeze") };
-      if (t <= 35) return { word: "NAH", line: pickSnark("veryCold") };
-      if (t <= 45) return { word: "MAYBE", line: pickSnark("cold") };
-      if (t <= 60) return { word: "HOODIE", line: pickSnark("prime") };
-      if (t <= 70) return { word: "MAYBE", line: pickSnark("mild") };
-      if (t <= 82) return { word: "NAH", line: pickSnark("warm") };
-      return { word: "NAH", line: pickSnark("hot") };
-    }
-
-    let suggestAbort = null;
-
-    async function suggestLocations(q){
-      if (!q || q.trim().length < 3){
-        locList.innerHTML = "";
-        return;
-      }
-      if (suggestAbort) suggestAbort.abort();
-      suggestAbort = new AbortController();
-
-      const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(q);
-      const res = await fetch(url, {
-        signal: suggestAbort.signal,
-        headers: { "Accept": "application/json" }
-      });
-      if (!res.ok) return;
-
-      const data = await res.json();
-      locList.innerHTML = data.map(item => {
-        const label = item.display_name;
-        return '<option value="' + escapeHtml(label) + '"></option>';
-      }).join("");
-    }
-
-    async function geocodeDisplayName(displayName){
-      const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&q=" + encodeURIComponent(displayName);
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("geocode_failed");
-      const data = await res.json();
-      if (!data || !data[0]) throw new Error("no_results");
-
-      const item = data[0];
-      const cc = item.address && item.address.country_code ? item.address.country_code.toUpperCase() : null;
-
-      return {
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-        label: simplifyLabel(item),
-        countryCode: cc
-      };
-    }
-
-    async function reverseGeocode(lat, lon){
-      const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon);
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("reverse_failed");
-      const data = await res.json();
-      const cc = data.address && data.address.country_code ? data.address.country_code.toUpperCase() : null;
-      return {
-        label: simplifyLabel(data),
-        countryCode: cc
-      };
-    }
-
-    function simplifyLabel(obj){
-      const a = obj.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
-      const stateName = a.state || a.region || "";
-      const country = a.country || "";
-      const cc = a.country_code ? a.country_code.toUpperCase() : null;
-
-      if (cc === "US"){
-        const st = a.state_code || stateName;
-        if (city && st) return city + ", " + st;
-        if (obj.display_name) return obj.display_name.split(",").slice(0,2).join(",").trim();
-        return "Near you";
-      }
-
-      if (city && country) return city + ", " + country;
-      if (obj.display_name) return obj.display_name.split(",").slice(0,2).join(",").trim();
-      return "Near you";
+      if (t <= 20) return { word: "NAH", line: pick(SNARK.deepFreeze) };
+      if (t <= 35) return { word: "NAH", line: pick(SNARK.veryCold) };
+      if (t <= 45) return { word: "MAYBE", line: pick(SNARK.cold) };
+      if (t <= 60) return { word: "HOODIE", line: pick(SNARK.prime) };
+      if (t <= 70) return { word: "MAYBE", line: pick(SNARK.mild) };
+      if (t <= 82) return { word: "NAH", line: pick(SNARK.warm) };
+      return { word: "NAH", line: pick(SNARK.hot) };
     }
 
     function escapeHtml(str){
@@ -963,6 +794,18 @@
         .replaceAll(">","&gt;")
         .replaceAll('"',"&quot;")
         .replaceAll("'","&#039;");
+    }
+
+    async function fetchJson(url, timeoutMs = 12000){
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), timeoutMs);
+      try{
+        const res = await fetch(url, { signal: ctrl.signal, headers: { "Accept": "application/json" } });
+        if (!res.ok) throw new Error("http_" + res.status);
+        return await res.json();
+      } finally {
+        clearTimeout(t);
+      }
     }
 
     async function fetchWeather(lat, lon, units){
@@ -978,119 +821,317 @@
         "&windspeed_unit=" + windUnit +
         "&timezone=auto";
 
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("weather_failed");
-      return await res.json();
+      return await fetchJson(url, 12000);
+    }
+
+    async function reverseGeocode(lat, lon){
+      const url =
+        "https://nominatim.openstreetmap.org/reverse" +
+        "?format=jsonv2&addressdetails=1" +
+        "&lat=" + encodeURIComponent(lat) +
+        "&lon=" + encodeURIComponent(lon);
+
+      const data = await fetchJson(url, 12000);
+      const a = data.address || {};
+      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
+      const stateName = a.state || a.region || "";
+      const cc = a.country_code ? String(a.country_code).toUpperCase() : null;
+      const country = a.country || "";
+
+      let label = "Near you";
+      if (cc === "US"){
+        const st = a.state_code || stateName;
+        if (city && st) label = city + ", " + st;
+        else if (data.display_name) label = data.display_name.split(",").slice(0,2).join(",").trim();
+      } else if (city && country){
+        label = city + ", " + country;
+      } else if (data.display_name){
+        label = data.display_name.split(",").slice(0,2).join(",").trim();
+      }
+
+      return { label, countryCode: cc };
+    }
+
+    async function geocodeDisplayName(displayName){
+      const url =
+        "https://nominatim.openstreetmap.org/search" +
+        "?format=jsonv2&addressdetails=1&limit=1&q=" + encodeURIComponent(displayName);
+
+      const data = await fetchJson(url, 12000);
+      if (!data || !data[0]) throw new Error("no_results");
+
+      const item = data[0];
+      const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
+
+      const a = item.address || {};
+      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
+      const stateName = a.state || a.region || "";
+      const country = a.country || "";
+      let label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : displayName;
+
+      if (cc === "US"){
+        const st = a.state_code || stateName;
+        if (city && st) label = city + ", " + st;
+      } else if (city && country){
+        label = city + ", " + country;
+      }
+
+      return {
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        label,
+        countryCode: cc
+      };
     }
 
     function renderResult(temp, feels, wind){
-      state.last = { temp, feels, wind };
-
       const tempF = state.units === "F" ? temp : toF(temp);
       const feelsF = state.units === "F" ? feels : toF(feels);
 
-      let d;
-      if (state.frozen && state.lastDecision && state.lastDecision.line){
-        d = state.lastDecision;
-      } else {
-        d = decide(tempF, feelsF, state.run);
-        state.lastDecision = d;
-      }
+      const d = decide(tempF, feelsF, state.run);
+      el.bigWord.textContent = d.word;
+      el.oneLiner.textContent = d.line;
 
-      bigWord.textContent = d.word;
-      oneLiner.textContent = d.line;
+      el.tempLine.textContent = fmtTemp(temp, state.units);
+      el.feelWindLine.textContent = "Feels like: " + fmtTemp(feels, state.units) + "  |  Wind: " + fmtWind(wind, state.units);
 
-      tempLine.textContent = fmtTemp(temp, state.units);
-      feelWindLine.textContent = "Feels like: " + fmtTemp(feels, state.units) + "  |  Wind: " + fmtWind(wind, state.units);
-      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
-      usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
+      updateSourceUI();
     }
 
     async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        return;
-      }
-
       state.lat = lat;
       state.lon = lon;
       state.countryCode = countryCode || state.countryCode;
       state.source = source || state.source;
 
       state.units = countryUsesF(state.countryCode) ? "F" : "C";
-      state.placeLabel = label || "Near you";
+      state.placeLabel = label || state.placeLabel || "Near you";
 
-      setPill("📍 " + state.placeLabel);
+      setPillText("📍 " + state.placeLabel);
       updateSourceUI();
 
-      setLoading(true);
-
+      setLoading();
       try{
         const data = await fetchWeather(lat, lon, state.units);
         const cur = data.current || {};
-        const temp = cur.temperature_2m;
-        const feels = cur.apparent_temperature;
-        const wind = cur.wind_speed_10m;
-
-        renderResult(temp, feels, wind);
+        renderResult(cur.temperature_2m, cur.apparent_temperature, cur.wind_speed_10m);
       }catch(e){
-        bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
+        console.error(e);
+        el.bigWord.textContent = "MAYBE";
+        el.oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
         showToast("Could not fetch weather. Try again.");
+      }finally{
+        endLoading();
       }
     }
 
     async function tryAutoLocation(){
-      if (state.frozen) return;
-
       state.source = "auto";
       state.placeLabel = "Near you";
-      setPill("Near you");
+      setPillText("Near you");
       updateSourceUI();
-      setLoading(true);
+      setLoading();
 
       if (!navigator.geolocation){
-        bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No GPS here. Type a city and we will judge it anyway.";
+        el.bigWord.textContent = "MAYBE";
+        el.oneLiner.textContent = "No GPS here. Type a city and we will judge it anyway.";
+        endLoading();
         return;
       }
 
-      setPill("", { loading: true });
+      setPillLoading();
 
       const opts = { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 };
 
       navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        // Do not block weather on reverse geocode
+        state.countryCode = "US"; // cheap default so units are not blank
+        await updateWeatherFromLatLon(lat, lon, "Near you", state.countryCode, "gps");
+
+        // Improve label in the background
         try{
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
           const rev = await reverseGeocode(lat, lon);
-          await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
+          state.countryCode = rev.countryCode || state.countryCode;
+          state.units = countryUsesF(state.countryCode) ? "F" : "C";
+          state.placeLabel = rev.label || state.placeLabel;
+          setPillText("📍 " + state.placeLabel);
+          updateSourceUI();
         }catch(err){
-          setPill("Near you");
-          bigWord.textContent = "MAYBE";
-          oneLiner.textContent = "Could not resolve your city. Type one and we will be dramatic about it.";
-          showToast("Location lookup failed");
+          // Nominatim sometimes blocks. Not fatal.
+          console.warn("Reverse geocode failed:", err);
         }
       }, (err) => {
-        setPill("Near you");
-        bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No location, no problem. Type a place and let us argue about hoodies.";
-        if (err && err.code === 1) showToast("Location access denied");
-        else showToast("GPS error or timeout");
+        console.warn("GPS failed:", err);
+        setPillText("Near you");
+        el.bigWord.textContent = "MAYBE";
+        el.oneLiner.textContent = "No location, no problem. Type a place and let us argue about hoodies.";
+        showToast(err && err.code === 1 ? "Location access denied" : "GPS error or timeout");
+        endLoading();
       }, opts);
     }
 
     async function onUseGPS(){
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        return;
-      }
       if (!navigator.geolocation){
         showToast("No GPS available in this browser.");
         return;
       }
+
       state.source = "gps";
-      setPill("", { loading: true });
+      updateSourceUI();
+      setPillLoading();
+      setLoading();
+
+      const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 };
+
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        // Weather first
+        await updateWeatherFromLatLon(lat, lon, "Near you", state.countryCode || "US", "gps");
+
+        // Label second
+        try{
+          const rev = await reverseGeocode(lat, lon);
+          state.countryCode = rev.countryCode || state.countryCode;
+          state.units = countryUsesF(state.countryCode) ? "F" : "C";
+          state.placeLabel = rev.label || state.placeLabel;
+          setPillText("📍 " + state.placeLabel);
+          updateSourceUI();
+
+          // Re-fetch weather if units changed due to country code update
+          await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+        }catch(err){
+          console.warn("Reverse geocode failed:", err);
+        }
+      }, (err) => {
+        console.warn("GPS failed:", err);
+        setPillText("Near you");
+        el.bigWord.textContent = "MAYBE";
+        el.oneLiner.textContent = "Location failed. Type a city and we will still judge it.";
+        showToast(err && err.code === 1 ? "Location access denied" : "GPS error or timeout");
+        endLoading();
+      }, opts);
+    }
+
+    async function onSpinGlobe(){
+      state.source = "globe";
       updateSourceUI();
 
-      const opts = { enableHighAccuracy: true, timeout: 9000
+      const lat = (Math.random() * 170) - 85;
+      const lon = (Math.random() * 360) - 180;
+
+      // Guess units as Celsius until we can reverse-geocode
+      state.countryCode = null;
+      state.units = "C";
+      state.placeLabel = "Somewhere chaotic";
+      setPillText("📍 " + state.placeLabel);
+      updateSourceUI();
+
+      await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
+
+      try{
+        const rev = await reverseGeocode(lat, lon);
+        state.countryCode = rev.countryCode || state.countryCode;
+        state.units = countryUsesF(state.countryCode) ? "F" : "C";
+        state.placeLabel = rev.label || state.placeLabel;
+        setPillText("📍 " + state.placeLabel);
+        updateSourceUI();
+
+        await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
+      }catch(err){
+        console.warn("Reverse geocode failed:", err);
+      }
+    }
+
+    async function suggestLocations(q){
+      const s = (q || "").trim();
+      if (s.length < 3){
+        el.locList.innerHTML = "";
+        return;
+      }
+
+      if (suggestAbort) suggestAbort.abort();
+      suggestAbort = new AbortController();
+
+      const url =
+        "https://nominatim.openstreetmap.org/search" +
+        "?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(s);
+
+      try{
+        const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept": "application/json" } });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        el.locList.innerHTML = (data || []).map(item => {
+          const label = item.display_name || "";
+          return '<option value="' + escapeHtml(label) + '"></option>';
+        }).join("");
+      }catch(e){
+        // ignore
+      }
+    }
+
+    async function onManualSubmit(){
+      const q = (el.manualInput.value || "").trim();
+      if (!q){
+        showToast("Type a place first.");
+        return;
+      }
+
+      state.source = "manual";
+      updateSourceUI();
+      setPillLoading();
+      setLoading();
+
+      try{
+        const g = await geocodeDisplayName(q);
+        await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual");
+      }catch(e){
+        console.error(e);
+        el.bigWord.textContent = "MAYBE";
+        el.oneLiner.textContent = "Could not find that place. Try a nearby city or add a country.";
+        showToast("No results for that location.");
+        setPillText("Near you");
+        endLoading();
+      }
+    }
+
+    function init(){
+      el.runSelect.addEventListener("change", () => {
+        state.run = el.runSelect.value || "normal";
+        if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
+        }
+      });
+
+      el.manualInput.addEventListener("input", () => {
+        suggestLocations(el.manualInput.value);
+      });
+
+      el.manualInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter"){
+          e.preventDefault();
+          onManualSubmit();
+        }
+      });
+
+      el.spinBtn.addEventListener("click", onSpinGlobe);
+      el.gpsBtn.addEventListener("click", onUseGPS);
+
+      el.brandHome.addEventListener("click", () => {
+        el.manualInput.value = "";
+        tryAutoLocation();
+      });
+
+      // Start
+      tryAutoLocation();
+    }
+
+    init();
+  </script>
+</body>
+</html>
