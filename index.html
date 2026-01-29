@@ -347,6 +347,39 @@
       display: none;
     }
 
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--panel);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 12px 20px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 12px 36px rgba(0,0,0,.8);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+    }
+    
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+    
+    .toast.error {
+      border-color: rgba(255, 107, 107, 0.5);
+      background: linear-gradient(180deg, rgba(255, 107, 107, 0.1), rgba(255, 107, 107, 0.05));
+    }
+
     /* Bottom sheet for mobile - initially hidden */
     .bottom-sheet-backdrop {
       display: none;
@@ -635,7 +668,24 @@
     </div>
   </div>
 
+  <!-- Toast notification -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
   <script>
+    // ========================================
+    // Toast Notification System
+    // ========================================
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.toggle('error', isError);
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
     // ========================================
     // Cache Helper with localStorage
     // ========================================
@@ -754,7 +804,14 @@
       
       document.getElementById('stat-temp').textContent = `${temp}°${currentUnit}`;
       document.getElementById('stat-feels').textContent = `${feels}°${currentUnit}`;
-      document.getElementById('stat-wind').textContent = `${Math.round(currentWeatherData.windspeed || 0)} mph`;
+      
+      // Convert wind speed based on unit preference
+      const windSpeed = currentWeatherData.windspeed || 0;
+      const windDisplay = currentUnit === 'C' 
+        ? `${Math.round(windSpeed * 1.60934)} km/h`  // Convert mph to km/h
+        : `${Math.round(windSpeed)} mph`;
+      document.getElementById('stat-wind').textContent = windDisplay;
+      
       document.getElementById('stat-location').textContent = currentLocation.name;
     }
 
@@ -861,13 +918,13 @@
         }
       } catch (error) {
         console.error('Error fetching weather:', error);
-        alert('Failed to fetch weather data. Please try again.');
+        showToast('Failed to fetch weather data. Please try again.', true);
       }
     }
 
     async function useGPS() {
       if (!navigator.geolocation) {
-        alert('Geolocation is not supported by your browser');
+        showToast('Geolocation is not supported by your browser', true);
         return;
       }
 
@@ -886,7 +943,7 @@
         },
         (error) => {
           console.error('Geolocation error:', error);
-          alert('Could not get your location. Please enter manually.');
+          showToast('Could not get your location. Please enter manually.', true);
           document.getElementById('verdict-subtitle').textContent = 'Location access denied';
         }
       );
@@ -895,13 +952,13 @@
     function useManualLocation() {
       const input = document.getElementById('manual-location').value.trim();
       if (!input) {
-        alert('Please enter a location in lat,lon format');
+        showToast('Please enter a location in lat,lon format', true);
         return;
       }
 
       const parts = input.split(',').map(p => p.trim());
       if (parts.length !== 2) {
-        alert('Invalid format. Use: latitude,longitude (e.g., 40.7128,-74.0060)');
+        showToast('Invalid format. Use: latitude,longitude (e.g., 40.7128,-74.0060)', true);
         return;
       }
 
@@ -909,7 +966,7 @@
       const lon = parseFloat(parts[1]);
 
       if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-        alert('Invalid coordinates. Latitude must be -90 to 90, longitude -180 to 180');
+        showToast('Invalid coordinates. Latitude must be -90 to 90, longitude -180 to 180', true);
         return;
       }
 
@@ -919,7 +976,7 @@
 
     function refreshWeather() {
       if (!currentLocation.lat || !currentLocation.lon) {
-        alert('Please load weather data first');
+        showToast('Please load weather data first', true);
         return;
       }
 
