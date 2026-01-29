@@ -195,6 +195,7 @@
       display:grid;
       grid-template-columns: 1.45fr 1fr;
       gap: 14px;
+      align-items:start;
     }
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
@@ -209,7 +210,6 @@
         radial-gradient(700px 420px at 85% 10%, rgba(255,255,255,.04), transparent 50%),
         rgba(0,0,0,.22);
       padding: 14px;
-      min-height: 420px;
       position:relative;
       overflow:hidden;
       z-index: 2;
@@ -220,7 +220,6 @@
       border: 1px solid var(--border2);
       background: rgba(0,0,0,.18);
       padding: 12px;
-      min-height: 420px;
       display:flex;
       flex-direction:column;
       gap: 10px;
@@ -229,7 +228,7 @@
     }
 
     .big{
-      font-size: 66px; /* reduced for density */
+      font-size: 66px;
       font-weight: 900;
       letter-spacing: .6px;
       margin: 8px 0 6px;
@@ -306,17 +305,29 @@
       margin: 8px 0 8px;
       font-weight: 650;
     }
-
-    select, input{
+	    select, input{
       width:100%;
-      padding: 10px 12px;
-      border-radius: 999px;
+      padding: 11px 14px;
+      border-radius: 14px;
       border: 1px solid var(--border2);
-      background: rgba(255,255,255,.03);
+      background: rgba(255,255,255,.035);
       color: var(--text);
       outline: none;
       font-size: 14px;
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      transition: border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    select:focus, input:focus{
+      border-color: rgba(255,255,255,.28);
+      box-shadow: 0 0 0 3px rgba(120,160,255,.18);
+      background: rgba(255,255,255,.05);
+    }
+    select option{
+      background-color: #0f1016;
+      color: var(--text);
     }
     input::placeholder{color: rgba(255,255,255,.35)}
     select{
@@ -388,19 +399,18 @@
       flex-wrap: wrap;
     }
 
-    /* FORECAST: wrap so no horizontal scrollbar; use available blank space */
     .forecast-list{
       display:flex;
       gap:12px;
       align-items:flex-start;
-      flex-wrap:wrap;           /* allow items to wrap to use blank space */
+      flex-wrap:wrap;
       justify-content:flex-start;
       padding: 6px 2px 2px;
       margin-top: 6px;
     }
 
     .forecast-item{
-      flex: 0 0 calc(20% - 9.6px); /* five across if space available; will wrap responsively */
+      flex: 0 0 calc(20% - 9.6px);
       min-width: 120px;
       max-width: 210px;
       border-radius: 12px;
@@ -413,7 +423,7 @@
       font-size:13px;
       color:var(--muted);
       align-items:flex-start;
-      transition: transform .14s ease, box-shadow .14s ease, background .12s ease;
+      transition: transform .14s ease, box-shadow .14s ease, background .12s ease, border-color .12s ease;
       cursor: pointer;
     }
     .forecast-item:focus, .forecast-item:hover{
@@ -421,6 +431,11 @@
       box-shadow: 0 10px 30px rgba(0,0,0,.6);
       background: rgba(255,255,255,.028);
       outline: none;
+    }
+    .forecast-item.selected{
+      border-color: rgba(255,255,255,.25);
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 12px 32px rgba(0,0,0,.5);
     }
     .forecast-item .row{
       display:flex;
@@ -446,6 +461,7 @@
       color:var(--text);
       flex:0 0 auto;
     }
+    .forecast-item .icon svg{width:28px;height:28px;display:block;}
     .forecast-item .verdict{
       font-weight:900;
       font-size:15px;
@@ -478,22 +494,20 @@
       flex: 0 0 auto;
     }
 
-    /* DETAILS DRAWER in right column (uses previously empty space) */
     .details-drawer{
       margin-top: 8px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.06);
       background: var(--drawer-bg);
-      padding: 12px;
-      min-height: 180px;
+      padding: 10px;
       color: var(--muted);
       display:flex;
       flex-direction:column;
       gap:8px;
     }
     .details-drawer h4{ margin:0; font-size:16px; color:var(--text); }
-    .details-row{ display:flex; gap:12px; align-items:center; }
-    .details-meta{ color:var(--muted); font-size:13px; }
+    .details-meta{ color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
+    .details-meta svg{ width:34px; height:34px; flex:0 0 auto; }
     .sparkline{ width:100%; height:48px; display:block; margin-top:6px; }
 
     .site-footer{
@@ -567,15 +581,14 @@
       * { transition: none !important; animation: none !important; }
     }
 
-    /* responsive tweaks for forecast layout */
     @media (max-width: 1200px){
-      .forecast-item{ flex: 0 0 calc(33.333% - 12px); } /* 3-per-row */
+      .forecast-item{ flex: 0 0 calc(33.333% - 12px); }
     }
     @media (max-width: 760px){
-      .forecast-item{ flex: 0 0 calc(50% - 12px); } /* 2-per-row */
+      .forecast-item{ flex: 0 0 calc(50% - 12px); }
     }
     @media (max-width: 480px){
-      .forecast-item{ flex: 0 0 calc(100% - 12px); } /* stacked */
+      .forecast-item{ flex: 0 0 calc(100% - 12px); }
     }
   </style>
 </head>
@@ -607,8 +620,7 @@
         </div>
       </div>
     </header>
-
-    <main id="mainShell">
+	    <main id="mainShell">
       <div class="grid">
         <section class="card" aria-live="polite" aria-atomic="true">
           <div class="big" id="bigWord">LOADING</div>
@@ -675,7 +687,6 @@
             <div class="row"><span>Actions</span><strong id="actionsLine">Click the location for details or copy</strong></div>
           </div>
 
-          <!-- DETAILS DRAWER (uses previously empty area) -->
           <div id="detailsDrawer" class="details-drawer" aria-hidden="true">
             <div id="drawerHeader" style="display:flex;justify-content:space-between;align-items:center;">
               <h4 id="drawerTitle">Select a day for details</h4>
@@ -725,11 +736,10 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ---------- Storage + defaults ----------
-    const STORAGE_KEY = "hoodie_state_v3";
+      const STORAGE_KEY = "hoodie_state_v3";
     const SPIN_POOL_KEY = "hoodie_spin_pool_v3";
     const API_CACHE_KEY = "hoodie_api_cache_v1";
-    const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+    const CACHE_TTL_MS = 15 * 60 * 1000;
 
     const defaultState = {
       run: "normal",
@@ -773,7 +783,6 @@
       }catch(e){}
     }
 
-    // ---------- simple cache helpers ----------
     function readCache(){
       try{
         const raw = localStorage.getItem(API_CACHE_KEY);
@@ -801,7 +810,6 @@
       writeCache(cache);
     }
 
-    // ---------- DOM refs ----------
     const el = {
       header: document.querySelector('header'),
       brand: document.querySelector('.brand'),
@@ -843,7 +851,12 @@
       drawerClose: document.getElementById("drawerClose")
     };
 
-    // ---------- Toast ----------
+    function fixUnitButtonLabels(){
+      el.unitAuto.textContent = "Auto";
+      el.unitF.innerHTML = "&deg;F";
+      el.unitC.innerHTML = "&deg;C";
+    }
+
     function showToast(msg){
       el.toast.textContent = msg;
       el.toast.classList.add("show");
@@ -851,7 +864,6 @@
       showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2600);
     }
 
-    // ---------- Utils ----------
     function countryUsesF(countryCode){
       return ["US","LR","MM"].includes(String(countryCode||"").toUpperCase());
     }
@@ -868,15 +880,16 @@
     function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
 
     function normalizeLabel(raw){
-      if (!raw) return "Somewhere";
-      return String(raw).replace(/[\u{1F4CD}\u{1F4CC}\u{1F4CD}\u{1F4CB}📍📌\uFE0F]/gu, "").replace(/\s+/g," ").trim();
+      if (!raw) return "Somewhere on Earth";
+      const cleaned = String(raw).replace(/[\u{1F4CD}\u{1F4CC}\u{1F4CB}📍📌\uFE0F]/gu, "").replace(/\s+/g," ").trim();
+      if (/^-?\d+(\.\d+)?[°,]/.test(cleaned)) return "Somewhere on Earth";
+      return cleaned || "Somewhere on Earth";
     }
     function displayWithPin(label){
       const clean = normalizeLabel(label);
       return "📍 " + clean;
     }
 
-    // ---------- Network helpers (with caching) ----------
     async function fetchJson(url, timeoutMs = 12000){
       const ctrl = new AbortController();
       const t = setTimeout(()=>ctrl.abort(), timeoutMs);
@@ -887,9 +900,7 @@
       } finally { clearTimeout(t); }
     }
 
-    // Normalize incoming API temps to Celsius in the cached object to make conversions predictable
     function normalizeForecastResponse(raw, unitsReturned){
-      // raw.daily likely has arrays: temperature_2m_max/min, apparent_temperature_max/min, weathercode, time
       if (!raw || !raw.daily) return null;
       const d = raw.daily;
       const toCIfNeeded = (val) => {
@@ -908,7 +919,6 @@
     }
 
     async function fetchWeather(lat, lon, units){
-      // cache key: weather:lat,lon (store as Celsius)
       const key = `weather:${lat.toFixed(4)},${lon.toFixed(4)}`;
       const cached = getCached(key);
       if (cached) return cached;
@@ -926,7 +936,6 @@
         "&timezone=auto";
 
       const raw = await fetchJson(url, 12000);
-      // normalize temperatures to Celsius for caching
       const cur = raw.current || {};
       const normalized = {
         temperature_C: (units === "F" ? toC(cur.temperature_2m) : cur.temperature_2m),
@@ -1007,7 +1016,6 @@
       };
     }
 
-    // ---------- Snark and decision ----------
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -1075,25 +1083,29 @@
       return { word: "NAH", line: pick(SNARK.hot) };
     }
 
-    // ---------- Inline SVG icons + descriptions (accessible) ----------
     function svgFor(code){
-      if (code == null) return { svg: `<span aria-hidden="true">—</span>`, text: "Unknown" };
-      if (code === 0) return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor" /></svg>`, text: "Clear" };
-      if (code === 1 || code === 2 || code === 3) return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 15a4 4 0 0 1 4-4h8a3 3 0 0 1 0 6H7a4 4 0 0 1-4-2z" fill="currentColor"/></svg>`, text: "Cloudy" };
-      if (code === 45 || code === 48) return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M4 12h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`, text: "Fog" };
-      if (code >= 51 && code <= 67) return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M6 14a6 6 0 0 1 12 0" fill="currentColor"/><path d="M8 18l1.5-2" stroke="#000" stroke-width="1.4" stroke-linecap="round"/></svg>`, text: "Rain" };
-      if (code >= 71 && code <= 86) return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M6 14a6 6 0 0 1 12 0" fill="currentColor"/><path d="M9 17l-1 2" stroke="#000" stroke-width="1.4" stroke-linecap="round"/></svg>`, text: "Snow" };
-      if (code >= 95 && code <= 99) return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M7 13l5-8 2 5 3-1-2 5" fill="currentColor"/></svg>`, text: "Thunder" };
-      return { svg: `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>`, text: "Weather" };
+      const c = Number(code);
+      const sun = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor" opacity="0.9"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.9"><path d="M12 2.8v2.2"/><path d="M12 19v2.2"/><path d="M4.5 4.5l1.6 1.6"/><path d="M17.9 17.9l1.6 1.6"/><path d="M2.8 12h2.2"/><path d="M19 12h2.2"/><path d="M4.5 19.5l1.6-1.6"/><path d="M17.9 6.1l1.6-1.6"/></g></svg>`;
+      const cloud = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5h8a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.7 1.7 3.5 3.5 0 0 0 2.7 6.3Z" fill="currentColor" opacity="0.9"/></svg>`;
+      const raindrop = `<path d="M8 18.5l1.3-2.2M12 18.5l1.3-2.2M16 18.5l1.3-2.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>`;
+      const snow = `<path d="M12 10v7M9.5 12l5 3M14.5 12l-5 3M9.5 17h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+      const fog = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11h16M4 15h16M6 19h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.9"/></svg>`;
+      const bolt = `<path d="M12 3l-2 6h3l-2 7 5-8h-3l1-5z" fill="currentColor" opacity="0.9"/>`;
+
+      if (c === 0) return { svg: sun, text: "Clear" };
+      if ([1,2].includes(c)) return { svg: `<svg viewBox="0 0 24 24" aria-hidden="true">${sun.replace('</svg>','')}<path d="M7 18h9a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.7 1.5A3 3 0 0 0 7 18Z" fill="currentColor" opacity="0.9"/></svg>`, text: "Partly cloudy" };
+      if (c === 3) return { svg: cloud, text: "Cloudy" };
+      if (c === 45 || c === 48) return { svg: fog, text: "Fog" };
+      if (c >= 51 && c <= 67) return { svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5h8a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.7 1.7 3.5 3.5 0 0 0 2.7 6.3Z" fill="currentColor" opacity="0.9"/>${raindrop}</svg>`, text: "Rain" };
+      if (c >= 71 && c <= 86) return { svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5h8a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.7 1.7 3.5 3.5 0 0 0 2.7 6.3Z" fill="currentColor" opacity="0.9"/>${snow}</svg>`, text: "Snow" };
+      if (c >= 95 && c <= 99) return { svg: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 18.5h8a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.7 1.7 3.5 3.5 0 0 0 2.7 6.3Z" fill="currentColor" opacity="0.9"/>${bolt}</svg>`, text: "Thunderstorm" };
+      return { svg: cloud, text: "Weather" };
     }
 
-    // ---------- Curated city pool (placeholder) ----------
     const CURATED_CITIES = [
       /* (paste your original curated city list here) */
     ];
-
-    // ---------- Spin pool ----------
-    function shuffledIndices(n){
+	    function shuffledIndices(n){
       const a = Array.from({length:n}, (_,i)=>i);
       for (let i = a.length - 1; i > 0; i--){
         const j = Math.floor(Math.random()*(i+1));
@@ -1131,10 +1143,12 @@
       return idx;
     }
 
-    // ---------- Rendering / state updates ----------
     let loading = false;
+    let latestForecastMeta = [];
+    let selectedForecastIndex = null;
+
     function setPill(rawText){
-      const clean = normalizeLabel(rawText || state.placeLabel || "Somewhere");
+      const clean = normalizeLabel(rawText || state.placeLabel || "Somewhere on Earth");
       state.placeLabel = clean;
       el.whereText.textContent = displayWithPin(clean);
       el.wherePill.setAttribute('title', clean);
@@ -1184,23 +1198,20 @@
         state.source === "globe" ? "Globe" : "Auto";
 
       el.usingLine.textContent = sourceName;
-      el.usingLoc.textContent = displayWithPin(state.placeLabel || "Somewhere");
+      el.usingLoc.textContent = displayWithPin(state.placeLabel || "Somewhere on Earth");
       el.usingUnits.textContent = (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
       el.actionsLine && (el.actionsLine.textContent = "Click the location for details or copy");
 
-      el.locLine.textContent = displayWithPin(state.placeLabel || "Somewhere");
+      el.locLine.textContent = displayWithPin(state.placeLabel || "Somewhere on Earth");
       el.locSource.textContent = "Source: " + sourceName + ".";
       el.unitsFooter.textContent = "Units: " + (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
     }
 
-    // Render current weather result using cached-normalized Celsius values
     function renderResultFromNormalized(normalized){
-      // normalized contains temperature_C, apparent_C, wind
       const tempC = normalized.temperature_C;
       const feelsC = normalized.apparent_C;
       const wind = normalized.wind;
 
-      // decide uses Fahrenheit internally, so convert
       const tempF = Number.isFinite(tempC) ? toF(tempC) : null;
       const feelsF = Number.isFinite(feelsC) ? toF(feelsC) : null;
 
@@ -1220,16 +1231,19 @@
       saveState();
     }
 
-    // ---------- Forecast render & interactivity ----------
     function renderForecast(normalized){
+      latestForecastMeta = [];
+      selectedForecastIndex = null;
+
       if (!normalized || !Array.isArray(normalized.time)) {
         el.forecastList.innerHTML = "";
+        closeDrawer();
         return;
       }
 
       const days = Math.min(5, normalized.time.length);
       const frag = document.createDocumentFragment();
-      const metaList = []; // store metadata for each card
+      const metaList = [];
 
       for (let i = 0; i < days; i++){
         const dateStr = normalized.time[i];
@@ -1262,7 +1276,6 @@
         const weatherCode = (Array.isArray(normalized.weathercode) && normalized.weathercode[i] != null) ? normalized.weathercode[i] : null;
         const icon = svgFor(weatherCode);
 
-        // create element
         const elCard = document.createElement('div');
         elCard.className = 'forecast-item';
         elCard.setAttribute('role','button');
@@ -1284,16 +1297,20 @@
         });
       }
 
-      // attach and map meta
       el.forecastList.innerHTML = "";
       el.forecastList.appendChild(frag);
       Array.from(el.forecastList.children).forEach((child, idx) => {
         child._meta = metaList[idx];
       });
-    }
 
-    // drawer helpers
-    function openDrawer(){
+      latestForecastMeta = metaList;
+      if (metaList.length > 0){
+        selectForecastIndex(0, { openDrawerNow: true });
+      } else {
+        closeDrawer();
+      }
+    }
+	    function openDrawer(){
       el.detailsDrawer.setAttribute('aria-hidden', 'false');
     }
     function closeDrawer(){
@@ -1302,10 +1319,11 @@
       el.drawerMeta.textContent = "No day selected.";
       el.drawerContent.innerHTML = "";
       el.drawerSpark.innerHTML = "";
+      selectedForecastIndex = null;
+      Array.from(el.forecastList.children).forEach(card => card.classList.remove("selected"));
     }
 
     function renderSparkline(values){
-      // values: array of numeric values (C)
       const svg = el.drawerSpark;
       if (!Array.isArray(values) || values.length === 0) {
         svg.innerHTML = "";
@@ -1330,20 +1348,29 @@
       if (!meta) return;
       openDrawer();
       el.drawerTitle.textContent = meta.dayLabel;
+
       const displayUnits = state.unitOverride || state.units;
       const maxDisplay = Number.isFinite(meta.tmaxC) ? (displayUnits === "F" ? Math.round(toF(meta.tmaxC)) : Math.round(meta.tmaxC)) : null;
       const minDisplay = Number.isFinite(meta.tminC) ? (displayUnits === "F" ? Math.round(toF(meta.tminC)) : Math.round(meta.tminC)) : null;
+      const feelMax = Number.isFinite(meta.amaxC) ? (displayUnits === "F" ? Math.round(toF(meta.amaxC)) : Math.round(meta.amaxC)) : null;
+      const feelMin = Number.isFinite(meta.aminC) ? (displayUnits === "F" ? Math.round(toF(meta.aminC)) : Math.round(meta.aminC)) : null;
       const icon = svgFor(meta.weatherCode);
-      el.drawerMeta.innerHTML = `${icon.svg} <span style="margin-left:8px;font-weight:700;color:var(--text)">${escapeHtml(icon.text)}</span>`;
+
+      const wkey = (Number.isFinite(state.lat) && Number.isFinite(state.lon)) ? `weather:${state.lat.toFixed(4)},${state.lon.toFixed(4)}` : null;
+      const curCached = wkey ? getCached(wkey) : null;
+      const windVal = curCached ? curCached.wind : null;
+
+      el.drawerMeta.innerHTML = `${icon.svg} <span style="font-weight:700;color:var(--text)">${escapeHtml(icon.text)}</span>`;
       el.drawerContent.innerHTML = `
-        <div style="margin-top:6px;">
-          <div style="font-weight:800;color:var(--text)">Temps: ${escapeHtml(maxDisplay != null ? (maxDisplay + "°" + displayUnits) : "--")} / ${escapeHtml(minDisplay != null ? (minDisplay + "°" + displayUnits) : "--")}</div>
-          <div style="margin-top:6px;color:var(--muted)">${escapeHtml(meta.dec.word)}</div>
-          <div style="margin-top:6px;color:var(--muted2)">${escapeHtml(meta.dec.line)}</div>
+        <div style="margin-top:6px;display:grid;gap:6px;line-height:1.35;">
+          <div><strong style="color:var(--text)">Temps:</strong> ${escapeHtml(maxDisplay != null ? (maxDisplay + "°" + displayUnits) : "--")} / ${escapeHtml(minDisplay != null ? (minDisplay + "°" + displayUnits) : "--")}</div>
+          <div><strong style="color:var(--text)">Feels:</strong> ${escapeHtml(feelMax != null ? (feelMax + "°" + displayUnits) : "--")} / ${escapeHtml(feelMin != null ? (feelMin + "°" + displayUnits) : "--")}</div>
+          <div><strong style="color:var(--text)">Verdict:</strong> ${escapeHtml(meta.dec.word)}</div>
+          <div style="color:var(--muted2);">${escapeHtml(meta.dec.line)}</div>
+          <div><strong style="color:var(--text)">Wind now:</strong> ${escapeHtml(fmtWind(windVal, displayUnits))}</div>
         </div>
       `;
-      // sparkline: build from upcoming days tmaxC
-      // we'll attempt to get the cached forecast for the current lat/lon and use its tmax array
+
       const fkey = state.lat && state.lon ? `forecast:${state.lat.toFixed(4)},${state.lon.toFixed(4)}` : null;
       const forecast = fkey ? getCached(fkey) : null;
       if (forecast && Array.isArray(forecast.temperature_2m_max_C)){
@@ -1353,21 +1380,28 @@
       }
     }
 
-    // ---------- Core update ----------
-    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
+    function selectForecastIndex(idx, opts = {}){
+      if (!latestForecastMeta[idx]) return;
+      selectedForecastIndex = idx;
+      Array.from(el.forecastList.children).forEach((card, i) => {
+        card.classList.toggle("selected", i === idx);
+      });
+      showDayInDrawer(latestForecastMeta[idx]);
+      if (opts.openDrawerNow) openDrawer();
+    }
+	    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
       state.lat = lat;
       state.lon = lon;
       state.source = source || state.source;
 
       const effectiveUnits = state.unitOverride ? state.unitOverride : (countryCode ? (countryUsesF(countryCode) ? "F" : "C") : state.units);
       state.units = effectiveUnits;
-      state.placeLabel = normalizeLabel(label || state.placeLabel || formatLatLonFallback(lat, lon));
+      state.placeLabel = normalizeLabel(label || state.placeLabel || "Somewhere on Earth");
       state.countryCode = countryCode || state.countryCode;
 
       setPill(state.placeLabel);
       setLoadingUI();
       try{
-        // fetch (cached) normalized current
         const curNorm = await fetchWeather(lat, lon, state.units);
         renderResultFromNormalized(curNorm);
       }catch(e){
@@ -1388,12 +1422,10 @@
       }
     }
 
-    function formatLatLonFallback(lat, lon){
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return "Somewhere";
-      return lat.toFixed(2) + "°, " + lon.toFixed(2) + "°";
+    function formatLatLonFallback(){
+      return "Somewhere on Earth";
     }
 
-    // ---------- Auto / GPS ----------
     async function tryAutoLocation(){
       state.source = "auto";
       state.placeLabel = "Near you";
@@ -1486,7 +1518,6 @@
       }, opts);
     }
 
-    // ---------- Spin (curated pool) ----------
     async function onSpinGlobe(){
       state.source = "globe";
       updateSourceUI();
@@ -1510,9 +1541,9 @@
             await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
             return;
           }
-        }catch(e){ /* fallback */ }
+        }catch(e){}
 
-        state.placeLabel = formatLatLonFallback(lat, lon);
+        state.placeLabel = "Random spot";
         state.countryCode = null;
         setPill(state.placeLabel);
         await updateWeatherFromLatLon(lat, lon, state.placeLabel, null, "globe");
@@ -1528,10 +1559,10 @@
             state.placeLabel = normalizeLabel(rev.display_name.split(",").slice(0,2).join(",").trim());
             pick.cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : pick.cc;
           } else {
-            state.placeLabel = formatLatLonFallback(pick.lat, pick.lon);
+            state.placeLabel = "Random spot";
           }
         }catch(e){
-          state.placeLabel = formatLatLonFallback(pick.lat, pick.lon);
+          state.placeLabel = "Random spot";
         }
       }
 
@@ -1541,7 +1572,6 @@
       await updateWeatherFromLatLon(pick.lat, pick.lon, state.placeLabel, pick.cc, "globe");
     }
 
-    // ---------- Suggestions ----------
     let suggestTimer = null, suggestAbort = null;
     function suggestLocations(q){
       const s = (q||"").trim();
@@ -1592,24 +1622,24 @@
       }
     }
 
-    // ---------- Forecast click handlers -> drawer ----------
     el.forecastList.addEventListener('click', (ev) => {
       const item = ev.target.closest('.forecast-item');
       if (!item) return;
-      showDayInDrawer(item._meta);
+      const idx = Array.from(el.forecastList.children).indexOf(item);
+      selectForecastIndex(idx);
     });
     el.forecastList.addEventListener('keydown', (ev) => {
       if (ev.key === "Enter" || ev.key === " ") {
         const item = ev.target.closest('.forecast-item');
         if (!item) return;
         ev.preventDefault();
-        showDayInDrawer(item._meta);
+        const idx = Array.from(el.forecastList.children).indexOf(item);
+        selectForecastIndex(idx);
       }
     });
 
     el.drawerClose.addEventListener('click', closeDrawer);
 
-    // ---------- Modal / pill behavior (keep modal as fallback) ----------
     function openModal(titleHtml){
       el.modalBackdrop.style.display = "flex";
       el.modalBackdrop.setAttribute("aria-hidden", "false");
@@ -1618,7 +1648,7 @@
     function closeModal(){ el.modalBackdrop.style.display = "none"; el.modalBackdrop.setAttribute("aria-hidden", "true"); }
 
     el.wherePill.addEventListener("click", async ()=>{
-      const full = state.placeLabel || "Somewhere";
+      const full = state.placeLabel || "Somewhere on Earth";
       if (state.pillBehavior === "copy"){
         try{
           await navigator.clipboard.writeText(full);
@@ -1628,7 +1658,7 @@
         }
         return;
       }
-      const latlon = Number.isFinite(state.lat) && Number.isFinite(state.lon) ? `<div style="margin-top:8px;color:var(--muted);font-size:13px;">Coords: ${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}</div>` : "";
+      const latlon = "";
       const html = `<div><strong>${escapeHtml(displayWithPin(full))}</strong>${latlon}<pre style="margin-top:8px;">${escapeHtml(state.lastDecision.word || "")} — ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
       openModal(html);
     });
@@ -1650,7 +1680,6 @@
       showToast("Pill behavior: " + (state.pillBehavior === "modal" ? "details modal" : "copy-on-click"));
     });
 
-    // ---------- Units control ----------
     function setUnitControlButtons(){
       const auto = !state.unitOverride;
       el.unitAuto.setAttribute("aria-pressed", String(auto));
@@ -1663,7 +1692,6 @@
       else state.units = state.countryCode ? (countryUsesF(state.countryCode) ? "F" : "C") : state.units;
       setUnitControlButtons();
       saveState();
-      // Instead of re-fetching, attempt to use cached normalized forecast/current and re-render in chosen units
       if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
         const wkey = `weather:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
         const fkey = `forecast:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
@@ -1671,7 +1699,6 @@
         const cachedF = getCached(fkey);
         if (cachedCur) renderResultFromNormalized(cachedCur);
         if (cachedF) renderForecast(cachedF);
-        // if caches absent, do a fresh fetch
         if (!cachedCur || !cachedF){
           updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
         }
@@ -1680,7 +1707,6 @@
       }
     }
 
-    // ---------- Hookups ----------
     el.manualInput.addEventListener('keydown', (e) => { if (e.key === "Enter"){ e.preventDefault(); onManualSubmit(); } });
     el.spinBtn.addEventListener("click", onSpinGlobe);
     el.gpsBtn.addEventListener("click", onUseGPS);
@@ -1689,14 +1715,13 @@
     el.unitF.addEventListener("click", () => applyUnitSelection("F"));
     el.unitC.addEventListener("click", () => applyUnitSelection("C"));
 
-    // ---------- Init ----------
     function init(){
+      fixUnitButtonLabels();
       el.runSelect.value = state.run || "normal";
       el.runSelect.addEventListener("change", () => {
         state.run = el.runSelect.value || "normal";
         saveState();
         if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-          // recalc decisions using cached data if possible
           const wkey = `weather:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
           const fkey = `forecast:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
           const cachedCur = getCached(wkey);
