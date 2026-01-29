@@ -564,12 +564,12 @@
       lat: null,
       lon: null,
       placeName: null,
-      placeLabelShort: "",
+      placeLabelShort: null,
       last: null,
       suggestionMap: new Map(),
       lastPickedLabel: null,
       forceNewSnark: false,
-      locationSource: "unknown", // gps | manual | random | unknown
+      locationSource: "unknown",
       gpsInFlight: false,
       toastTimer: null
     };
@@ -730,42 +730,35 @@
       return (data && data.results) ? data.results : [];
     }
 
+    // IMPORTANT: Reverse geocode should never break weather rendering.
+    // We try BigDataCloud and if it fails we return a minimal label.
     async function reverseGeocode(lat, lon){
-      // Try Open-Meteo first
+      const url = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
+      url.searchParams.set("latitude", String(lat));
+      url.searchParams.set("longitude", String(lon));
+      url.searchParams.set("localityLanguage", "en");
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 3500);
+
       try{
-        const url = new URL("https://geocoding-api.open-meteo.com/v1/reverse");
-        url.searchParams.set("latitude", String(lat));
-        url.searchParams.set("longitude", String(lon));
-        url.searchParams.set("language", "en");
-        url.searchParams.set("format", "json");
+        const res = await fetch(url.toString(), {
+          headers: { "Accept": "application/json" },
+          signal: controller.signal
+        });
+        if (!res.ok) throw new Error("Reverse failed");
+        const d = await res.json();
 
-        const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error("Open-Meteo reverse failed");
-        const data = await res.json();
-
-        const r = (data && data.results && data.results[0]) ? data.results[0] : null;
-        if (r && (r.name || r.admin1 || r.country_code || r.country)) return r;
-      }catch{
-        // fall through
+        return {
+          name: d.city || d.locality || d.principalSubdivision || "",
+          admin1: d.principalSubdivision || "",
+          admin1_code: (d.principalSubdivisionCode || "").toUpperCase(),
+          country_code: (d.countryCode || "").toUpperCase(),
+          country: d.countryName || ""
+        };
+      }finally{
+        clearTimeout(timeout);
       }
-
-      // Fallback: BigDataCloud (CORS friendly, no key)
-      const url2 = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
-      url2.searchParams.set("latitude", String(lat));
-      url2.searchParams.set("longitude", String(lon));
-      url2.searchParams.set("localityLanguage", "en");
-
-      const res2 = await fetch(url2.toString(), { headers: { "Accept": "application/json" } });
-      if (!res2.ok) throw new Error("BigDataCloud reverse failed");
-      const d = await res2.json();
-
-      return {
-        name: d.city || d.locality || d.principalSubdivision || d.localityInfo?.administrative?.[0]?.name || "",
-        admin1: d.principalSubdivision || "",
-        admin1_code: d.principalSubdivisionCode || "",
-        country_code: (d.countryCode || "").toUpperCase(),
-        country: d.countryName || ""
-      };
     }
 
     function formatPlace(r){
@@ -871,54 +864,27 @@
         { t: "If you skip the hoodie, you will complain immediately.", w: 1 },
         { t: "Cold enough to justify the good hoodie.", w: 1 },
         { t: "Hoodie weather. Do not try to be tough.", w: 1 },
-        { t: "This is the kind of cold that sneaks up on confidence.", w: 0.9 },
-        { t: "Hoodie on. Hands in pockets. Survive.", w: 0.9 },
-        { t: "If you own a beanie, this is its moment.", w: 0.7 },
-        { t: "The air is disrespectful. Hoodie up.", w: 0.8 },
-        { t: "Hoodie time. And maybe actual outerwear.", w: 0.8 },
-        { t: "This is not fashion weather. This is survival weather.", w: 0.8 }
+        { t: "The air is disrespectful. Hoodie up.", w: 0.9 },
+        { t: "Hoodie time. And maybe actual outerwear.", w: 0.9 }
       ],
       hoodie_mild: [
         { t: "Prime hoodie weather. Do not overthink it.", w: 1 },
         { t: "This is exactly why hoodies were invented.", w: 1 },
         { t: "Yes, a hoodie. No, not the thin one.", w: 1 },
         { t: "Hoodie weather. The vibe is secure.", w: 1 },
-        { t: "Hoodie on. Headphones in. Main character.", w: 0.7 },
-        { t: "This is the sweet spot. Hoodie, no jacket.", w: 0.5 },
-        { t: "Hoodie time. The universe has spoken.", w: 1 },
-        { t: "Put on the hoodie and pretend you planned this.", w: 0.8 },
-        { t: "Hoodie weather. Carrying a jacket is for amateurs.", w: 0.6 },
-        { t: "Hoodie weather. No notes.", w: 1 },
-        { t: "This is a hoodie day. The math checks out.", w: 1 },
-        { t: "Hoodie up. Be comfortable on purpose.", w: 1 }
+        { t: "Hoodie time. The universe has spoken.", w: 1 }
       ],
       maybe: [
         { t: "Borderline. Choose wisely, hero.", w: 1 },
         { t: "You could go either way. Regret is possible.", w: 1 },
         { t: "This is ‘I will carry it later’ weather.", w: 1 },
-        { t: "Hoodie depends on wind. Wind is chaos.", w: 1 },
-        { t: "Bring it or do not. Just do not whine.", w: 0.8 },
-        { t: "This weather is not here to help you.", w: 1 },
-        { t: "A hoodie might be correct. Might.", w: 1 },
-        { t: "It is giving: hoodie, but unzipped.", w: 0.9 },
-        { t: "You will be fine until the shade hits.", w: 1 },
-        { t: "Half hoodie. Full uncertainty.", w: 0.9 },
-        { t: "This is a layered look moment.", w: 0.9 },
         { t: "You are one cloud away from switching teams.", w: 0.9 }
       ],
       nah: [
         { t: "Absolutely not. Step away from the hoodie.", w: 1 },
         { t: "This is t-shirt weather. Accept it.", w: 1 },
         { t: "This is how you end up carrying a hoodie all day.", w: 1 },
-        { t: "Hoodie? No. Hydration? Yes.", w: 1 },
-        { t: "The hoodie is not the move today.", w: 1 },
-        { t: "This is a breathable fabric situation.", w: 1 },
-        { t: "No hoodie. Save yourself the burden.", w: 1 },
-        { t: "Hoodies are great. Today is not.", w: 1 },
-        { t: "You will take it off in five minutes. Be honest.", w: 1 },
-        { t: "Nah. Let your arms live.", w: 1 },
-        { t: "If you hoodie up, you are basically slow cooking.", w: 0.8 },
-        { t: "The sun is watching. Do not be foolish.", w: 0.8 }
+        { t: "No hoodie. Save yourself the burden.", w: 1 }
       ]
     };
 
@@ -1005,6 +971,7 @@
 
         const shortLabel = state.placeLabelShort || "";
         if (shortLabel) setLocPillPinned(shortLabel);
+        else if (state.locationSource === "gps") setLocPillPinned("Your area");
         else setLocPillNeutral();
 
         const metaParts = [
@@ -1016,7 +983,7 @@
 
         if (needsLayerUp) metaParts.push("Layer up");
 
-        const where = shortLabel ? `in ${shortLabel}` : "near you";
+        const where = shortLabel ? `in ${shortLabel}` : (state.locationSource === "gps" ? "in your area" : "near you");
 
         let explanation = "";
         if (verdict === "Hoodie"){
@@ -1077,34 +1044,31 @@
           state.lat = pos.coords.latitude;
           state.lon = pos.coords.longitude;
 
+          // Render immediately so the app works even if reverse lookup fails.
+          setLocPillPinned("Your area");
+          requestRender({ forceNewSnark: true });
+
           let shortLabel = "";
           try{
             const r = await reverseGeocode(state.lat, state.lon);
             shortLabel = formatShortPlace(r);
-
-            if (!shortLabel){
-              const n = (r && r.name) ? String(r.name).trim() : "";
-              const a = (r && r.admin1) ? String(r.admin1).trim() : "";
-              shortLabel = [n, a].filter(Boolean).join(", ").trim();
-            }
           }catch{
             shortLabel = "";
           }
 
           state.placeLabelShort = shortLabel || "";
-          state.placeName = shortLabel || "Near you";
+          state.placeName = shortLabel || "Your area";
+
           state.gpsInFlight = false;
 
           if (state.placeLabelShort) setLocPillPinned(state.placeLabelShort);
-          else setLocPillNeutral();
-
-          await requestRender({ forceNewSnark: true });
+          else setLocPillPinned("Your area");
         }catch(err){
           console.error(err);
           state.gpsInFlight = false;
           setLoading(false);
           setLocPillNeutral();
-          setStatus("GPS worked. Reverse lookup did not. Classic.");
+          setStatus("GPS worked. Everything else did not. Classic.");
           showToast("Location unavailable");
         }
       }, (err) => {
