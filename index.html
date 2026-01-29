@@ -3,467 +3,178 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>hoodieornah</title>
+  <title>Hoodie or Nah</title>
   <meta name="description" content="Settle the hoodie debate. Hoodie, maybe, or nah based on your local weather." />
   <meta name="theme-color" content="#0b0b0f" />
 
-  <!-- Favicons / App Icons -->
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
   <link rel="icon" type="image/png" href="/favicon-16.png" sizes="16x16" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
   <link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192" />
   <link rel="icon" type="image/png" href="/android-chrome-512x512.png" sizes="512x512" />
-  <link rel="manifest" href="/site.webmanifest" />
-
-  <!-- Open Graph / Social Sharing -->
-  <meta property="og:title" content="Hoodie or nah?" />
-  <meta property="og:description" content="Settle the hoodie debate in one click. Hoodie, maybe, or nah based on your local weather." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://hoodieornah.com" />
-  <meta property="og:image" content="https://hoodieornah.com/og.png" />
-
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Hoodie or nah?" />
-  <meta name="twitter:description" content="Settle the hoodie debate in one click." />
-  <meta name="twitter:image" content="https://hoodieornah.com/og.png" />
 
   <style>
-    :root{
+    :root {
       color-scheme: dark;
-
       --bg:#0b0b0f;
       --text:#f4f4f6;
       --muted:#b9b9c2;
-      --border:rgba(255,255,255,.10);
-      --shadow: 0 14px 30px rgba(0,0,0,.35);
-      --radius: 22px;
-
-      --lift: translateY(-1px);
-      --press: translateY(0.5px);
-      --focus: 0 0 0 3px rgba(255,255,255,.12);
-
-      --glow-1: rgba(130,170,255,.22);
-      --glow-2: rgba(0,220,255,.14);
-
-      --brand-font: ui-rounded, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      --brand-weight: 860;
-      --brand-track: .22px;
-
-      --toast-bg: rgba(10,10,14,.72);
-      --toast-border: rgba(255,255,255,.12);
+      --border:rgba(255,255,255,.12);
+      --radius:22px;
+      --shadow:0 14px 30px rgba(0,0,0,.35);
     }
 
-    @media (prefers-color-scheme: light){
-      :root{
-        color-scheme: light;
+    * { box-sizing:border-box; }
 
-        --bg:#f7f7fb;
-        --text:#101015;
-        --muted:#4b4b57;
-        --border:rgba(0,0,0,.12);
-        --shadow: 0 14px 30px rgba(0,0,0,.12);
-
-        --glow-1: rgba(40,80,255,.16);
-        --glow-2: rgba(0,160,255,.10);
-
-        --toast-bg: rgba(255,255,255,.88);
-        --toast-border: rgba(0,0,0,.10);
-      }
-      body{
-        background:
-          radial-gradient(1200px 800px at 50% -20%, rgba(0,0,0,.05), transparent 60%),
-          radial-gradient(900px 600px at 20% 10%, rgba(120,100,255,.10), transparent 55%),
-          radial-gradient(900px 600px at 80% 15%, rgba(0,200,255,.10), transparent 55%),
-          var(--bg);
-      }
-      select option{
-        background-color:#ffffff;
-        color:#101015;
-      }
-    }
-
-    *{box-sizing:border-box}
-    body{
+    body {
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 800px at 50% -20%, rgba(255,255,255,.08), transparent 60%),
-        radial-gradient(900px 600px at 20% 10%, rgba(120,100,255,.10), transparent 55%),
-        radial-gradient(900px 600px at 80% 15%, rgba(0,200,255,.10), transparent 55%),
-        var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(900px 600px at 50% -20%, rgba(120,100,255,.12), transparent 60%), var(--bg);
       color:var(--text);
       min-height:100vh;
       display:flex;
-      align-items:center;
       justify-content:center;
       padding:18px;
     }
 
-    .wrap{width:min(860px, 100%);}
+    .wrap { width:min(860px, 100%); }
 
-    header{
+    header {
       display:flex;
-      align-items:center;
       justify-content:space-between;
-      margin: 6px 2px 14px;
-      gap:12px;
+      align-items:center;
+      margin-bottom:14px;
     }
 
-    .brandWrap{
+    .brand {
       display:flex;
-      align-items:center;
       gap:12px;
-      min-width: 0;
-    }
-
-    .brandIconBtn{
-      width:44px;
-      height:44px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      display:inline-flex;
       align-items:center;
-      justify-content:center;
-      padding:0;
-      cursor:pointer;
-      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .2s ease;
-      flex: 0 0 auto;
+      font-weight:800;
+      font-size:20px;
     }
 
-    .brandIconBtn:hover{
-      background: rgba(255,255,255,.08);
-      transform: var(--lift);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,.06),
-        0 0 18px var(--glow-1),
-        0 0 28px var(--glow-2);
-    }
-    .brandIconBtn:active{ transform: var(--press); box-shadow:none; }
-    .brandIconBtn:focus-visible{ box-shadow: var(--focus); }
-
-    .brandIcon{
-      width:36px;
-      height:36px;
+    .brand img {
+      width:38px;
+      height:38px;
       border-radius:999px;
-      display:block;
-      object-fit:cover;
     }
 
-    .brandText{
-      font-family: var(--brand-font);
-      font-weight: var(--brand-weight);
-      letter-spacing: var(--brand-track);
-      font-size: 19px;
-      opacity:.96;
-      white-space: nowrap;
-      line-height: 1;
-      text-rendering: geometricPrecision;
-      -webkit-font-smoothing: antialiased;
-      font-kerning: normal;
-    }
-
-    .pill{
+    .pill {
+      display:flex;
+      gap:6px;
+      align-items:center;
       border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      padding:8px 12px;
       border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      color:var(--muted);
+      background:rgba(255,255,255,.05);
+      cursor:pointer;
+      max-width:60%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .card {
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px;
+      background:rgba(255,255,255,.04);
+    }
+
+    .hero {
+      display:grid;
+      grid-template-columns:1.25fr .75fr;
+      gap:18px;
+    }
+
+    @media (max-width:800px) {
+      .hero { grid-template-columns:1fr; }
+    }
+
+    .answerBox {
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:20px;
+      min-height:260px;
+      background:rgba(0,0,0,.25);
+    }
+
+    .answer {
+      font-size:72px;
+      font-weight:900;
+      margin:0 0 8px;
+      letter-spacing:.5px;
+    }
+
+    .reason {
+      font-size:16px;
+      color:var(--muted);
+      max-width:46ch;
+      line-height:1.45;
+    }
+
+    .meta {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .meta span {
+      border:1px solid var(--border);
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+    }
+
+    .controls {
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:18px;
+      background:rgba(0,0,0,.25);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    label {
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    select, input {
+      width:100%;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+    }
+
+    button {
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    footer {
+      margin-top:14px;
       font-size:13px;
       color:var(--muted);
       display:flex;
-      gap:8px;
-      align-items:center;
-      max-width: 60%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: pointer;
-      appearance: none;
-      outline: none;
-      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
-    .pill:hover{ background: rgba(255,255,255,.08); transform: var(--lift); }
-    .pill:active{ transform: var(--press); }
-    .pill:focus-visible{ box-shadow: var(--focus); }
-
-    .pill .pillText{
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      display:block;
-      min-width: 0;
-    }
-    .pill .pillPin{
-      opacity: .9;
-      flex: 0 0 auto;
-    }
-    .pill .pillSpinner{
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.22);
-      border-top-color: rgba(255,255,255,.72);
-      animation: spin .9s linear infinite;
-      flex: 0 0 auto;
-    }
-    @keyframes spin{
-      from{ transform: rotate(0deg); }
-      to{ transform: rotate(360deg); }
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
-    }
-    .hero{
-      display:grid;
-      grid-template-columns: 1.25fr .75fr;
-      gap:18px;
-      align-items:stretch;
-    }
-    @media (max-width: 820px){
-      .hero{grid-template-columns:1fr;}
-      .pill{max-width: 70%;}
-    }
-
-    .answerBox{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      background: rgba(0,0,0,.20);
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      min-height: 260px;
-      transition: background-color .15s ease, border-color .15s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .answerBox.loading{ background: rgba(0,0,0,.16); }
-    .loaderRow{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      margin-bottom: 10px;
-    }
-    .loaderIcon{
-      width: 34px;
-      height: 34px;
-      flex: 0 0 auto;
-      opacity: .92;
-      border-radius: 999px;
-      object-fit: cover;
-    }
-    .loaderText{
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .pulse{
-      animation: pulse 1.25s ease-in-out infinite;
-      transform-origin: 50% 50%;
-    }
-    @keyframes pulse{
-      0%{ transform: scale(1); opacity: .78; }
-      50%{ transform: scale(1.03); opacity: .98; }
-      100%{ transform: scale(1); opacity: .78; }
-    }
-
-    .answerBox.verdict-hoodie{
-      border-color: rgba(120,160,255,.35);
-      background: rgba(120,160,255,.08);
-    }
-    .answerBox.verdict-maybe{
-      border-color: rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-    }
-    .answerBox.verdict-nah{
-      border-color: rgba(120,255,190,.28);
-      background: rgba(120,255,190,.06);
-    }
-    .answerBox.verdict-hoodie .answer{ color: rgba(210,225,255,.98); }
-    .answerBox.verdict-maybe .answer{ color: rgba(244,244,246,.98); }
-    .answerBox.verdict-nah .answer{ color: rgba(210,255,235,.98); }
-
-    .answer{
-      font-size: clamp(44px, 7vw, 76px);
-      line-height:1.02;
-      font-weight: 900;
-      letter-spacing: .6px;
-      margin: 6px 0 10px;
-      text-transform: uppercase;
-    }
-    .reason{
-      font-size: 16px;
-      color: var(--muted);
-      line-height: 1.45;
-      max-width: 46ch;
-    }
-
-    .snark-line{
-      margin-top: 10px;
-      opacity: 0.92;
-      font-size: 0.98rem;
-      line-height: 1.35;
-      color: rgba(231, 237, 255, 0.86);
-      max-width: 46ch;
-      min-height: 1.35em;
-    }
-    .snark-line.is-animating{
-      animation: snarkFade 220ms ease-out;
-    }
-    @keyframes snarkFade{
-      from{ opacity: 0; transform: translateY(4px); }
-      to{ opacity: 0.92; transform: translateY(0); }
-    }
-
-    .meta{
-      margin-top:14px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .meta span{
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:7px 10px;
-      background: rgba(255,255,255,.03);
-    }
-
-    .controls{
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      background: rgba(0,0,0,.18);
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      min-height: 260px;
-    }
-    .row{ display:flex; flex-direction:column; gap:8px; }
-    label{ font-size: 13px; color: var(--muted); }
-
-    select, input[type="text"]{
-      width:100%;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-      color-scheme: dark;
-      transition: border-color .15s ease, transform .15s ease;
-    }
-    select option{ background-color:#0b0b0f; color:#f4f4f6; }
-    select:focus, input[type="text"]:focus{ border-color: rgba(255,255,255,.25); }
-
-    .btnRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:4px;
-    }
-
-    button, a.btn{
-      appearance:none;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      padding: 11px 14px;
-      border-radius: 14px;
-      cursor:pointer;
-      font-weight: 650;
-      font-size: 14px;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      transition: transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
-    button:hover, a.btn:hover{
-      background: rgba(255,255,255,.09);
-      border-color: rgba(255,255,255,.18);
-      transform: var(--lift);
-      box-shadow: 0 10px 22px rgba(0,0,0,.28);
-    }
-    button:active, a.btn:active{ transform: var(--press); box-shadow: none; }
-    button:focus-visible, a.btn:focus-visible{ box-shadow: var(--focus); }
-    button:disabled{ opacity:.55; cursor:not-allowed; transform: none; box-shadow: none; }
-
-    .tiny{
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-      margin-top: 6px;
-    }
-    .status{
-      margin-top:10px;
-      color: var(--muted);
-      font-size: 13px;
-      min-height: 18px;
-    }
-
-    footer{
-      margin-top: 14px;
-      display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:12px;
-      flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 0 4px;
-    }
-    footer a{
-      color: var(--text);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(255,255,255,.25);
-    }
-    footer a.btn{ border-bottom: none; }
-
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%) translateY(18px);
-      opacity: 0;
-      pointer-events: none;
-      border: 1px solid var(--toast-border);
-      background: var(--toast-bg);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
-      box-shadow: 0 14px 30px rgba(0,0,0,.35);
-      font-size: 13px;
-      max-width: min(520px, calc(100vw - 24px));
-      text-align: center;
-      transition: opacity .18s ease, transform .18s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      z-index: 9999;
-    }
-    .toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      button, a.btn, .pill, select, input[type="text"], .brandIconBtn{
-        transition: none;
-      }
-      .pulse{ animation: none; }
-      .snark-line.is-animating{ animation: none; }
-      .pill .pillSpinner{ animation: none; }
-      .toast{ transition: none; }
     }
   </style>
 </head>
@@ -471,805 +182,104 @@
 <body>
   <div class="wrap">
     <header>
-      <div class="brandWrap">
-        <button class="brandIconBtn" id="brandHomeBtn" type="button" aria-label="Use my GPS">
-          <img class="brandIcon" src="/logo-mark.png" alt="Hoodie or Nah logo" />
-        </button>
-        <div class="brandText">Hoodie or Nah</div>
+      <div class="brand">
+        <img src="/logo-mark.png" alt="Hoodie or Nah">
+        Hoodie or Nah
       </div>
-
-      <button class="pill" id="locPill" type="button" aria-label="Set location">
-        <span class="pillText">Near you</span>
-      </button>
+      <div class="pill" id="locPill">Near you</div>
     </header>
 
     <main class="card">
       <section class="hero">
-        <div class="answerBox verdict-maybe loading" id="answerBox">
-          <div class="loaderRow" id="loaderRow" aria-live="polite">
-            <img class="loaderIcon pulse" src="/logo-mark.png" alt="" aria-hidden="true" />
-            <div class="loaderText" id="loaderText">Getting your local weather…</div>
-          </div>
-
+        <div class="answerBox">
           <div class="answer" id="answer">…</div>
-          <div class="reason" id="reason">Getting your local weather.</div>
-          <div id="snarkLine" class="snark-line" aria-live="polite"></div>
+          <div class="reason" id="reason">Loading weather.</div>
           <div class="meta" id="meta"></div>
-          <div class="status" id="status"></div>
         </div>
 
         <div class="controls">
-          <div class="row">
-            <label for="tempPref">How do you run?</label>
-            <select id="tempPref">
-              <option value="0" selected>Normal</option>
-              <option value="-4">I run cold</option>
-              <option value="4">I run warm</option>
-            </select>
-          </div>
+          <label>How do you run?</label>
+          <select id="tempPref">
+            <option value="0">Normal</option>
+            <option value="-4">I run cold</option>
+            <option value="4">I run warm</option>
+          </select>
 
-          <div class="row">
-            <label for="city">Manual location (optional)</label>
-            <input
-              id="city"
-              type="text"
-              placeholder="City, Region, Country or ZIP (example: Sydney, Australia)"
-              autocomplete="off"
-              list="citySuggestions"
-            />
-            <datalist id="citySuggestions"></datalist>
-
-            <div class="btnRow">
-              <button id="useCityBtn" type="button">Use this location</button>
-              <button id="useGpsBtn" type="button">Use my GPS</button>
-            </div>
-            <div class="tiny">
-              Tip: pick a suggestion to auto-run. Otherwise click Use this location.
-            </div>
-          </div>
-
-          <div class="row">
-            <label>Explore</label>
-            <div class="btnRow">
-              <button id="randomBtn" type="button">Spin the globe</button>
-              <button id="refreshBtn" type="button">Refresh</button>
-            </div>
-          </div>
+          <label>Manual location (optional)</label>
+          <input id="city" placeholder="City or ZIP" />
+          <button id="useCity">Use this location</button>
+          <button id="useGps">Use my GPS</button>
         </div>
       </section>
     </main>
 
     <footer>
-      <div style="opacity:.70;">Made to settle the daily hoodie debate.</div>
-
-      <div>
-        <a
-          href="https://buymeacoffee.com/hoodieornah"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="btn"
-        >
-          ☕ Fuel the hoodie science
-        </a>
-      </div>
+      <div>Made to settle the daily hoodie debate.</div>
     </footer>
   </div>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+const locPill = document.getElementById("locPill");
+const answerEl = document.getElementById("answer");
+const reasonEl = document.getElementById("reason");
+const metaEl = document.getElementById("meta");
 
-  <script>
-    const el = (id) => document.getElementById(id);
+let state = { lat:null, lon:null, label:"Your area" };
 
-    const state = {
-      lat: null,
-      lon: null,
-      placeName: null,
-      placeLabelShort: null,
-      last: null,
-      suggestionMap: new Map(),
-      lastPickedLabel: null,
-      forceNewSnark: false,
-      locationSource: "unknown",
-      gpsInFlight: false,
-      toastTimer: null
-    };
+function setPill(label) {
+  locPill.textContent = label ? "📍 " + label : "Near you";
+}
 
-    function round(n){
-      const x = Number(n);
-      return Number.isFinite(x) ? Math.round(x) : null;
+async function reverseGeocode(lat, lon) {
+  try {
+    const r = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+    );
+    const d = await r.json();
+    if (d.address) {
+      const city = d.address.city || d.address.town || d.address.village;
+      const state = d.address.state || d.address.region;
+      if (city && state) return city + ", " + state;
+      if (city) return city;
     }
-
-    function getRegionCode(){
-      try{
-        const loc = Intl.DateTimeFormat().resolvedOptions().locale || "";
-        const m = loc.match(/-([A-Z]{2})\b/);
-        return m ? m[1] : null;
-      }catch{
-        return null;
-      }
-    }
-
-    function inferUnitSystem(){
-      const region = getRegionCode();
-      const usesF = region === "US" || region === "LR" || region === "MM";
-      return {
-        tempUnit: usesF ? "fahrenheit" : "celsius",
-        windUnit: usesF ? "mph" : "kmh",
-        tempSymbol: usesF ? "°F" : "°C",
-        windSymbol: usesF ? "mph" : "km/h",
-        usesF
-      };
-    }
-
-    function setStatus(msg){ el("status").textContent = msg || ""; }
-
-    function showToast(msg){
-      const t = el("toast");
-      if (!t) return;
-
-      if (state.toastTimer) clearTimeout(state.toastTimer);
-
-      t.textContent = msg;
-      t.classList.add("show");
-
-      state.toastTimer = setTimeout(() => {
-        t.classList.remove("show");
-      }, 2200);
-    }
-
-    function setLocPillNeutral(){
-      const p = el("locPill");
-      p.innerHTML = '<span class="pillText">Near you</span>';
-    }
-
-    function setLocPillLoading(){
-      const p = el("locPill");
-      p.innerHTML = '<span class="pillSpinner" aria-hidden="true"></span><span class="pillText">Near you</span>';
-    }
-
-    function setLocPillPinned(label){
-      const p = el("locPill");
-      const safe = String(label || "").trim();
-      if (!safe){
-        setLocPillNeutral();
-        return;
-      }
-      p.innerHTML = '<span class="pillPin" aria-hidden="true">📍</span><span class="pillText"></span>';
-      p.querySelector(".pillText").textContent = safe;
-    }
-
-    function clearSnarkLine(){
-      const s = el("snarkLine");
-      if (!s) return;
-      s.classList.remove("is-animating");
-      s.textContent = "";
-    }
-
-    function setLoading(isLoading, text){
-      const box = el("answerBox");
-      const row = el("loaderRow");
-      const t = el("loaderText");
-
-      if (isLoading){
-        box.classList.add("loading");
-        row.style.display = "flex";
-        if (text) t.textContent = text;
-        clearSnarkLine();
-      } else {
-        box.classList.remove("loading");
-        row.style.display = "none";
-      }
-    }
-
-    function applyVerdictClass(verdict){
-      const box = el("answerBox");
-      box.classList.remove("verdict-hoodie","verdict-maybe","verdict-nah");
-      if (verdict === "Hoodie") box.classList.add("verdict-hoodie");
-      else if (verdict === "Maybe") box.classList.add("verdict-maybe");
-      else box.classList.add("verdict-nah");
-    }
-
-    function setAnswer(verdict, reason, metaParts){
-      applyVerdictClass(verdict);
-      el("answer").textContent = String(verdict || "").toUpperCase();
-      el("reason").textContent = reason;
-
-      const meta = el("meta");
-      meta.innerHTML = "";
-      (metaParts || []).forEach(t => {
-        const s = document.createElement("span");
-        s.textContent = t;
-        meta.appendChild(s);
-      });
-    }
-
-    function computeDecision({ feels, wind, isNight, tempPrefShift, usesF }){
-      let adjusted = feels;
-
-      if (wind > (usesF ? 10 : 16)) adjusted -= (usesF ? 3 : 2);
-      if (isNight) adjusted -= (usesF ? 2 : 1);
-
-      adjusted += tempPrefShift;
-
-      const hoodieCut = usesF ? 62 : 17;
-      const maybeTop = usesF ? 68 : 20;
-
-      let verdict = "Nah";
-      if (adjusted < hoodieCut) verdict = "Hoodie";
-      else if (adjusted <= maybeTop) verdict = "Maybe";
-
-      return { verdict, adjusted };
-    }
-
-    async function fetchWeather(lat, lon, units){
-      const url = new URL("https://api.open-meteo.com/v1/forecast");
-      url.searchParams.set("latitude", lat);
-      url.searchParams.set("longitude", lon);
-      url.searchParams.set("current", "temperature_2m,apparent_temperature,wind_speed_10m");
-      url.searchParams.set("daily", "sunrise,sunset");
-      url.searchParams.set("timezone", "auto");
-      url.searchParams.set("temperature_unit", units.tempUnit);
-      url.searchParams.set("wind_speed_unit", units.windUnit);
-
-      const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("Weather fetch failed");
-      return res.json();
-    }
-
-    async function geocodeCandidates(query, count = 8){
-      const q = query.trim();
-      const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
-      url.searchParams.set("name", q);
-      url.searchParams.set("count", String(count));
-      url.searchParams.set("language", "en");
-      url.searchParams.set("format", "json");
-
-      const res = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("Geocode failed");
-      const data = await res.json();
-      return (data && data.results) ? data.results : [];
-    }
-
-    // IMPORTANT: Reverse geocode should never break weather rendering.
-    // We try BigDataCloud and if it fails we return a minimal label.
-    async function reverseGeocode(lat, lon){
-      const url = new URL("https://api.bigdatacloud.net/data/reverse-geocode-client");
-      url.searchParams.set("latitude", String(lat));
-      url.searchParams.set("longitude", String(lon));
-      url.searchParams.set("localityLanguage", "en");
-
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 3500);
-
-      try{
-        const res = await fetch(url.toString(), {
-          headers: { "Accept": "application/json" },
-          signal: controller.signal
-        });
-        if (!res.ok) throw new Error("Reverse failed");
-        const d = await res.json();
-
-        return {
-          name: d.city || d.locality || d.principalSubdivision || "",
-          admin1: d.principalSubdivision || "",
-          admin1_code: (d.principalSubdivisionCode || "").toUpperCase(),
-          country_code: (d.countryCode || "").toUpperCase(),
-          country: d.countryName || ""
-        };
-      }finally{
-        clearTimeout(timeout);
-      }
-    }
-
-    function formatPlace(r){
-      const country = r.country || r.country_code || "";
-      return [r.name, r.admin1, country].filter(Boolean).join(", ");
-    }
-
-    function formatShortPlace(r){
-      const name = (r && r.name) ? String(r.name).trim() : "";
-      const cc = (r && (r.country_code || r.country)) ? String(r.country_code || r.country).trim().toUpperCase() : "";
-      const admin1 = (r && r.admin1) ? String(r.admin1).trim() : "";
-      const admin1Code = (r && r.admin1_code) ? String(r.admin1_code).trim().toUpperCase() : "";
-
-      if (!name) return "";
-
-      if (cc === "US" && (admin1Code || admin1)){
-        const st = admin1Code || admin1;
-        return `${name}, ${st}`;
-      }
-
-      if (admin1 && admin1.toLowerCase() !== name.toLowerCase()){
-        return `${name}, ${admin1}`;
-      }
-
-      return name;
-    }
-
-    function pickBestResult(query, results){
-      if (!results.length) return null;
-
-      const q = query.trim().toLowerCase();
-      const tokens = q.split(/[\s,]+/).filter(Boolean);
-
-      function score(r){
-        const hay = [r.name, r.admin1, r.country, r.country_code].filter(Boolean).join(" ").toLowerCase();
-        let s = 0;
-        for (const t of tokens){
-          if (hay.includes(t)) s += 2;
-        }
-        const pop = Number(r.population);
-        if (Number.isFinite(pop)) s += Math.min(6, Math.log10(pop + 1));
-        return s;
-      }
-
-      const sorted = results.slice().sort((a,b) => score(b) - score(a));
-      return sorted[0];
-    }
-
-    async function geocodeBest(query){
-      const results = await geocodeCandidates(query, 10);
-      if (!results.length) throw new Error("No results");
-      const r = pickBestResult(query, results);
-      if (!r) throw new Error("No results");
-
-      return {
-        lat: Number(r.latitude),
-        lon: Number(r.longitude),
-        name: formatPlace(r),
-        short: formatShortPlace(r)
-      };
-    }
-
-    function isNightNow(currentIso, sunriseIso, sunsetIso){
-      const now = new Date(currentIso).getTime();
-      const sunrise = new Date(sunriseIso).getTime();
-      const sunset = new Date(sunsetIso).getTime();
-      if (![now, sunrise, sunset].every(Number.isFinite)) return false;
-      return now >= sunset || now < sunrise;
-    }
-
-    function buildLocationKey(){
-      const lat = Number(state.lat);
-      const lon = Number(state.lon);
-      if (Number.isFinite(lat) && Number.isFinite(lon)){
-        return `ll:${lat.toFixed(3)},${lon.toFixed(3)}`;
-      }
-      const p = (state.placeName || "unknown").toLowerCase().trim();
-      return `place:${p}`;
-    }
-
-    function pickWeighted(items){
-      let total = 0;
-      for (const it of items) total += (typeof it.w === "number" ? it.w : 1);
-      let r = Math.random() * total;
-      for (const it of items){
-        r -= (typeof it.w === "number" ? it.w : 1);
-        if (r <= 0) return it.t;
-      }
-      return items[items.length - 1].t;
-    }
-
-    function isExtremeWeather(temp, units){
-      return units.usesF ? (temp <= 15 || temp >= 95) : (temp <= -9 || temp >= 35);
-    }
-
-    const EXTREME_FALLBACK_LINE = "This weather is doing the most. Dress like you respect yourself.";
-
-    const SNARK_POOLS = {
-      hoodie_cold: [
-        { t: "It is cold. Hoodie is the minimum.", w: 1 },
-        { t: "This is hoodie weather with consequences.", w: 1 },
-        { t: "Hoodie, yes. Also respect the wind.", w: 1 },
-        { t: "If you skip the hoodie, you will complain immediately.", w: 1 },
-        { t: "Cold enough to justify the good hoodie.", w: 1 },
-        { t: "Hoodie weather. Do not try to be tough.", w: 1 },
-        { t: "The air is disrespectful. Hoodie up.", w: 0.9 },
-        { t: "Hoodie time. And maybe actual outerwear.", w: 0.9 }
-      ],
-      hoodie_mild: [
-        { t: "Prime hoodie weather. Do not overthink it.", w: 1 },
-        { t: "This is exactly why hoodies were invented.", w: 1 },
-        { t: "Yes, a hoodie. No, not the thin one.", w: 1 },
-        { t: "Hoodie weather. The vibe is secure.", w: 1 },
-        { t: "Hoodie time. The universe has spoken.", w: 1 }
-      ],
-      maybe: [
-        { t: "Borderline. Choose wisely, hero.", w: 1 },
-        { t: "You could go either way. Regret is possible.", w: 1 },
-        { t: "This is ‘I will carry it later’ weather.", w: 1 },
-        { t: "You are one cloud away from switching teams.", w: 0.9 }
-      ],
-      nah: [
-        { t: "Absolutely not. Step away from the hoodie.", w: 1 },
-        { t: "This is t-shirt weather. Accept it.", w: 1 },
-        { t: "This is how you end up carrying a hoodie all day.", w: 1 },
-        { t: "No hoodie. Save yourself the burden.", w: 1 }
-      ]
-    };
-
-    function setSnarkLine({ verdict, feelsLike, adjustedLike, units, forceNew }){
-      const s = el("snarkLine");
-      if (!s) return;
-
-      const resultType =
-        verdict === "Hoodie" ? "hoodie" :
-        verdict === "Maybe" ? "maybe" : "nah";
-
-      const hoodieColdMax = units.usesF ? 35 : 2;
-      const band =
-        resultType === "hoodie"
-          ? (adjustedLike <= hoodieColdMax ? "hoodie_cold" : "hoodie_mild")
-          : resultType;
-
-      const locationKey = buildLocationKey();
-      const key = `hon_snark_v2:${band}:${locationKey}`;
-
-      if (!forceNew){
-        const existing = sessionStorage.getItem(key);
-        if (existing){
-          s.textContent = existing;
-          return;
-        }
-      }
-
-      const extreme = isExtremeWeather(feelsLike, units);
-      const pool = extreme
-        ? [{ t: EXTREME_FALLBACK_LINE, w: 1 }]
-        : (SNARK_POOLS[band] || SNARK_POOLS[resultType] || []);
-
-      const line = pickWeighted(pool);
-
-      sessionStorage.setItem(key, line);
-
-      s.classList.remove("is-animating");
-      void s.offsetWidth;
-      s.classList.add("is-animating");
-      s.textContent = line;
-    }
-
-    function requestRender({ forceNewSnark = false } = {}){
-      state.forceNewSnark = !!forceNewSnark;
-      return render();
-    }
-
-    async function render(){
-      if (state.lat == null || state.lon == null) return;
-
-      const forceNew = !!state.forceNewSnark;
-      state.forceNewSnark = false;
-
-      try{
-        setLoading(true, "Checking the weather…");
-        setStatus("Checking the weather…");
-
-        const units = inferUnitSystem();
-        const prefShift = Number(el("tempPref").value || 0);
-        const w = await fetchWeather(state.lat, state.lon, units);
-
-        const current = w.current || {};
-        const daily = w.daily || {};
-        const sunrise = (daily.sunrise && daily.sunrise[0]) ? daily.sunrise[0] : null;
-        const sunset = (daily.sunset && daily.sunset[0]) ? daily.sunset[0] : null;
-
-        const feels = Number(current.apparent_temperature);
-        const wind = Number(current.wind_speed_10m);
-
-        if (![feels, wind].every(Number.isFinite)) throw new Error("Bad weather payload");
-
-        const night = (sunrise && sunset) ? isNightNow(current.time, sunrise, sunset) : false;
-
-        const { verdict, adjusted } = computeDecision({
-          feels,
-          wind,
-          isNight: night,
-          tempPrefShift: prefShift,
-          usesF: units.usesF
-        });
-
-        const needsLayerUp = (verdict === "Hoodie" && adjusted <= (units.usesF ? 50 : 10));
-
-        const shortLabel = state.placeLabelShort || "";
-        if (shortLabel) setLocPillPinned(shortLabel);
-        else if (state.locationSource === "gps") setLocPillPinned("Your area");
-        else setLocPillNeutral();
-
-        const metaParts = [
-          `Feels like ${round(feels)}${units.tempSymbol}`,
-          `Wind ${round(wind)} ${units.windSymbol}`,
-          night ? "Night" : "Day",
-          `Adjusted ${round(adjusted)}${units.tempSymbol}`
-        ];
-
-        if (needsLayerUp) metaParts.push("Layer up");
-
-        const where = shortLabel ? `in ${shortLabel}` : (state.locationSource === "gps" ? "in your area" : "near you");
-
-        let explanation = "";
-        if (verdict === "Hoodie"){
-          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Hoodie weather.`;
-          if (needsLayerUp) explanation += " Layer up. You might want a jacket too.";
-          if (wind > (units.usesF ? 10 : 16)) explanation += " The wind is being rude.";
-          if (night) explanation += " Nights cool off fast.";
-        } else if (verdict === "Maybe"){
-          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. You could go either way. If you will be out awhile, bring it.`;
-        } else {
-          explanation = `It feels like ${round(feels)}${units.tempSymbol} ${where}. Probably no hoodie.`;
-          if (night) explanation += " If you are out late, a light layer might still save you.";
-        }
-
-        setAnswer(verdict, explanation, metaParts);
-
-        setSnarkLine({
-          verdict,
-          feelsLike: round(feels),
-          adjustedLike: round(adjusted),
-          units,
-          forceNew
-        });
-
-        setLoading(false);
-        setStatus(`Updated ${new Date(current.time).toLocaleString()}.`);
-      }catch(err){
-        console.error(err);
-        setLoading(false);
-        clearSnarkLine();
-        setAnswer("…", "Weather fetch failed. Love that for us.", []);
-        setStatus("Try refresh, GPS, or manual location.");
-        setLocPillNeutral();
-      }
-    }
-
-    async function useGps(){
-      state.gpsInFlight = true;
-      state.locationSource = "gps";
-      state.placeName = null;
-      state.placeLabelShort = "";
-
-      setLocPillLoading();
-      setStatus("");
-      setLoading(true, "Asking your browser nicely…");
-
-      if (!navigator.geolocation){
-        state.gpsInFlight = false;
-        setLoading(false);
-        setLocPillNeutral();
-        setStatus("No GPS support. Wild.");
-        showToast("Location unavailable");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        try{
-          state.lat = pos.coords.latitude;
-          state.lon = pos.coords.longitude;
-
-          // Render immediately so the app works even if reverse lookup fails.
-          setLocPillPinned("Your area");
-          requestRender({ forceNewSnark: true });
-
-          let shortLabel = "";
-          try{
-            const r = await reverseGeocode(state.lat, state.lon);
-            shortLabel = formatShortPlace(r);
-          }catch{
-            shortLabel = "";
-          }
-
-          state.placeLabelShort = shortLabel || "";
-          state.placeName = shortLabel || "Your area";
-
-          state.gpsInFlight = false;
-
-          if (state.placeLabelShort) setLocPillPinned(state.placeLabelShort);
-          else setLocPillPinned("Your area");
-        }catch(err){
-          console.error(err);
-          state.gpsInFlight = false;
-          setLoading(false);
-          setLocPillNeutral();
-          setStatus("GPS worked. Everything else did not. Classic.");
-          showToast("Location unavailable");
-        }
-      }, (err) => {
-        console.error(err);
-        state.gpsInFlight = false;
-        setLoading(false);
-        clearSnarkLine();
-        setLocPillNeutral();
-
-        if (err && err.code === 1){
-          setStatus("No location. No problem. Use manual if you want.");
-          showToast("Location access denied");
-        } else {
-          setStatus("GPS timed out. Try again or just type a city.");
-          showToast("Location unavailable");
-        }
-      }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
-    }
-
-    function clearSuggestions(){
-      state.suggestionMap.clear();
-      el("citySuggestions").innerHTML = "";
-    }
-
-    function setSuggestions(results){
-      clearSuggestions();
-      const dl = el("citySuggestions");
-
-      for (const r of results){
-        const label = formatPlace(r);
-        const short = formatShortPlace(r);
-
-        state.suggestionMap.set(label, {
-          lat: Number(r.latitude),
-          lon: Number(r.longitude),
-          name: label,
-          short: short || r.name || label
-        });
-
-        const opt = document.createElement("option");
-        opt.value = label;
-        dl.appendChild(opt);
-      }
-    }
-
-    let acTimer = null;
-
-    async function autocomplete(){
-      const q = el("city").value.trim();
-
-      if (state.suggestionMap.has(q) && state.lastPickedLabel !== q){
-        const picked = state.suggestionMap.get(q);
-        state.lastPickedLabel = q;
-
-        state.lat = picked.lat;
-        state.lon = picked.lon;
-        state.placeName = picked.name;
-        state.placeLabelShort = picked.short || picked.name;
-        state.locationSource = "manual";
-
-        setLocPillPinned(state.placeLabelShort);
-        setLoading(true, "Fine. Teleporting your forecast…");
-        setStatus("Loading weather…");
-
-        await requestRender({ forceNewSnark: true });
-        return;
-      }
-
-      if (!state.suggestionMap.has(q)){
-        state.lastPickedLabel = null;
-      }
-
-      if (q.length < 3){
-        clearSuggestions();
-        return;
-      }
-
-      try{
-        const results = await geocodeCandidates(q, 8);
-        if (!results.length){
-          clearSuggestions();
-          return;
-        }
-        setSuggestions(results);
-      }catch(err){
-        console.error(err);
-      }
-    }
-
-    async function useCity(){
-      const qRaw = el("city").value.trim();
-      if (!qRaw){
-        setStatus("Type a city or ZIP first. I cannot guess harder than this.");
-        return;
-      }
-
-      const picked = state.suggestionMap.get(qRaw);
-
-      try{
-        setLoading(true, "Finding that place…");
-        setStatus("Finding that place…");
-
-        state.locationSource = "manual";
-
-        if (picked){
-          state.lat = picked.lat;
-          state.lon = picked.lon;
-          state.placeName = picked.name;
-          state.placeLabelShort = picked.short || picked.name;
-          state.lastPickedLabel = qRaw;
-
-          setLocPillPinned(state.placeLabelShort);
-          await requestRender({ forceNewSnark: true });
-          return;
-        }
-
-        setLocPillLoading();
-        const g = await geocodeBest(qRaw);
-
-        state.lat = g.lat;
-        state.lon = g.lon;
-        state.placeName = g.name;
-        state.placeLabelShort = g.short || g.name;
-        state.lastPickedLabel = null;
-
-        setLocPillPinned(state.placeLabelShort);
-        await requestRender({ forceNewSnark: true });
-      }catch(err){
-        console.error(err);
-        setLoading(false);
-        clearSnarkLine();
-        setLocPillNeutral();
-        setStatus("Could not find that location. Try: City, Country.");
-        showToast("Location not found");
-      }
-    }
-
-    const RANDOM_PLACES = [
-      { name: "Reykjavík, Iceland", short: "Reykjavík", lat: 64.1466, lon: -21.9426 },
-      { name: "Dublin, Ireland", short: "Dublin", lat: 53.3498, lon: -6.2603 },
-      { name: "London, UK", short: "London", lat: 51.5072, lon: -0.1276 },
-      { name: "Paris, France", short: "Paris", lat: 48.8566, lon: 2.3522 },
-      { name: "Rome, Italy", short: "Rome", lat: 41.9028, lon: 12.4964 },
-      { name: "Cairo, Egypt", short: "Cairo", lat: 30.0444, lon: 31.2357 },
-      { name: "Cape Town, South Africa", short: "Cape Town", lat: -33.9249, lon: 18.4241 },
-      { name: "Nairobi, Kenya", short: "Nairobi", lat: -1.2921, lon: 36.8219 },
-      { name: "Dubai, UAE", short: "Dubai", lat: 25.2048, lon: 55.2708 },
-      { name: "Tokyo, Japan", short: "Tokyo", lat: 35.6762, lon: 139.6503 }
-    ];
-
-    let lastRandomIndex = -1;
-
-    async function randomLocation(){
-      if (!RANDOM_PLACES.length) return;
-
-      let idx = Math.floor(Math.random() * RANDOM_PLACES.length);
-      if (RANDOM_PLACES.length > 1 && idx === lastRandomIndex){
-        idx = (idx + 1) % RANDOM_PLACES.length;
-      }
-      lastRandomIndex = idx;
-
-      const p = RANDOM_PLACES[idx];
-
-      state.lat = p.lat;
-      state.lon = p.lon;
-      state.placeName = p.name;
-      state.placeLabelShort = p.short || p.name;
-      state.lastPickedLabel = null;
-      state.locationSource = "random";
-
-      setLocPillPinned(state.placeLabelShort);
-      setLoading(true, "Spinning the globe…");
-      setStatus("Spinning the globe…");
-      await requestRender({ forceNewSnark: true });
-    }
-
-    el("useCityBtn").addEventListener("click", useCity);
-    el("useGpsBtn").addEventListener("click", useGps);
-
-    el("refreshBtn").addEventListener("click", () => requestRender({ forceNewSnark: true }));
-    el("randomBtn").addEventListener("click", randomLocation);
-    el("tempPref").addEventListener("change", () => requestRender({ forceNewSnark: true }));
-
-    el("locPill").addEventListener("click", useGps);
-    el("brandHomeBtn").addEventListener("click", useGps);
-
-    el("city").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") useCity();
-    });
-
-    el("city").addEventListener("input", () => {
-      if (acTimer) clearTimeout(acTimer);
-      acTimer = setTimeout(autocomplete, 200);
-    });
-
-    el("city").addEventListener("change", () => {
-      autocomplete();
-    });
-
-    setLocPillNeutral();
-    useGps();
-  </script>
+  } catch {}
+  return "Your area";
+}
+
+async function fetchWeather(lat, lon) {
+  const r = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=apparent_temperature,wind_speed_10m&temperature_unit=fahrenheit`
+  );
+  return r.json();
+}
+
+async function run() {
+  const w = await fetchWeather(state.lat, state.lon);
+  const feels = Math.round(w.current.apparent_temperature);
+  const wind = Math.round(w.current.wind_speed_10m);
+
+  answerEl.textContent = feels < 62 ? "HOODIE" : feels < 68 ? "MAYBE" : "NAH";
+  reasonEl.textContent = `It feels like ${feels}°F in ${state.label}.`;
+  metaEl.innerHTML = `
+    <span>Feels like ${feels}°F</span>
+    <span>Wind ${wind} mph</span>
+  `;
+}
+
+async function useGps() {
+  navigator.geolocation.getCurrentPosition(async pos => {
+    state.lat = pos.coords.latitude;
+    state.lon = pos.coords.longitude;
+    state.label = await reverseGeocode(state.lat, state.lon);
+    setPill(state.label);
+    run();
+  });
+}
+
+document.getElementById("useGps").onclick = useGps;
+document.getElementById("locPill").onclick = useGps;
+
+useGps();
+</script>
 </body>
 </html>
