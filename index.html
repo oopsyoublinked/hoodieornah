@@ -41,6 +41,7 @@
       --radius:22px;
       --radius2:28px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      color-scheme: dark;
     }
 
     *{box-sizing:border-box}
@@ -59,6 +60,34 @@
       max-width: 1280px;
       margin: 0 auto;
       padding: 18px 18px 14px;
+      position: relative;
+    }
+
+    /* Frozen effect (subtle, on-brand) */
+    body.is-frozen .wrap::before{
+      content:"";
+      position:absolute;
+      inset:-12px -10px auto -10px;
+      height: 220px;
+      pointer-events:none;
+      background:
+        radial-gradient(700px 160px at 20% 10%, rgba(160,190,255,.10), transparent 55%),
+        radial-gradient(560px 140px at 85% 10%, rgba(255,255,255,.08), transparent 60%);
+      filter: blur(8px);
+      opacity: .9;
+    }
+
+    body.is-frozen main{
+      box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 40px rgba(140,170,255,.08);
+    }
+
+    .freeze-pop{
+      animation: freezePop 520ms ease-out 1;
+    }
+    @keyframes freezePop{
+      0%{ transform: translateY(0px) scale(1); }
+      45%{ transform: translateY(-2px) scale(1.01); }
+      100%{ transform: translateY(0px) scale(1); }
     }
 
     header{
@@ -84,8 +113,8 @@
     }
 
     .brand-btn{
-      width: 54px;
-      height: 54px;
+      width: 64px;
+      height: 64px;
       border-radius: 999px;
       border: 1px solid var(--border2);
       background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
@@ -104,12 +133,12 @@
     }
     .brand-btn:active{transform: translateY(0px) scale(.99)}
     .brand-btn img{
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       display:block;
       image-rendering: auto;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
-      border-radius: 12px;
+      border-radius: 14px;
     }
 
     .wordmark{
@@ -185,6 +214,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
       box-shadow: var(--shadow);
       padding: 16px;
+      transition: box-shadow .22s ease;
     }
 
     .grid{
@@ -208,6 +238,13 @@
       min-height: 390px;
       position:relative;
       overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* When frozen, do not force a huge empty void */
+    body.is-frozen .card{
+      min-height: 0;
     }
 
     .card-right{
@@ -303,7 +340,16 @@
       outline: none;
       font-size: 14px;
       box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
+      color-scheme: dark;
     }
+
+    /* Try to keep dropdown readable in Chromium */
+    select{ background-color: rgba(255,255,255,.03); }
+    option{
+      background-color: #0f1016;
+      color: rgba(255,255,255,.92);
+    }
+
     input::placeholder{color: rgba(255,255,255,.35)}
 
     .btn-row{
@@ -419,6 +465,55 @@
       font-size: 12px;
     }
 
+    /* Fills the “blank void” when frozen so it looks intentional */
+    .frozen-fill{
+      margin-top: 14px;
+      border: 1px dashed rgba(255,255,255,.14);
+      border-radius: 18px;
+      background:
+        radial-gradient(520px 220px at 20% 0%, rgba(160,190,255,.08), transparent 55%),
+        radial-gradient(420px 180px at 90% 10%, rgba(255,255,255,.06), transparent 55%),
+        rgba(0,0,0,.12);
+      padding: 14px;
+      display:none;
+    }
+    body.is-frozen .frozen-fill{ display:block; }
+    .frozen-fill .title{
+      font-weight: 820;
+      letter-spacing: .2px;
+      margin-bottom: 6px;
+      color: rgba(255,255,255,.86);
+      font-size: 13px;
+    }
+    .frozen-fill .desc{
+      color: rgba(255,255,255,.56);
+      font-size: 12px;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+    .frozen-fill .row{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap: wrap;
+    }
+    .frozen-fill code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,.78);
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 8px 10px;
+      border-radius: 12px;
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      flex: 1 1 380px;
+      min-width: 240px;
+    }
+
     .site-footer{
       margin-top: 14px;
       border: 1px solid rgba(255,255,255,.10);
@@ -488,7 +583,7 @@
       </div>
     </header>
 
-    <main>
+    <main id="mainShell">
       <div class="grid">
         <!-- Left: Result -->
         <section class="card" aria-live="polite">
@@ -518,7 +613,7 @@
           <div class="divider"></div>
 
           <div class="in-card-footer">
-            <a class="support" href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">
+            <a class="support" href="https://buymeacoffee.com/hoodieornah" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M6.5 8.2h9.2c.8 0 1.4.6 1.4 1.4v3.7c0 2.7-2.2 4.9-4.9 4.9H10c-2.7 0-4.9-2.2-4.9-4.9V9.6c0-.8.6-1.4 1.4-1.4Z" stroke="rgba(255,255,255,.88)" stroke-width="1.7"/>
                 <path d="M17.1 9.6h1.1c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3h-1.1" stroke="rgba(255,255,255,.78)" stroke-width="1.7" stroke-linecap="round"/>
@@ -534,6 +629,16 @@
 
             <div id="unitsLine">Units: --</div>
           </div>
+
+          <!-- Only visible when frozen: fills the empty void + quick share -->
+          <div class="frozen-fill" id="frozenFill">
+            <div class="title">Frozen snapshot</div>
+            <div class="desc">This verdict is locked. Copy the link and go start a mild argument.</div>
+            <div class="row">
+              <code id="frozenUrlPreview">Generating link…</code>
+              <button id="copyLinkBtnLeft" type="button" style="padding:10px 12px;">Copy link</button>
+            </div>
+          </div>
         </section>
 
         <!-- Right: Controls -->
@@ -547,7 +652,7 @@
             </select>
 
             <label for="manualInput">Manual location (optional)</label>
-            <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP (example)" autocomplete="off" />
+            <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP" autocomplete="off" />
             <datalist id="locList"></datalist>
 
             <div class="btn-row">
@@ -556,13 +661,14 @@
             </div>
           </div>
 
-          <div class="mini" aria-live="polite">
+          <div class="mini" aria-live="polite" id="summaryPanel">
             <div class="row"><span>Using</span><strong id="usingLine">Auto</strong></div>
             <div class="row"><span>Location</span><strong id="usingLoc">Near you</strong></div>
             <div class="row"><span>Units</span><strong id="usingUnits">--</strong></div>
             <div class="row"><span>Tip</span><strong id="tipLine">Type a city and press Enter.</strong></div>
           </div>
 
+          <!-- Frozen panel (no Note row) -->
           <div class="mini" id="frozenPanel" style="display:none;">
             <div class="row">
               <span>Mode</span>
@@ -572,12 +678,6 @@
               <span>Share</span>
               <strong>
                 <button id="copyLinkBtn" type="button" style="padding:10px 12px;">Copy link</button>
-              </strong>
-            </div>
-            <div class="row">
-              <span>Note</span>
-              <strong style="text-align:right; max-width: 240px;">
-                Frozen results cannot be changed. Share it. Defend it. Stand by it.
               </strong>
             </div>
           </div>
@@ -632,6 +732,10 @@
     const frozenLine = document.getElementById("frozenLine");
     const frozenPanel = document.getElementById("frozenPanel");
     const copyLinkBtn = document.getElementById("copyLinkBtn");
+    const mainShell = document.getElementById("mainShell");
+
+    const frozenUrlPreview = document.getElementById("frozenUrlPreview");
+    const copyLinkBtnLeft = document.getElementById("copyLinkBtnLeft");
 
     const locLine = document.getElementById("locLine");
     const locSource = document.getElementById("locSource");
@@ -699,7 +803,8 @@
       const sourceName =
         state.source === "gps" ? "GPS" :
         state.source === "manual" ? "Manual" :
-        state.source === "globe" ? "Globe" : "Auto";
+        state.source === "globe" ? "Globe" :
+        state.source === "frozen" ? "Frozen" : "Auto";
 
       usingLine.textContent = sourceName;
       usingLoc.textContent = state.placeLabel;
@@ -718,11 +823,10 @@
       }
 
       locLine.textContent = state.placeLabel;
-      locSource.textContent = "Source: " + (state.frozen ? "Frozen" : sourceName) + ".";
+      locSource.textContent = "Source: " + sourceName + ".";
       unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
     }
 
-    /* ---------- localStorage helpers ---------- */
     function lsGet(key, fallback){
       try{
         const raw = localStorage.getItem(key);
@@ -736,7 +840,7 @@
       try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
     }
 
-    /* ---------- snark pools + anti-repeat (persisted) ---------- */
+    /* Snark pools + anti-repeat (persisted) */
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -746,7 +850,9 @@
         "This is how you end up texting: I cannot feel my hands.",
         "If you step outside and instantly regret it, yeah, nah.",
         "This is not hoodie weather. This is survival gear weather.",
-        "The air is trying to fight you. Do not let it win."
+        "The air is trying to fight you. Do not let it win.",
+        "That cold is personal. Dress accordingly.",
+        "Today is brought to you by: layers."
       ],
       veryCold: [
         "Hoodie alone is cute. So is hypothermia.",
@@ -755,7 +861,9 @@
         "This is hoodie plus consequences.",
         "Nah. Add a real jacket and stop pretending.",
         "Your ears called. They want protection.",
-        "This is the part where you learn about wind chill."
+        "This is the part where you learn about wind chill.",
+        "Hoodie only if you like being humbled.",
+        "This is not the day to test your toughness."
       ],
       cold: [
         "Hoodie plus a jacket. Do not get cocky.",
@@ -764,7 +872,8 @@
         "If you go hoodie only, at least walk fast.",
         "A light jacket over the hoodie and you are good.",
         "This is a hoodie, but be responsible moment.",
-        "Hoodie is fine. The wind is not."
+        "Hoodie is fine. The wind is not.",
+        "Hoodie works, but add something that blocks reality."
       ],
       prime: [
         "Prime hoodie weather. Enjoy your moment.",
@@ -774,7 +883,8 @@
         "This is the sweet spot. Do not waste it.",
         "Yes. Hoodie. Obviously.",
         "Hoodie season is in session.",
-        "Your hoodie has been waiting for this."
+        "Your hoodie has been waiting for this.",
+        "This is elite weather. Do not ruin it by overthinking."
       ],
       mild: [
         "Hoodie if you like options. Otherwise, nah.",
@@ -783,7 +893,8 @@
         "This is borderline. Proceed with vibes.",
         "Hoodie: optional. Confidence: required.",
         "A thin hoodie works. A thick one is a mistake.",
-        "This is weather that changes its mind every hour."
+        "This is weather that changes its mind every hour.",
+        "Hoodie for the morning. Regret for the afternoon."
       ],
       warm: [
         "You are gonna regret sleeves in 10 minutes.",
@@ -792,7 +903,8 @@
         "If you wear a hoodie, you are doing it for the look, not the comfort.",
         "This is short sleeve territory. Do not overthink it.",
         "Put the hoodie down and step away slowly.",
-        "It is warm. Stop lying to yourself."
+        "It is warm. Stop lying to yourself.",
+        "This is the temperature where hoodies become a bad decision."
       ],
       hot: [
         "It is basically a warm hug from the sun. No hoodie.",
@@ -801,7 +913,8 @@
         "If you wear a hoodie, you owe your sweat glands an apology.",
         "This is the kind of heat that makes sleeves illegal.",
         "The sun is doing too much. Do not join it.",
-        "This is not a hoodie day. This is a regret day."
+        "This is not a hoodie day. This is a regret day.",
+        "Hoodie season is not today. Today is survival season."
       ]
     };
 
@@ -842,7 +955,7 @@
       return { word: "NAH", line: pickSnark("hot") };
     }
 
-    /* ---------- location autocomplete ---------- */
+    /* Autocomplete */
     let suggestAbort = null;
 
     async function suggestLocations(q){
@@ -925,7 +1038,7 @@
         .replaceAll("'","&#039;");
     }
 
-    /* ---------- weather ---------- */
+    /* Weather */
     async function fetchWeather(lat, lon, units){
       const tempUnit = units === "F" ? "fahrenheit" : "celsius";
       const windUnit = units === "F" ? "mph" : "kmh";
@@ -1073,7 +1186,7 @@
       }, opts);
     }
 
-    /* ---------- globe spins (bigger) + anti-repeat (persisted) ---------- */
+    /* Globe spins + anti-repeat (persisted) */
     const globeSpins = [
       { label: "Seattle, WA", lat: 47.6062, lon: -122.3321, cc:"US" },
       { label: "San Francisco, CA", lat: 37.7749, lon: -122.4194, cc:"US" },
@@ -1175,7 +1288,7 @@
       await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc, "globe");
     }
 
-    /* ---------- freeze mode ---------- */
+    /* Freeze mode */
     function encodeFrozenUrl(){
       if (!Number.isFinite(state.last.temp) || !Number.isFinite(state.last.feels) || !Number.isFinite(state.last.wind)){
         return null;
@@ -1198,6 +1311,23 @@
       p.set("verdict", state.lastDecision.word || "");
       p.set("snark", state.lastDecision.line || "");
       return window.location.origin + window.location.pathname + "?" + p.toString();
+    }
+
+    function setFrozenUrlPreview(url){
+      if (!frozenUrlPreview) return;
+      if (!url){
+        frozenUrlPreview.textContent = "Generating link…";
+        return;
+      }
+      try{
+        const u = new URL(url);
+        const short = u.origin + u.pathname + "?" + u.searchParams.toString();
+        frozenUrlPreview.textContent = short;
+        frozenUrlPreview.title = short;
+      }catch(e){
+        frozenUrlPreview.textContent = url;
+        frozenUrlPreview.title = url;
+      }
     }
 
     async function copyToClipboard(text){
@@ -1223,10 +1353,17 @@
       }
     }
 
-    function setFrozenUI(on){
+    function setFrozenUI(on, { pop=false, urlPreview=null } = {}){
       state.frozen = !!on;
 
       if (state.frozen){
+        document.body.classList.add("is-frozen");
+        if (pop){
+          mainShell.classList.remove("freeze-pop");
+          void mainShell.offsetWidth;
+          mainShell.classList.add("freeze-pop");
+        }
+
         setPill("📍 " + state.placeLabel + " • Frozen", { frozen: true });
         frozenLine.style.display = "block";
         frozenPanel.style.display = "block";
@@ -1241,8 +1378,14 @@
         gpsBtn.disabled = true;
         locList.innerHTML = "";
 
+        setFrozenUrlPreview(urlPreview);
+
         updateSourceUI();
       } else {
+        document.body.classList.remove("is-frozen");
+        mainShell.classList.remove("freeze-pop");
+
+        setPill("📍 " + state.placeLabel, { frozen: false });
         frozenLine.style.display = "none";
         frozenPanel.style.display = "none";
 
@@ -1286,122 +1429,10 @@
       state.lat = Number.isFinite(lat) ? lat : null;
       state.lon = Number.isFinite(lon) ? lon : null;
 
-      setFrozenUI(true);
+      setFrozenUI(true, { pop: false, urlPreview: window.location.href });
 
-      // Render snapshot exactly as given
+      runSelect.value = state.run;
+
       renderResult(temp, feels, wind);
 
-      // Fill side labels
-      locLine.textContent = state.placeLabel;
-      locSource.textContent = "Source: Frozen.";
-      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
-
-      return true;
-    }
-
-    /* ---------- events ---------- */
-    runSelect.addEventListener("change", () => {
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        runSelect.value = state.run;
-        return;
-      }
-      state.run = runSelect.value;
-      if (Number.isFinite(state.lat) && Number.isFinite(state.lon) && Number.isFinite(state.last.temp)){
-        // Re-run decision for current conditions
-        const temp = state.last.temp;
-        const feels = state.last.feels;
-        const wind = state.last.wind;
-        state.lastDecision = decide(state.units === "F" ? temp : toF(temp), state.units === "F" ? feels : toF(feels), state.run);
-        renderResult(temp, feels, wind);
-      }
-    });
-
-    manualInput.addEventListener("input", () => {
-      if (state.frozen) return;
-      suggestLocations(manualInput.value).catch(() => {});
-    });
-
-    manualInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
-        e.preventDefault();
-        if (state.frozen){
-          showToast("Too late. The verdict has spoken.");
-          return;
-        }
-        onManualCommit();
-      }
-    });
-
-    spinBtn.addEventListener("click", onSpinGlobe);
-    gpsBtn.addEventListener("click", onUseGPS);
-
-    brandHome.addEventListener("click", () => {
-      if (state.frozen){
-        showToast("This page is frozen. Open the main site to change things.");
-        return;
-      }
-      manualInput.value = "";
-      locList.innerHTML = "";
-      tryAutoLocation();
-    });
-
-    freezeBtn.addEventListener("click", async () => {
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        return;
-      }
-      const url = encodeFrozenUrl();
-      if (!url){
-        showToast("Need a real verdict first. Give it a second.");
-        return;
-      }
-      const ok = await copyToClipboard(url);
-      if (ok) showToast("Judgment frozen. No take-backs.");
-      else showToast("Could not copy link. Your browser is being difficult.");
-
-      // Switch UI into frozen mode using the generated URL
-      window.history.replaceState(null, "", url);
-      applyFrozenFromUrl();
-    });
-
-    if (copyLinkBtn){
-      copyLinkBtn.addEventListener("click", async () => {
-        const url = window.location.href;
-        const ok = await copyToClipboard(url);
-        if (ok) showToast("Link copied. Go start arguments.");
-        else showToast("Could not copy link. Your browser is being difficult.");
-      });
-    }
-
-    async function onManualCommit(){
-      const q = (manualInput.value || "").trim();
-      if (!q){
-        showToast("Type a city or ZIP first.");
-        return;
-      }
-
-      try{
-        const g = await geocodeDisplayName(q);
-        state.source = "manual";
-        await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual");
-      }catch(e){
-        showToast("No results. Try a slightly different spelling.");
-      }
-    }
-
-    /* ---------- init ---------- */
-    (function init(){
-      state.run = runSelect.value;
-
-      const isFrozen = applyFrozenFromUrl();
-      if (isFrozen) return;
-
-      setFrozenUI(false);
-      updateSourceUI();
-      tryAutoLocation();
-    })();
-  </script>
-</body>
-</html>
-
+      locLine.textContent = state
