@@ -156,6 +156,16 @@
       box-shadow: 0 0 0 4px rgba(255,255,255,.04);
       flex: 0 0 auto;
     }
+    .pill.frozen{
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.02);
+      color: rgba(255,255,255,.78);
+      cursor: default;
+    }
+    .pill.frozen .dot{
+      background: rgba(255,255,255,.22);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.03);
+    }
 
     .spinner{
       width: 14px;
@@ -312,7 +322,7 @@
       font-weight: 740;
       letter-spacing: .2px;
       cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
     }
     button:hover{
       transform: translateY(-1px);
@@ -321,7 +331,7 @@
     }
     button:active{transform: translateY(0px) scale(.99)}
     button:disabled{
-      opacity:.5;
+      opacity:.48;
       cursor:not-allowed;
       transform:none;
     }
@@ -357,6 +367,7 @@
       color: var(--muted);
       font-weight: 650;
       padding: 2px 2px 0;
+      flex-wrap: wrap;
     }
 
     .support{
@@ -377,6 +388,35 @@
       height: 16px;
       opacity: .9;
       flex: 0 0 auto;
+    }
+
+    .freeze-wrap{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .freeze-btn{
+      background: rgba(255,255,255,.05);
+    }
+    .freeze-hint{
+      font-size: 12px;
+      color: rgba(255,255,255,.50);
+      line-height: 1.35;
+    }
+
+    .frozen-badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.02);
+      color: rgba(255,255,255,.80);
+      font-weight: 780;
+      letter-spacing: .2px;
+      font-size: 12px;
     }
 
     .site-footer{
@@ -417,7 +457,7 @@
       pointer-events:none;
       transition: opacity .18s ease, transform .18s ease;
       z-index: 30;
-      max-width: min(640px, calc(100% - 24px));
+      max-width: min(720px, calc(100% - 24px));
       text-align:center;
       font-weight: 700;
     }
@@ -433,7 +473,6 @@
     <header>
       <div class="brand">
         <button class="brand-btn" id="brandHome" aria-label="Hoodie or Nah home">
-          <!-- PNG logo (big enough to actually see) -->
           <img src="/android-chrome-192x192.png" alt="Hoodie or Nah logo" />
         </button>
 
@@ -456,9 +495,12 @@
           <div class="big" id="bigWord">LOADING</div>
           <p class="sub" id="oneLiner">Grabbing your weather. Try not to panic.</p>
 
+          <div id="frozenLine" class="sub" style="display:none; margin-top:-4px; color: rgba(255,255,255,.52); font-size: 13px;">
+            This take has been frozen in time.
+          </div>
+
           <div class="divider"></div>
 
-          <!-- Fill the space with structured info instead of a void -->
           <div class="stats">
             <div class="stat">
               <div class="k">Location</div>
@@ -485,6 +527,11 @@
               <span>Support the hoodie science</span>
             </a>
 
+            <div class="freeze-wrap">
+              <button class="freeze-btn" id="freezeBtn" type="button">Freeze this take</button>
+              <span class="freeze-hint" id="freezeHint">Locks this exact verdict so it never changes.</span>
+            </div>
+
             <div id="unitsLine">Units: --</div>
           </div>
         </section>
@@ -509,18 +556,35 @@
             </div>
           </div>
 
-          <!-- Use the space with a compact summary panel -->
           <div class="mini" aria-live="polite">
             <div class="row"><span>Using</span><strong id="usingLine">Auto</strong></div>
             <div class="row"><span>Location</span><strong id="usingLoc">Near you</strong></div>
             <div class="row"><span>Units</span><strong id="usingUnits">--</strong></div>
             <div class="row"><span>Tip</span><strong id="tipLine">Type a city and press Enter.</strong></div>
           </div>
+
+          <div class="mini" id="frozenPanel" style="display:none;">
+            <div class="row">
+              <span>Mode</span>
+              <strong><span class="frozen-badge">Frozen</span></strong>
+            </div>
+            <div class="row">
+              <span>Share</span>
+              <strong>
+                <button id="copyLinkBtn" type="button" style="padding:10px 12px;">Copy link</button>
+              </strong>
+            </div>
+            <div class="row">
+              <span>Note</span>
+              <strong style="text-align:right; max-width: 240px;">
+                Frozen results cannot be changed. Share it. Defend it. Stand by it.
+              </strong>
+            </div>
+          </div>
         </aside>
       </div>
     </main>
 
-    <!-- Real footer -->
     <div class="site-footer">
       <div>
         <strong style="color:rgba(255,255,255,.86);">Contact</strong><br/>
@@ -530,7 +594,7 @@
 
       <div style="text-align:right; max-width: 64ch;">
         Weather data via Open-Meteo. Geocoding via OpenStreetMap Nominatim.<br/>
-        This site is for entertainment and mild arguments only. No warranties. Don’t sue us because you wore a hoodie in a blizzard.
+        This site is for entertainment and mild arguments only. No warranties. Do not sue us because you wore a hoodie in a blizzard.
       </div>
     </div>
   </div>
@@ -546,11 +610,12 @@
       lon: null,
       countryCode: null,
       units: "F",
-      last: { temp: null, feels: null, wind: null }
+      last: { temp: null, feels: null, wind: null },
+      lastDecision: { word: "MAYBE", line: "" },
+      frozen: false
     };
 
     const wherePill = document.getElementById("wherePill");
-    const whereText = document.getElementById("whereText");
     const bigWord = document.getElementById("bigWord");
     const oneLiner = document.getElementById("oneLiner");
     const toastEl = document.getElementById("toast");
@@ -561,6 +626,12 @@
     const spinBtn = document.getElementById("spinBtn");
     const gpsBtn = document.getElementById("gpsBtn");
     const brandHome = document.getElementById("brandHome");
+
+    const freezeBtn = document.getElementById("freezeBtn");
+    const freezeHint = document.getElementById("freezeHint");
+    const frozenLine = document.getElementById("frozenLine");
+    const frozenPanel = document.getElementById("frozenPanel");
+    const copyLinkBtn = document.getElementById("copyLinkBtn");
 
     const locLine = document.getElementById("locLine");
     const locSource = document.getElementById("locSource");
@@ -580,7 +651,9 @@
       showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
     }
 
-    function setPill(text, { loading=false } = {}){
+    function setPill(text, { loading=false, frozen=false } = {}){
+      wherePill.classList.toggle("frozen", !!frozen);
+
       if (loading){
         wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
         return;
@@ -597,18 +670,6 @@
       if (run === "cold") return -4;
       if (run === "hot") return +4;
       return 0;
-    }
-
-    function decide(tempF, feelsF, run){
-      const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
-
-      if (t <= 25) return { word: "NAH", line: "That air hurts your face. Bundle up." };
-      if (t <= 35) return { word: "NAH", line: "Hoodie alone is cute. So is hypothermia." };
-      if (t <= 45) return { word: "MAYBE", line: "Hoodie plus a jacket. Don’t get cocky." };
-      if (t <= 60) return { word: "HOODIE", line: "Prime hoodie weather. Enjoy your moment." };
-      if (t <= 70) return { word: "MAYBE", line: "Hoodie if you like options. Otherwise, nah." };
-      if (t <= 82) return { word: "NAH", line: "You’re gonna regret sleeves in 10 minutes." };
-      return { word: "NAH", line: "It’s basically a warm hug from the sun. No hoodie." };
     }
 
     function fmtTemp(val, units){
@@ -644,16 +705,144 @@
       usingLoc.textContent = state.placeLabel;
       usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
 
-      if (state.source === "manual") tipLine.textContent = "Manual override wins. Always.";
-      else if (state.source === "gps") tipLine.textContent = "GPS did the work. Respect.";
-      else if (state.source === "globe") tipLine.textContent = "Random place, real judgment.";
-      else tipLine.textContent = "Type a city and press Enter.";
+      if (state.frozen){
+        tipLine.textContent = "Frozen results cannot be changed. Share it. Defend it. Stand by it.";
+      } else if (state.source === "manual") {
+        tipLine.textContent = "Manual override wins. Always.";
+      } else if (state.source === "gps") {
+        tipLine.textContent = "GPS did the work. Respect.";
+      } else if (state.source === "globe") {
+        tipLine.textContent = "Random place, real judgment.";
+      } else {
+        tipLine.textContent = "Type a city and press Enter.";
+      }
 
       locLine.textContent = state.placeLabel;
-      locSource.textContent = "Source: " + sourceName + ".";
+      locSource.textContent = "Source: " + (state.frozen ? "Frozen" : sourceName) + ".";
       unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
     }
 
+    /* ---------- localStorage helpers ---------- */
+    function lsGet(key, fallback){
+      try{
+        const raw = localStorage.getItem(key);
+        if (raw === null || raw === undefined) return fallback;
+        return JSON.parse(raw);
+      }catch(e){
+        return fallback;
+      }
+    }
+    function lsSet(key, val){
+      try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
+    }
+
+    /* ---------- snark pools + anti-repeat (persisted) ---------- */
+    const SNARK = {
+      deepFreeze: [
+        "That air hurts your face. Respectfully, no.",
+        "If your breath is crunchy, it is coat season.",
+        "Hoodie? Sure. Under the parka.",
+        "The wind is auditioning to be your enemy.",
+        "This is how you end up texting: I cannot feel my hands.",
+        "If you step outside and instantly regret it, yeah, nah.",
+        "This is not hoodie weather. This is survival gear weather.",
+        "The air is trying to fight you. Do not let it win."
+      ],
+      veryCold: [
+        "Hoodie alone is cute. So is hypothermia.",
+        "If you wear only a hoodie, you are making a statement. A dumb one.",
+        "You can do hoodie only if you also enjoy suffering.",
+        "This is hoodie plus consequences.",
+        "Nah. Add a real jacket and stop pretending.",
+        "Your ears called. They want protection.",
+        "This is the part where you learn about wind chill."
+      ],
+      cold: [
+        "Hoodie plus a jacket. Do not get cocky.",
+        "Layer up. Hoodie needs a bodyguard today.",
+        "Hoodie is allowed, but bring backup.",
+        "If you go hoodie only, at least walk fast.",
+        "A light jacket over the hoodie and you are good.",
+        "This is a hoodie, but be responsible moment.",
+        "Hoodie is fine. The wind is not."
+      ],
+      prime: [
+        "Prime hoodie weather. Enjoy your moment.",
+        "This is the whole point of hoodies existing.",
+        "Congratulations, you found peak comfort.",
+        "Hoodie time. No notes.",
+        "This is the sweet spot. Do not waste it.",
+        "Yes. Hoodie. Obviously.",
+        "Hoodie season is in session.",
+        "Your hoodie has been waiting for this."
+      ],
+      mild: [
+        "Hoodie if you like options. Otherwise, nah.",
+        "You can wear a hoodie, but you might regret it at noon.",
+        "Light layer energy. Choose your fighter.",
+        "This is borderline. Proceed with vibes.",
+        "Hoodie: optional. Confidence: required.",
+        "A thin hoodie works. A thick one is a mistake.",
+        "This is weather that changes its mind every hour."
+      ],
+      warm: [
+        "You are gonna regret sleeves in 10 minutes.",
+        "That hoodie is about to become a portable sauna.",
+        "Nah. Let your arms experience freedom.",
+        "If you wear a hoodie, you are doing it for the look, not the comfort.",
+        "This is short sleeve territory. Do not overthink it.",
+        "Put the hoodie down and step away slowly.",
+        "It is warm. Stop lying to yourself."
+      ],
+      hot: [
+        "It is basically a warm hug from the sun. No hoodie.",
+        "Hoodie? In this heat? Bold. Wrong, but bold.",
+        "Nah. Hydrate and stop layering like a villain.",
+        "If you wear a hoodie, you owe your sweat glands an apology.",
+        "This is the kind of heat that makes sleeves illegal.",
+        "The sun is doing too much. Do not join it.",
+        "This is not a hoodie day. This is a regret day."
+      ]
+    };
+
+    function pickSnark(bucketKey){
+      const arr = SNARK[bucketKey] || [];
+      if (!arr.length) return "Hoodie. Maybe. Nah. We tried.";
+
+      const keep = Math.min(8, Math.max(4, Math.floor(arr.length / 2)));
+      const key = "hon_snark_hist_" + bucketKey;
+      const hist = lsGet(key, []);
+
+      let idx = -1;
+      for (let attempt = 0; attempt < 12; attempt++){
+        const candidate = Math.floor(Math.random() * arr.length);
+        if (!hist.includes(candidate)){
+          idx = candidate;
+          break;
+        }
+      }
+      if (idx === -1) idx = Math.floor(Math.random() * arr.length);
+
+      hist.unshift(idx);
+      hist.length = keep;
+      lsSet(key, hist);
+
+      return arr[idx];
+    }
+
+    function decide(tempF, feelsF, run){
+      const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
+
+      if (t <= 20) return { word: "NAH", line: pickSnark("deepFreeze") };
+      if (t <= 35) return { word: "NAH", line: pickSnark("veryCold") };
+      if (t <= 45) return { word: "MAYBE", line: pickSnark("cold") };
+      if (t <= 60) return { word: "HOODIE", line: pickSnark("prime") };
+      if (t <= 70) return { word: "MAYBE", line: pickSnark("mild") };
+      if (t <= 82) return { word: "NAH", line: pickSnark("warm") };
+      return { word: "NAH", line: pickSnark("hot") };
+    }
+
+    /* ---------- location autocomplete ---------- */
     let suggestAbort = null;
 
     async function suggestLocations(q){
@@ -736,6 +925,7 @@
         .replaceAll("'","&#039;");
     }
 
+    /* ---------- weather ---------- */
     async function fetchWeather(lat, lon, units){
       const tempUnit = units === "F" ? "fahrenheit" : "celsius";
       const windUnit = units === "F" ? "mph" : "kmh";
@@ -760,7 +950,14 @@
       const tempF = state.units === "F" ? temp : toF(temp);
       const feelsF = state.units === "F" ? feels : toF(feels);
 
-      const d = decide(tempF, feelsF, state.run);
+      let d;
+      if (state.frozen && state.lastDecision && state.lastDecision.line){
+        d = state.lastDecision;
+      } else {
+        d = decide(tempF, feelsF, state.run);
+        state.lastDecision = d;
+      }
+
       bigWord.textContent = d.word;
       oneLiner.textContent = d.line;
 
@@ -771,6 +968,11 @@
     }
 
     async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        return;
+      }
+
       state.lat = lat;
       state.lon = lon;
       state.countryCode = countryCode || state.countryCode;
@@ -800,6 +1002,8 @@
     }
 
     async function tryAutoLocation(){
+      if (state.frozen) return;
+
       state.source = "auto";
       state.placeLabel = "Near you";
       setPill("Near you");
@@ -808,7 +1012,7 @@
 
       if (!navigator.geolocation){
         bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No GPS here. Type a city and we’ll judge it anyway.";
+        oneLiner.textContent = "No GPS here. Type a city and we will judge it anyway.";
         return;
       }
 
@@ -825,19 +1029,23 @@
         }catch(err){
           setPill("Near you");
           bigWord.textContent = "MAYBE";
-          oneLiner.textContent = "Couldn’t resolve your city. Type one and we’ll be dramatic about it.";
+          oneLiner.textContent = "Could not resolve your city. Type one and we will be dramatic about it.";
           showToast("Location lookup failed");
         }
       }, (err) => {
         setPill("Near you");
         bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No location, no problem. Type a place and let’s argue about hoodies.";
+        oneLiner.textContent = "No location, no problem. Type a place and let us argue about hoodies.";
         if (err && err.code === 1) showToast("Location access denied");
         else showToast("GPS error or timeout");
       }, opts);
     }
 
     async function onUseGPS(){
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        return;
+      }
       if (!navigator.geolocation){
         showToast("No GPS available in this browser.");
         return;
@@ -865,22 +1073,305 @@
       }, opts);
     }
 
+    /* ---------- globe spins (bigger) + anti-repeat (persisted) ---------- */
     const globeSpins = [
-      { label: "Reykjavík, Iceland", lat: 64.1466, lon: -21.9426, cc:"IS" },
-      { label: "London, UK", lat: 51.5072, lon: -0.1276, cc:"GB" },
-      { label: "Tokyo, Japan", lat: 35.6762, lon: 139.6503, cc:"JP" },
-      { label: "Sydney, Australia", lat: -33.8688, lon: 151.2093, cc:"AU" },
-      { label: "Mexico City, Mexico", lat: 19.4326, lon: -99.1332, cc:"MX" },
-      { label: "Toronto, Canada", lat: 43.6532, lon: -79.3832, cc:"CA" },
+      { label: "Seattle, WA", lat: 47.6062, lon: -122.3321, cc:"US" },
+      { label: "San Francisco, CA", lat: 37.7749, lon: -122.4194, cc:"US" },
+      { label: "Los Angeles, CA", lat: 34.0522, lon: -118.2437, cc:"US" },
+      { label: "Phoenix, AZ", lat: 33.4484, lon: -112.0740, cc:"US" },
+      { label: "Denver, CO", lat: 39.7392, lon: -104.9903, cc:"US" },
+      { label: "Dallas, TX", lat: 32.7767, lon: -96.7970, cc:"US" },
+      { label: "Houston, TX", lat: 29.7604, lon: -95.3698, cc:"US" },
       { label: "Chicago, IL", lat: 41.8781, lon: -87.6298, cc:"US" },
+      { label: "Miami, FL", lat: 25.7617, lon: -80.1918, cc:"US" },
+      { label: "New York, NY", lat: 40.7128, lon: -74.0060, cc:"US" },
+      { label: "Boston, MA", lat: 42.3601, lon: -71.0589, cc:"US" },
       { label: "Las Vegas, NV", lat: 36.1699, lon: -115.1398, cc:"US" },
-      { label: "Paris, France", lat: 48.8566, lon: 2.3522, cc:"FR" }
+      { label: "Anchorage, AK", lat: 61.2181, lon: -149.9003, cc:"US" },
+      { label: "Honolulu, HI", lat: 21.3069, lon: -157.8583, cc:"US" },
+
+      { label: "Vancouver, Canada", lat: 49.2827, lon: -123.1207, cc:"CA" },
+      { label: "Calgary, Canada", lat: 51.0447, lon: -114.0719, cc:"CA" },
+      { label: "Toronto, Canada", lat: 43.6532, lon: -79.3832, cc:"CA" },
+      { label: "Montreal, Canada", lat: 45.5019, lon: -73.5674, cc:"CA" },
+
+      { label: "Mexico City, Mexico", lat: 19.4326, lon: -99.1332, cc:"MX" },
+      { label: "Guadalajara, Mexico", lat: 20.6597, lon: -103.3496, cc:"MX" },
+      { label: "Cancun, Mexico", lat: 21.1619, lon: -86.8515, cc:"MX" },
+      { label: "Bogota, Colombia", lat: 4.7110, lon: -74.0721, cc:"CO" },
+      { label: "Lima, Peru", lat: -12.0464, lon: -77.0428, cc:"PE" },
+      { label: "Santiago, Chile", lat: -33.4489, lon: -70.6693, cc:"CL" },
+      { label: "Buenos Aires, Argentina", lat: -34.6037, lon: -58.3816, cc:"AR" },
+      { label: "Rio de Janeiro, Brazil", lat: -22.9068, lon: -43.1729, cc:"BR" },
+
+      { label: "Reykjavik, Iceland", lat: 64.1466, lon: -21.9426, cc:"IS" },
+      { label: "Dublin, Ireland", lat: 53.3498, lon: -6.2603, cc:"IE" },
+      { label: "London, UK", lat: 51.5072, lon: -0.1276, cc:"GB" },
+      { label: "Edinburgh, UK", lat: 55.9533, lon: -3.1883, cc:"GB" },
+      { label: "Paris, France", lat: 48.8566, lon: 2.3522, cc:"FR" },
+      { label: "Amsterdam, Netherlands", lat: 52.3676, lon: 4.9041, cc:"NL" },
+      { label: "Berlin, Germany", lat: 52.5200, lon: 13.4050, cc:"DE" },
+      { label: "Copenhagen, Denmark", lat: 55.6761, lon: 12.5683, cc:"DK" },
+      { label: "Stockholm, Sweden", lat: 59.3293, lon: 18.0686, cc:"SE" },
+      { label: "Oslo, Norway", lat: 59.9139, lon: 10.7522, cc:"NO" },
+      { label: "Helsinki, Finland", lat: 60.1699, lon: 24.9384, cc:"FI" },
+      { label: "Rome, Italy", lat: 41.9028, lon: 12.4964, cc:"IT" },
+      { label: "Barcelona, Spain", lat: 41.3851, lon: 2.1734, cc:"ES" },
+      { label: "Lisbon, Portugal", lat: 38.7223, lon: -9.1393, cc:"PT" },
+      { label: "Athens, Greece", lat: 37.9838, lon: 23.7275, cc:"GR" },
+
+      { label: "Cairo, Egypt", lat: 30.0444, lon: 31.2357, cc:"EG" },
+      { label: "Nairobi, Kenya", lat: -1.2921, lon: 36.8219, cc:"KE" },
+      { label: "Cape Town, South Africa", lat: -33.9249, lon: 18.4241, cc:"ZA" },
+      { label: "Dubai, UAE", lat: 25.2048, lon: 55.2708, cc:"AE" },
+
+      { label: "Istanbul, Turkey", lat: 41.0082, lon: 28.9784, cc:"TR" },
+      { label: "Mumbai, India", lat: 19.0760, lon: 72.8777, cc:"IN" },
+      { label: "Bangkok, Thailand", lat: 13.7563, lon: 100.5018, cc:"TH" },
+      { label: "Singapore", lat: 1.3521, lon: 103.8198, cc:"SG" },
+      { label: "Hong Kong", lat: 22.3193, lon: 114.1694, cc:"HK" },
+      { label: "Seoul, South Korea", lat: 37.5665, lon: 126.9780, cc:"KR" },
+      { label: "Tokyo, Japan", lat: 35.6762, lon: 139.6503, cc:"JP" },
+      { label: "Sapporo, Japan", lat: 43.0618, lon: 141.3545, cc:"JP" },
+
+      { label: "Sydney, Australia", lat: -33.8688, lon: 151.2093, cc:"AU" },
+      { label: "Melbourne, Australia", lat: -37.8136, lon: 144.9631, cc:"AU" },
+      { label: "Auckland, New Zealand", lat: -36.8509, lon: 174.7645, cc:"NZ" }
     ];
 
+    function pickGlobeIndex(){
+      const n = globeSpins.length;
+      if (n <= 1) return 0;
+
+      const keep = Math.min(14, Math.max(6, Math.floor(n / 6)));
+      const histKey = "hon_globe_hist";
+      const hist = lsGet(histKey, []);
+
+      let idx = -1;
+      for (let attempt = 0; attempt < 25; attempt++){
+        const candidate = Math.floor(Math.random() * n);
+        if (!hist.includes(candidate)){
+          idx = candidate;
+          break;
+        }
+      }
+      if (idx === -1) idx = Math.floor(Math.random() * n);
+
+      hist.unshift(idx);
+      hist.length = keep;
+      lsSet(histKey, hist);
+
+      return idx;
+    }
+
     async function onSpinGlobe(){
-      const pick = globeSpins[Math.floor(Math.random() * globeSpins.length)];
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        return;
+      }
+      const idx = pickGlobeIndex();
+      const pick = globeSpins[idx];
       state.source = "globe";
       await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc, "globe");
+    }
+
+    /* ---------- freeze mode ---------- */
+    function encodeFrozenUrl(){
+      if (!Number.isFinite(state.last.temp) || !Number.isFinite(state.last.feels) || !Number.isFinite(state.last.wind)){
+        return null;
+      }
+      if (!state.placeLabel || state.placeLabel === "Near you"){
+        return null;
+      }
+
+      const p = new URLSearchParams();
+      p.set("frozen", "1");
+      p.set("loc", state.placeLabel);
+      p.set("lat", String(state.lat ?? ""));
+      p.set("lon", String(state.lon ?? ""));
+      p.set("units", state.units);
+      p.set("run", state.run);
+      p.set("source", state.source);
+      p.set("temp", String(state.last.temp));
+      p.set("feels", String(state.last.feels));
+      p.set("wind", String(state.last.wind));
+      p.set("verdict", state.lastDecision.word || "");
+      p.set("snark", state.lastDecision.line || "");
+      return window.location.origin + window.location.pathname + "?" + p.toString();
+    }
+
+    async function copyToClipboard(text){
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      }catch(e){
+        try{
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          ta.style.position = "fixed";
+          ta.style.left = "-9999px";
+          ta.style.top = "0";
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          const ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+          return ok;
+        }catch(err){
+          return false;
+        }
+      }
+    }
+
+    function setFrozenUI(on){
+      state.frozen = !!on;
+
+      if (state.frozen){
+        setPill("📍 " + state.placeLabel + " • Frozen", { frozen: true });
+        frozenLine.style.display = "block";
+        frozenPanel.style.display = "block";
+
+        freezeBtn.textContent = "Take frozen";
+        freezeBtn.disabled = true;
+        freezeHint.textContent = "This verdict is locked.";
+
+        runSelect.disabled = true;
+        manualInput.disabled = true;
+        spinBtn.disabled = true;
+        gpsBtn.disabled = true;
+        locList.innerHTML = "";
+
+        updateSourceUI();
+      } else {
+        frozenLine.style.display = "none";
+        frozenPanel.style.display = "none";
+
+        freezeBtn.textContent = "Freeze this take";
+        freezeBtn.disabled = false;
+        freezeHint.textContent = "Locks this exact verdict so it never changes.";
+
+        runSelect.disabled = false;
+        manualInput.disabled = false;
+        spinBtn.disabled = false;
+        gpsBtn.disabled = false;
+
+        updateSourceUI();
+      }
+    }
+
+    function applyFrozenFromUrl(){
+      const params = new URLSearchParams(window.location.search);
+      const frozen = params.get("frozen") === "1";
+      if (!frozen) return false;
+
+      const loc = params.get("loc") || "Somewhere";
+      const units = (params.get("units") || "F").toUpperCase() === "C" ? "C" : "F";
+      const run = params.get("run") || "normal";
+
+      const temp = parseFloat(params.get("temp"));
+      const feels = parseFloat(params.get("feels"));
+      const wind = parseFloat(params.get("wind"));
+
+      const verdict = params.get("verdict") || "MAYBE";
+      const snark = params.get("snark") || "This take has been frozen in time.";
+
+      state.placeLabel = loc;
+      state.units = units;
+      state.run = (run === "cold" || run === "hot" || run === "normal") ? run : "normal";
+      state.source = "frozen";
+      state.lastDecision = { word: verdict, line: snark };
+
+      const lat = parseFloat(params.get("lat"));
+      const lon = parseFloat(params.get("lon"));
+      state.lat = Number.isFinite(lat) ? lat : null;
+      state.lon = Number.isFinite(lon) ? lon : null;
+
+      setFrozenUI(true);
+
+      // Render snapshot exactly as given
+      renderResult(temp, feels, wind);
+
+      // Fill side labels
+      locLine.textContent = state.placeLabel;
+      locSource.textContent = "Source: Frozen.";
+      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
+
+      return true;
+    }
+
+    /* ---------- events ---------- */
+    runSelect.addEventListener("change", () => {
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        runSelect.value = state.run;
+        return;
+      }
+      state.run = runSelect.value;
+      if (Number.isFinite(state.lat) && Number.isFinite(state.lon) && Number.isFinite(state.last.temp)){
+        // Re-run decision for current conditions
+        const temp = state.last.temp;
+        const feels = state.last.feels;
+        const wind = state.last.wind;
+        state.lastDecision = decide(state.units === "F" ? temp : toF(temp), state.units === "F" ? feels : toF(feels), state.run);
+        renderResult(temp, feels, wind);
+      }
+    });
+
+    manualInput.addEventListener("input", () => {
+      if (state.frozen) return;
+      suggestLocations(manualInput.value).catch(() => {});
+    });
+
+    manualInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        if (state.frozen){
+          showToast("Too late. The verdict has spoken.");
+          return;
+        }
+        onManualCommit();
+      }
+    });
+
+    spinBtn.addEventListener("click", onSpinGlobe);
+    gpsBtn.addEventListener("click", onUseGPS);
+
+    brandHome.addEventListener("click", () => {
+      if (state.frozen){
+        showToast("This page is frozen. Open the main site to change things.");
+        return;
+      }
+      manualInput.value = "";
+      locList.innerHTML = "";
+      tryAutoLocation();
+    });
+
+    freezeBtn.addEventListener("click", async () => {
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        return;
+      }
+      const url = encodeFrozenUrl();
+      if (!url){
+        showToast("Need a real verdict first. Give it a second.");
+        return;
+      }
+      const ok = await copyToClipboard(url);
+      if (ok) showToast("Judgment frozen. No take-backs.");
+      else showToast("Could not copy link. Your browser is being difficult.");
+
+      // Switch UI into frozen mode using the generated URL
+      window.history.replaceState(null, "", url);
+      applyFrozenFromUrl();
+    });
+
+    if (copyLinkBtn){
+      copyLinkBtn.addEventListener("click", async () => {
+        const url = window.location.href;
+        const ok = await copyToClipboard(url);
+        if (ok) showToast("Link copied. Go start arguments.");
+        else showToast("Could not copy link. Your browser is being difficult.");
+      });
     }
 
     async function onManualCommit(){
@@ -899,40 +1390,18 @@
       }
     }
 
-    runSelect.addEventListener("change", () => {
-      state.run = runSelect.value;
-      if (Number.isFinite(state.lat) && Number.isFinite(state.lon) && Number.isFinite(state.last.temp)){
-        renderResult(state.last.temp, state.last.feels, state.last.wind);
-      }
-    });
-
-    manualInput.addEventListener("input", () => {
-      suggestLocations(manualInput.value).catch(() => {});
-    });
-
-    manualInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
-        e.preventDefault();
-        onManualCommit();
-      }
-    });
-
-    spinBtn.addEventListener("click", onSpinGlobe);
-    gpsBtn.addEventListener("click", onUseGPS);
-
-    brandHome.addEventListener("click", () => {
-      manualInput.value = "";
-      locList.innerHTML = "";
-      tryAutoLocation();
-    });
-
+    /* ---------- init ---------- */
     (function init(){
       state.run = runSelect.value;
+
+      const isFrozen = applyFrozenFromUrl();
+      if (isFrozen) return;
+
+      setFrozenUI(false);
       updateSourceUI();
       tryAutoLocation();
     })();
   </script>
 </body>
 </html>
-```
 
