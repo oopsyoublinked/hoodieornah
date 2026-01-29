@@ -181,17 +181,6 @@
       flex: 0 0 auto;
     }
 
-    .spinner{
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.24);
-      border-top-color: rgba(255,255,255,.82);
-      animation: spin .75s linear infinite;
-      flex: 0 0 auto;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
     main{
       margin-top: 16px;
       border: 1px solid var(--border);
@@ -204,7 +193,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 1.55fr 1fr;
+      grid-template-columns: 1.5fr 1fr;
       gap: 16px;
     }
     @media (max-width: 980px){
@@ -239,7 +228,7 @@
     }
 
     .big{
-      font-size: 86px;
+      font-size: 82px;
       font-weight: 900;
       letter-spacing: .6px;
       margin: 8px 0 6px;
@@ -255,7 +244,7 @@
     }
     .sub{
       color: var(--muted);
-      font-size: 16px;
+      font-size: 15px;
       margin: 0 0 10px;
       max-width: 52ch;
       transition: opacity .22s ease, transform .18s ease;
@@ -402,17 +391,21 @@
       flex-wrap: wrap;
     }
 
-    /* Forecast list (replaces freeze UI) */
+    /* FORECAST: wrap so no horizontal scrollbar; use available blank space */
     .forecast-list{
       display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:nowrap;
-      overflow:auto;
-      padding: 6px;
+      gap:12px;
+      align-items:flex-start;
+      flex-wrap:wrap;           /* allow items to wrap to use blank space */
+      justify-content:flex-start;
+      padding: 6px 2px 2px;
+      margin-top: 6px;
     }
+
     .forecast-item{
-      min-width: 140px;
+      width: calc(20% - 9.6px); /* five across if space available; will wrap on narrow screens */
+      min-width: 120px;
+      max-width: 180px;
       border-radius: 14px;
       padding: 10px;
       background: rgba(255,255,255,.02);
@@ -423,6 +416,19 @@
       font-size:13px;
       color:var(--muted);
       align-items:flex-start;
+      transition: transform .14s ease, box-shadow .14s ease, background .12s ease;
+      cursor: pointer;
+    }
+    .forecast-item:focus, .forecast-item:hover{
+      transform: translateY(-6px);
+      box-shadow: 0 10px 30px rgba(0,0,0,.6);
+      background: rgba(255,255,255,.028);
+      outline: none;
+    }
+    .forecast-item .row{
+      display:flex;
+      gap:8px;
+      align-items:center;
     }
     .forecast-item .day{
       font-weight:820;
@@ -435,7 +441,13 @@
       font-size:13px;
     }
     .forecast-item .icon{
-      font-size:20px;
+      width:28px;
+      height:28px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text);
+      flex:0 0 auto;
     }
     .forecast-item .verdict{
       font-weight:900;
@@ -445,7 +457,7 @@
     .forecast-item .snark{
       color:var(--muted);
       font-size:12px;
-      line-height:1.2;
+      line-height:1.25;
     }
 
     .support{
@@ -542,6 +554,17 @@
     @media (prefers-reduced-motion: reduce) {
       * { transition: none !important; animation: none !important; }
     }
+
+    /* responsive tweaks */
+    @media (max-width: 1200px){
+      .forecast-item{ width: calc(33.333% - 8px); } /* 3-per-row */
+    }
+    @media (max-width: 760px){
+      .forecast-item{ width: calc(50% - 8px); } /* 2-per-row */
+    }
+    @media (max-width: 480px){
+      .forecast-item{ width: calc(100% - 8px); } /* stacked */
+    }
   </style>
 </head>
 
@@ -597,16 +620,13 @@
 
           <div class="divider"></div>
 
-          <div class="in-card-footer" style="align-items:flex-start;">
+          <div class="in-card-footer" style="flex-direction:column;align-items:stretch;">
             <div id="forecastPanel" style="flex:1 1 auto; min-width:220px;">
               <div class="forecast-list" id="forecastList" aria-live="polite" aria-atomic="false"></div>
               <div style="margin-top:8px;color:var(--muted);font-size:13px;" id="unitsFooter">Units: --</div>
             </div>
-
-            <div style="flex-basis:220px;"></div>
           </div>
 
-          <!-- Support moved below forecast (per request) -->
           <a class="support" href="https://buymeacoffee.com/hoodieornah" target="_blank" rel="noopener" id="supportBtn">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M6.5 8.2h9.2c.8 0 1.4.6 1.4 1.4v3.7c0 2.7-2.2 4.9-4.9 4.9H10c-2.7 0-4.9-2.2-4.9-4.9V9.6c0-.8.6-1.4 1.4-1.4Z" stroke="rgba(255,255,255,.88)" stroke-width="1.7"/>
@@ -663,7 +683,7 @@
   <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modal">
       <div>
-        <h3 id="modalTitle">Location details</h3>
+        <h3 id="modalTitle">Day details</h3>
         <div id="modalContent"></div>
         <div class="modal-row">
           <div>
@@ -693,8 +713,7 @@
       units: "F",
       unitOverride: null,
       lastDecision: { word: "MAYBE", line: "" },
-      // user prefs
-      pillBehavior: "modal" // "modal" (default) or "copy"
+      pillBehavior: "modal" // "modal" or "copy"
     };
 
     function loadState(){
@@ -785,11 +804,9 @@
     function escapeHtml(str){ return String(str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
     function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
 
-    // Normalize label storage (strip pin emojis and extra whitespace)
     function normalizeLabel(raw){
       if (!raw) return "Somewhere";
-      // remove common pin emojis and repeated occurrences
-      return String(raw).replace(/^[\s📍📌✳️\uFE0F]+|[\u200B]+/g, "").trim();
+      return String(raw).replace(/[\u{1F4CD}\u{1F4CC}\u{1F4CD}\u{1F4CB}📍📌\uFE0F]/gu, "").replace(/\s+/g," ").trim();
     }
     function displayWithPin(label){
       const clean = normalizeLabel(label);
@@ -823,7 +840,6 @@
       return await fetchJson(url, 12000);
     }
 
-    // Request daily fields including apparent temperature and weathercode for icons
     async function fetchForecast(lat, lon, units){
       const tempUnit = units === "F" ? "fahrenheit" : "celsius";
       const url =
@@ -879,7 +895,7 @@
       };
     }
 
-    // ---------- Snark (same as before) ----------
+    // ---------- Snark ----------
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -947,26 +963,25 @@
       return { word: "NAH", line: pick(SNARK.hot) };
     }
 
-    // ---------- Weather code -> emoji/icon ----------
-    function weatherCodeToEmoji(code){
-      // mapping based on Open-Meteo weathercode categories
-      // 0: clear, 1-3: partly/mostly cloudy, 45/48: fog, 51-67 drizzle/rain, 71-86 snow, 95-99 thunder
-      if (code === 0) return "☀️";
-      if (code === 1 || code === 2 || code === 3) return "⛅";
-      if (code === 45 || code === 48) return "🌫️";
-      if (code >= 51 && code <= 67) return "🌧️";
-      if (code >= 71 && code <= 86) return "❄️";
-      if (code >= 95 && code <= 99) return "⛈️";
-      return "🌤️";
+    // ---------- Small inline SVG icons for weather ----------
+    function svgFor(code){
+      // Returns an inline SVG string for a given weathercode category
+      // Keep them visually small and monochrome so they match design.
+      if (code === 0) return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor" /></svg>`; // sun
+      if (code === 1 || code === 2 || code === 3) return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M3 15a4 4 0 0 1 4-4h8a3 3 0 0 1 0 6H7a4 4 0 0 1-4-2z" fill="currentColor"/></svg>`; // cloud
+      if (code === 45 || code === 48) return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M4 12h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`; // fog
+      if (code >= 51 && code <= 67) return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M6 14a6 6 0 0 1 12 0" fill="currentColor"/><path d="M8 18l1.5-2" stroke="#000" stroke-width="1.4" stroke-linecap="round"/></svg>`; // rain-ish stylized
+      if (code >= 71 && code <= 86) return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M6 14a6 6 0 0 1 12 0" fill="currentColor"/><path d="M9 17l-1 2" stroke="#000" stroke-width="1.4" stroke-linecap="round"/></svg>`; // snow-ish stylized
+      if (code >= 95 && code <= 99) return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M7 13l5-8 2 5 3-1-2 5" fill="currentColor"/></svg>`; // thunder simple
+      return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>`;
     }
 
     // ---------- Curated city pool (placeholder) ----------
     const CURATED_CITIES = [
-      /* (same list used previously — medium ~300 entries)
-         For brevity here; paste your original list into this array as before. */
+      /* (paste your original curated city list here) */
     ];
 
-    // ---------- Spin pool management ----------
+    // ---------- Spin pool ----------
     function shuffledIndices(n){
       const a = Array.from({length:n}, (_,i)=>i);
       for (let i = a.length - 1; i > 0; i--){
@@ -995,7 +1010,6 @@
     }
 
     let spinPool = loadSpinPool();
-
     function popNextSpinIndex(){
       if (!Array.isArray(spinPool) || spinPool.length === 0){
         spinPool = shuffledIndices(CURATED_CITIES.length);
@@ -1008,7 +1022,6 @@
     // ---------- Render / state updates ----------
     let loading = false;
     function setPill(rawText){
-      // store normalized label (without pin emoji) and show single pin in UI
       const clean = normalizeLabel(rawText || state.placeLabel || "Somewhere");
       state.placeLabel = clean;
       el.whereText.textContent = displayWithPin(clean);
@@ -1086,7 +1099,7 @@
       saveState();
     }
 
-    // ---------- Forecast render ----------
+    // ---------- Forecast render & interactivity ----------
     function renderForecast(daily){
       if (!daily || !daily.time || !Array.isArray(daily.time)) {
         el.forecastList.innerHTML = "";
@@ -1098,12 +1111,9 @@
         const dateStr = daily.time[i];
         const tmax = daily.temperature_2m_max ? daily.temperature_2m_max[i] : null;
         const tmin = daily.temperature_2m_min ? daily.temperature_2m_min[i] : null;
-
-        // prefer apparent temperature daily values if available
         const amax = daily.apparent_temperature_max ? daily.apparent_temperature_max[i] : null;
         const amin = daily.apparent_temperature_min ? daily.apparent_temperature_min[i] : null;
 
-        // compute an approximate "feels" average
         let avgFeels;
         if (Number.isFinite(amax) && Number.isFinite(amin)) avgFeels = (amax + amin) / 2;
         else if (Number.isFinite(amax)) avgFeels = amax;
@@ -1111,7 +1121,6 @@
         else if (Number.isFinite(tmax) && Number.isFinite(tmin)) avgFeels = (tmax + tmin) / 2;
         else avgFeels = Number.isFinite(tmax) ? tmax : (Number.isFinite(tmin) ? tmin : null);
 
-        // For decision, convert to Fahrenheit if needed
         const tempF_forDecision = (state.units === "F") ? avgFeels : (Number.isFinite(avgFeels) ? toF(avgFeels) : null);
         const dec = decide(tempF_forDecision, tempF_forDecision, state.run);
 
@@ -1123,26 +1132,71 @@
         })(dateStr);
 
         const displayUnits = state.unitOverride || state.units;
-
-        // display numeric temps: show max/min (prefer original temp arrays)
         const displayMax = Number.isFinite(tmax) ? fmtTemp(displayUnits === "F" ? (state.units === "F" ? tmax : toF(tmax)) : (state.units === "F" ? Math.round((tmax - 32) * 5/9) : tmax), displayUnits) : "--";
         const displayMin = Number.isFinite(tmin) ? fmtTemp(displayUnits === "F" ? (state.units === "F" ? tmin : toF(tmin)) : (state.units === "F" ? Math.round((tmin - 32) * 5/9) : tmin), displayUnits) : "--";
 
         const weatherCode = (daily.weathercode && daily.weathercode[i] != null) ? daily.weathercode[i] : null;
-        const icon = weatherCode == null ? "🌤️" : weatherCodeToEmoji(weatherCode);
+        const iconSvg = svgFor(weatherCode);
 
         const html = `
-          <div class="forecast-item" role="listitem" aria-label="${escapeHtml(dayLabel)}">
-            <div class="icon">${escapeHtml(icon)}</div>
-            <div class="day">${escapeHtml(dayLabel)}</div>
+          <div class="forecast-item" role="button" tabindex="0" data-day-index="${i}" aria-label="${escapeHtml(dayLabel)}">
+            <div class="row">
+              <div class="icon" aria-hidden="true">${iconSvg}</div>
+              <div class="day">${escapeHtml(dayLabel)}</div>
+            </div>
             <div class="temp">${escapeHtml(displayMax)} / ${escapeHtml(displayMin)}</div>
             <div class="verdict">${escapeHtml(dec.word)}</div>
             <div class="snark">${escapeHtml(dec.line)}</div>
           </div>
         `;
-        items.push(html);
+        // store backing info on element via dataset; we'll also keep a small in-memory store for details
+        items.push({ html, meta: { dateStr, tmax, tmin, amax, amin, dec, weatherCode, dayLabel } });
       }
-      el.forecastList.innerHTML = items.join("");
+
+      // render and attach metadata map
+      el.forecastList.innerHTML = items.map(it => it.html).join("");
+      // attach metadata to DOM nodes
+      Array.from(el.forecastList.children).forEach((child, idx) => {
+        const meta = items[idx].meta;
+        child._meta = meta;
+      });
+    }
+
+    // click / keyboard handler for forecast items -> show modal details
+    el.forecastList.addEventListener('click', (ev) => {
+      const item = ev.target.closest('.forecast-item');
+      if (!item) return;
+      showDayModal(item._meta);
+    });
+    el.forecastList.addEventListener('keydown', (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") {
+        const item = ev.target.closest('.forecast-item');
+        if (!item) return;
+        ev.preventDefault();
+        showDayModal(item._meta);
+      }
+    });
+
+    function showDayModal(meta){
+      if (!meta) return;
+      const displayUnits = state.unitOverride || state.units;
+      const max = Number.isFinite(meta.tmax) ? (displayUnits === "F" ? (state.units === "F" ? meta.tmax : toF(meta.tmax)) : (state.units === "F" ? Math.round((meta.tmax - 32) * 5/9) : meta.tmax)) : null;
+      const min = Number.isFinite(meta.tmin) ? (displayUnits === "F" ? (state.units === "F" ? meta.tmin : toF(meta.tmin)) : (state.units === "F" ? Math.round((meta.tmin - 32) * 5/9) : meta.tmin)) : null;
+      const iconSvg = svgFor(meta.weatherCode);
+
+      const html = `
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="flex:0 0 auto">${iconSvg}</div>
+          <div style="flex:1 1 auto">
+            <strong style="display:block;margin-bottom:6px">${escapeHtml(meta.dayLabel)}</strong>
+            <div style="color:var(--muted);margin-bottom:8px">Temps: ${escapeHtml(max != null ? fmtTemp(max, displayUnits) : "--")} / ${escapeHtml(min != null ? fmtTemp(min, displayUnits) : "--")}</div>
+            <div style="font-weight:900;margin-bottom:8px">${escapeHtml(meta.dec.word)}</div>
+            <div style="color:var(--muted)">${escapeHtml(meta.dec.line)}</div>
+            <div style="margin-top:8px;color:var(--muted);font-size:13px">Source: Forecast</div>
+          </div>
+        </div>
+      `;
+      openModal(html);
     }
 
     // ---------- Core update ----------
@@ -1168,7 +1222,7 @@
         el.oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
         showToast("Could not fetch weather. Try again.");
       }finally{
-        // fetch & render forecast after showing current result
+        // forecast
         try{
           const forecastData = await fetchForecast(lat, lon, state.units);
           if (forecastData && forecastData.daily) {
@@ -1284,7 +1338,7 @@
       }, opts);
     }
 
-    // ---------- Spin (curated pool, no reroll) ----------
+    // ---------- Spin globe ----------
     async function onSpinGlobe(){
       state.source = "globe";
       updateSourceUI();
@@ -1308,7 +1362,7 @@
             await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
             return;
           }
-        }catch(e){ /* fallback to coords */ }
+        }catch(e){ /* fallback */ }
 
         state.placeLabel = formatLatLonFallback(lat, lon);
         state.countryCode = null;
@@ -1317,7 +1371,6 @@
         return;
       }
 
-      // prefer the label property; normalize to avoid duplicate pins
       if (pick.label){
         state.placeLabel = normalizeLabel(pick.label);
       } else {
@@ -1340,7 +1393,7 @@
       await updateWeatherFromLatLon(pick.lat, pick.lon, state.placeLabel, pick.cc, "globe");
     }
 
-    // ---------- Suggestions (debounced + auto-select handling) ----------
+    // ---------- Suggestions ----------
     let suggestTimer = null, suggestAbort = null;
     function suggestLocations(q){
       const s = (q||"").trim();
@@ -1359,7 +1412,6 @@
       }, 300);
     }
 
-    // Autocomplete auto-submit when user picks a datalist option (no Enter)
     el.manualInput.addEventListener('input', () => {
       suggestLocations(el.manualInput.value);
       const val = (el.manualInput.value || "").trim();
@@ -1392,7 +1444,7 @@
       }
     }
 
-    // ---------- Modal / pill behavior ----------
+    // ---------- Modal / pill ----------
     function openModal(titleHtml){
       el.modalBackdrop.style.display = "flex";
       el.modalBackdrop.setAttribute("aria-hidden", "false");
@@ -1418,7 +1470,6 @@
     el.wherePill.addEventListener("keydown", (e)=>{ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.wherePill.click(); } });
 
     el.shareTakeBtn.addEventListener("click", async ()=>{
-      // include the snarky line in the share text
       const shareText = `${state.lastDecision.word || "MAYBE"} — ${state.placeLabel || ""} — ${el.tempLine.textContent || ""} — ${el.oneLiner.textContent || ""} — #HoodieOrNah`;
       try{
         await navigator.clipboard.writeText(shareText);
@@ -1428,7 +1479,6 @@
     el.closeModalBtn.addEventListener("click", closeModal);
     el.modalBackdrop.addEventListener("click", (e)=>{ if (e.target === el.modalBackdrop) closeModal(); });
 
-    // Double-click inside modal content toggles pill behavior (power-user shortcut)
     el.modalContent.addEventListener("dblclick", ()=>{
       state.pillBehavior = (state.pillBehavior === "modal") ? "copy" : "modal";
       saveState();
