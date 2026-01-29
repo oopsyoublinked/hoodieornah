@@ -15,19 +15,6 @@
   <link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192" />
   <link rel="icon" type="image/png" href="/android-chrome-512x512.png" sizes="512x512" />
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Hoodie or Nah" />
-  <meta property="og:description" content="Settle the hoodie debate in one click. Hoodie, maybe, or nah based on your local weather." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://hoodieornah.com" />
-  <meta property="og:image" content="https://hoodieornah.com/og.png" />
-
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Hoodie or Nah" />
-  <meta name="twitter:description" content="Hoodie, maybe, or nah. Based on your weather." />
-  <meta name="twitter:image" content="https://hoodieornah.com/og.png" />
-
   <style>
     :root{
       --bg:#0b0b0f;
@@ -59,7 +46,7 @@
     .wrap{
       max-width: 1280px;
       margin: 0 auto;
-      padding: 18px 18px 14px;
+      padding: 18px;
       position: relative;
     }
 
@@ -83,7 +70,7 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding: 16px 18px;
+      padding: 12px 14px;
       border:1px solid var(--border);
       border-radius: 999px;
       background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
@@ -92,18 +79,19 @@
       top: 14px;
       backdrop-filter: blur(10px);
       z-index: 5;
+      gap: 12px;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap: 14px;
+      gap: 12px;
       min-width: 0;
     }
 
     .brand-btn{
-      width: 72px;
-      height: 72px;
+      width: 64px;
+      height: 64px;
       border-radius: 999px;
       border: 1px solid var(--border2);
       background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
@@ -120,13 +108,12 @@
       border-color: rgba(140,170,255,.35);
       box-shadow: 0 10px 34px rgba(0,0,0,.55), 0 0 26px rgba(120,160,255,.14);
     }
-    .brand-btn:active{transform: translateY(0px) scale(.99)}
     .brand-btn img{
-      width: 60px;
-      height: 60px;
+      width: 48px;
+      height: 48px;
       display:block;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
-      border-radius: 14px;
+      border-radius: 12px;
     }
 
     .wordmark{
@@ -136,23 +123,29 @@
       min-width:0;
     }
     .wordmark .title{
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 780;
       letter-spacing: .2px;
       white-space: nowrap;
     }
     .wordmark .tag{
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted2);
       letter-spacing: .2px;
       margin-top: 3px;
+    }
+
+    .header-right{
+      display:flex;
+      align-items:center;
+      gap: 12px;
     }
 
     .pill{
       display:flex;
       align-items:center;
       gap: 10px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       border-radius: 999px;
       border: 1px solid var(--border2);
       background: rgba(255,255,255,.03);
@@ -179,9 +172,30 @@
       color: rgba(255,255,255,.78);
       cursor: default;
     }
-    .pill.frozen .dot{
-      background: rgba(255,255,255,.22);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.03);
+
+    .units-seg{
+      display:inline-flex;
+      border-radius: 999px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.06);
+      padding: 4px;
+      gap: 6px;
+      align-items:center;
+      font-size: 13px;
+    }
+    .units-seg button{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .units-seg button[aria-pressed="true"]{
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 999px;
     }
 
     .spinner{
@@ -244,6 +258,12 @@
       font-weight: 900;
       letter-spacing: .6px;
       margin: 8px 0 6px;
+      transition: opacity .22s ease, transform .18s ease;
+      will-change: opacity, transform;
+    }
+    .big.fade{
+      opacity: 0;
+      transform: translateY(6px) scale(.995);
     }
     @media (max-width: 560px){
       .big{font-size: 56px}
@@ -253,6 +273,7 @@
       font-size: 16px;
       margin: 0 0 10px;
       max-width: 52ch;
+      transition: opacity .22s ease, transform .18s ease;
     }
 
     .divider{
@@ -294,13 +315,6 @@
       color: var(--muted);
       margin-top: 4px;
       line-height: 1.35;
-    }
-
-    h3{
-      margin: 0 0 2px;
-      font-size: 22px;
-      font-weight: 820;
-      letter-spacing: .2px;
     }
 
     label{
@@ -364,7 +378,7 @@
 
     .mini{
       border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.02);
+      background: rgba(255,255,255,.03);
       border-radius: 18px;
       padding: 12px 12px;
       margin-top: 6px;
@@ -511,15 +525,23 @@
         </div>
       </div>
 
-      <div class="pill" id="wherePill" title="Location">
-        <span class="dot" aria-hidden="true"></span>
-        <span id="whereText">Near you</span>
+      <div class="header-right">
+        <div class="units-seg" role="group" aria-label="Units">
+          <button id="unitAuto" aria-pressed="true" title="Auto units (based on country)">Auto</button>
+          <button id="unitF" aria-pressed="false" title="Force Fahrenheit">°F</button>
+          <button id="unitC" aria-pressed="false" title="Force Celsius">°C</button>
+        </div>
+
+        <div class="pill" id="wherePill" title="Location" aria-live="polite">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="whereText">Near you</span>
+        </div>
       </div>
     </header>
 
     <main id="mainShell">
       <div class="grid">
-        <section class="card" aria-live="polite">
+        <section class="card" aria-live="polite" aria-atomic="true">
           <div class="big" id="bigWord">LOADING</div>
           <p class="sub" id="oneLiner">Grabbing your weather. Try not to panic.</p>
 
@@ -552,7 +574,7 @@
             </a>
 
             <div class="freeze-wrap" id="freezeWrap">
-              <button class="freeze-btn" id="freezeBtn" type="button">Freeze this take</button>
+              <button class="freeze-btn" id="freezeBtn" type="button" aria-pressed="false">Freeze this take</button>
               <span class="freeze-hint" id="freezeHint">Locks this exact verdict so it never changes.</span>
               <span class="frozen-badge" id="frozenBadge" style="display:none;">Frozen mode</span>
             </div>
@@ -604,21 +626,58 @@
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const state = {
+    // ---------- State and persistence ----------
+    const STORAGE_KEY = "hoodie_state_v2";
+    const defaultState = {
       run: "normal",
       source: "auto",
       placeLabel: "Near you",
       lat: null,
       lon: null,
       countryCode: null,
-      units: "F",
+      units: "F",         // effective units in use
+      unitOverride: null, // null = auto, "F" or "C" = forced
       frozen: false,
       lastDecision: { word: "MAYBE", line: "" }
     };
 
+    const state = loadState();
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return Object.assign({}, defaultState);
+        const parsed = JSON.parse(raw);
+        return Object.assign({}, defaultState, parsed || {});
+      }catch(e){
+        return Object.assign({}, defaultState);
+      }
+    }
+
+    function saveState(){
+      try{
+        const toSave = {
+          run: state.run,
+          source: state.source,
+          placeLabel: state.placeLabel,
+          lat: state.lat,
+          lon: state.lon,
+          countryCode: state.countryCode,
+          units: state.units,
+          unitOverride: state.unitOverride,
+          frozen: state.frozen,
+          lastDecision: state.lastDecision
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+      }catch(e){
+        // ignore
+      }
+    }
+
+    // ---------- Elements ----------
     const el = {
       wherePill: document.getElementById("wherePill"),
       bigWord: document.getElementById("bigWord"),
@@ -645,17 +704,23 @@
       usingLine: document.getElementById("usingLine"),
       usingLoc: document.getElementById("usingLoc"),
       usingUnits: document.getElementById("usingUnits"),
-      tipLine: document.getElementById("tipLine")
+      tipLine: document.getElementById("tipLine"),
+
+      unitAuto: document.getElementById("unitAuto"),
+      unitF: document.getElementById("unitF"),
+      unitC: document.getElementById("unitC")
     };
 
+    // ---------- UI helpers ----------
     let loading = false;
+    let suggestTimer = null;
     let suggestAbort = null;
 
     function showToast(msg){
       el.toast.textContent = msg;
       el.toast.classList.add("show");
       clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2200);
+      showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2500);
     }
 
     window.addEventListener("error", (e) => {
@@ -665,12 +730,14 @@
     });
 
     function setPillText(text){
-      el.wherePill.classList.remove("frozen");
+      if (state.frozen) el.wherePill.classList.add("frozen");
+      else el.wherePill.classList.remove("frozen");
       el.wherePill.innerHTML = '<span class="dot" aria-hidden="true"></span><span id="whereText"></span>';
       el.wherePill.querySelector("#whereText").textContent = text;
     }
 
     function setPillLoading(){
+      el.wherePill.classList.remove("frozen");
       el.wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
     }
 
@@ -700,6 +767,10 @@
       loading = true;
       el.spinBtn.disabled = true;
       el.gpsBtn.disabled = true;
+      el.manualInput.disabled = true;
+
+      el.bigWord.classList.add("fade");
+      setTimeout(() => el.bigWord.classList.remove("fade"), 20);
 
       el.bigWord.textContent = "LOADING";
       el.oneLiner.textContent = "Grabbing your weather. Try not to panic.";
@@ -711,8 +782,9 @@
 
     function endLoading(){
       loading = false;
-      el.spinBtn.disabled = false;
-      el.gpsBtn.disabled = false;
+      el.spinBtn.disabled = !!state.frozen;
+      el.gpsBtn.disabled = !!state.frozen;
+      el.manualInput.disabled = !!state.frozen;
     }
 
     function updateSourceUI(){
@@ -723,14 +795,15 @@
 
       el.usingLine.textContent = sourceName;
       el.usingLoc.textContent = state.placeLabel;
-      el.usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
+      el.usingUnits.textContent = (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
       el.tipLine.textContent = state.source === "manual" ? "Manual override wins. Always." : "Type a city and press Enter.";
 
       el.locLine.textContent = state.placeLabel;
       el.locSource.textContent = "Source: " + sourceName + ".";
-      el.unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
+      el.unitsLine.textContent = "Units: " + (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
     }
 
+    // ---------- Snark and decision ----------
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -771,13 +844,10 @@
       ]
     };
 
-    function pick(arr){
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
+    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
     function decide(tempF, feelsF, run){
       const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
-
       if (t <= 20) return { word: "NAH", line: pick(SNARK.deepFreeze) };
       if (t <= 35) return { word: "NAH", line: pick(SNARK.veryCold) };
       if (t <= 45) return { word: "MAYBE", line: pick(SNARK.cold) };
@@ -788,7 +858,7 @@
     }
 
     function escapeHtml(str){
-      return String(str)
+      return String(str || "")
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -796,6 +866,7 @@
         .replaceAll("'","&#039;");
     }
 
+    // ---------- Network helpers ----------
     async function fetchJson(url, timeoutMs = 12000){
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -838,7 +909,7 @@
       const cc = a.country_code ? String(a.country_code).toUpperCase() : null;
       const country = a.country || "";
 
-      let label = "Near you";
+      let label = "";
       if (cc === "US"){
         const st = a.state_code || stateName;
         if (city && st) label = city + ", " + st;
@@ -849,7 +920,9 @@
         label = data.display_name.split(",").slice(0,2).join(",").trim();
       }
 
-      return { label, countryCode: cc };
+      if (!label) label = data.display_name || "";
+
+      return { label: label || null, countryCode: cc, raw: data || {} };
     }
 
     async function geocodeDisplayName(displayName){
@@ -862,18 +935,15 @@
 
       const item = data[0];
       const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
-
       const a = item.address || {};
       const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
       const stateName = a.state || a.region || "";
-      const country = a.country || "";
       let label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : displayName;
-
       if (cc === "US"){
         const st = a.state_code || stateName;
         if (city && st) label = city + ", " + st;
-      } else if (city && country){
-        label = city + ", " + country;
+      } else if (city && a.country){
+        label = city + ", " + a.country;
       }
 
       return {
@@ -884,28 +954,47 @@
       };
     }
 
+    // ---------- Render ----------
     function renderResult(temp, feels, wind){
-      const tempF = state.units === "F" ? temp : toF(temp);
-      const feelsF = state.units === "F" ? feels : toF(feels);
-
+      const tempF = (state.unitOverride === "C" ? toF(temp) : (state.units === "F" ? temp : toF(temp)));
+      const feelsF = (state.unitOverride === "C" ? toF(feels) : (state.units === "F" ? feels : toF(feels)));
+      // Choose decide based on Fahrenheit equivalent
       const d = decide(tempF, feelsF, state.run);
+      state.lastDecision = { word: d.word, line: d.line };
       el.bigWord.textContent = d.word;
       el.oneLiner.textContent = d.line;
 
-      el.tempLine.textContent = fmtTemp(temp, state.units);
-      el.feelWindLine.textContent = "Feels like: " + fmtTemp(feels, state.units) + "  |  Wind: " + fmtWind(wind, state.units);
+      // Display temperatures in the active displayed units:
+      const displayUnits = state.unitOverride || state.units;
+      const displayTemp = displayUnits === "F" ? (state.units === "F" ? temp : toF(temp)) : (state.units === "F" ? (temp - 32) * 5/9 : temp);
+      const displayFeels = displayUnits === "F" ? (state.units === "F" ? feels : toF(feels)) : (state.units === "F" ? (feels - 32) * 5/9 : feels);
+
+      el.tempLine.textContent = fmtTemp(displayTemp, displayUnits);
+      el.feelWindLine.textContent = "Feels like: " + fmtTemp(displayFeels, displayUnits) + "  |  Wind: " + fmtWind(wind, displayUnits);
 
       updateSourceUI();
+      saveState();
     }
 
+    // ---------- Core updater (avoids double fetches) ----------
     async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
+      if (state.frozen){
+        showToast("This take is frozen. Unfreeze to update.");
+        return;
+      }
+
+      // update basic state
       state.lat = lat;
       state.lon = lon;
-      state.countryCode = countryCode || state.countryCode;
       state.source = source || state.source;
 
-      state.units = countryUsesF(state.countryCode) ? "F" : "C";
-      state.placeLabel = label || state.placeLabel || "Near you";
+      // Determine desired effective units:
+      // If user forced unit -> use that. Else if reverse provided countryCode -> determine from it.
+      const effectiveUnits = state.unitOverride ? state.unitOverride : (countryCode ? (countryUsesF(countryCode) ? "F" : "C") : state.units);
+      const unitsChanged = effectiveUnits !== state.units;
+      state.units = effectiveUnits;
+      state.placeLabel = label || state.placeLabel || formatLatLonFallback(lat, lon);
+      state.countryCode = countryCode || state.countryCode;
 
       setPillText("📍 " + state.placeLabel);
       updateSourceUI();
@@ -922,14 +1011,22 @@
         showToast("Could not fetch weather. Try again.");
       }finally{
         endLoading();
+        saveState();
       }
     }
 
+    function formatLatLonFallback(lat, lon){
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return "Somewhere";
+      return lat.toFixed(2) + "°, " + lon.toFixed(2) + "°";
+    }
+
+    // ---------- Auto location ----------
     async function tryAutoLocation(){
       state.source = "auto";
       state.placeLabel = "Near you";
       setPillText("Near you");
       updateSourceUI();
+
       setLoading();
 
       if (!navigator.geolocation){
@@ -947,20 +1044,26 @@
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        // Do not block weather on reverse geocode
-        state.countryCode = "US"; // cheap default so units are not blank
-        await updateWeatherFromLatLon(lat, lon, "Near you", state.countryCode, "gps");
+        // Fetch weather once
+        await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps");
 
-        // Improve label in the background
+        // Get nicer label & maybe units; only re-fetch if units would change (and not frozen)
         try{
           const rev = await reverseGeocode(lat, lon);
-          state.countryCode = rev.countryCode || state.countryCode;
-          state.units = countryUsesF(state.countryCode) ? "F" : "C";
-          state.placeLabel = rev.label || state.placeLabel;
-          setPillText("📍 " + state.placeLabel);
-          updateSourceUI();
+          if (rev && rev.label){
+            const newUnits = state.unitOverride ? state.unitOverride : (rev.countryCode ? (countryUsesF(rev.countryCode) ? "F" : "C") : state.units);
+            const unitsChanged = newUnits !== state.units;
+            state.countryCode = rev.countryCode || state.countryCode;
+            state.placeLabel = rev.label || state.placeLabel;
+            state.units = newUnits;
+            setPillText("📍 " + state.placeLabel);
+            updateSourceUI();
+
+            if (unitsChanged && !state.frozen){
+              await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+            }
+          }
         }catch(err){
-          // Nominatim sometimes blocks. Not fatal.
           console.warn("Reverse geocode failed:", err);
         }
       }, (err) => {
@@ -973,6 +1076,7 @@
       }, opts);
     }
 
+    // ---------- Use GPS (explicit) ----------
     async function onUseGPS(){
       if (!navigator.geolocation){
         showToast("No GPS available in this browser.");
@@ -990,20 +1094,25 @@
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        // Weather first
-        await updateWeatherFromLatLon(lat, lon, "Near you", state.countryCode || "US", "gps");
+        // Fetch weather once (without country override)
+        await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps");
 
-        // Label second
+        // Label second; only re-fetch if units changed
         try{
           const rev = await reverseGeocode(lat, lon);
-          state.countryCode = rev.countryCode || state.countryCode;
-          state.units = countryUsesF(state.countryCode) ? "F" : "C";
-          state.placeLabel = rev.label || state.placeLabel;
-          setPillText("📍 " + state.placeLabel);
-          updateSourceUI();
+          if (rev && rev.label){
+            const newUnits = state.unitOverride ? state.unitOverride : (rev.countryCode ? (countryUsesF(rev.countryCode) ? "F" : "C") : state.units);
+            const unitsChanged = newUnits !== state.units;
+            state.countryCode = rev.countryCode || state.countryCode;
+            state.placeLabel = rev.label || state.placeLabel;
+            state.units = newUnits;
+            setPillText("📍 " + state.placeLabel);
+            updateSourceUI();
 
-          // Re-fetch weather if units changed due to country code update
-          await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+            if (unitsChanged && !state.frozen){
+              await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+            }
+          }
         }catch(err){
           console.warn("Reverse geocode failed:", err);
         }
@@ -1017,36 +1126,134 @@
       }, opts);
     }
 
+    // ---------- Spin the globe (option C: up to 3 re-rolls, land-biased) ----------
     async function onSpinGlobe(){
+      if (state.frozen){
+        showToast("This take is frozen. Unfreeze to spin the globe.");
+        return;
+      }
+
       state.source = "globe";
       updateSourceUI();
+      setPillText("Spinning the globe...");
+      setPillLoading();
 
-      const lat = (Math.random() * 170) - 85;
-      const lon = (Math.random() * 360) - 180;
+      // Attempt up to 3 times to find a sensible land result
+      const MAX_ATTEMPTS = 3;
+      let attempt = 0;
+      let chosen = null;
+      let chosenRev = null;
 
-      // Guess units as Celsius until we can reverse-geocode
-      state.countryCode = null;
-      state.units = "C";
-      state.placeLabel = "Somewhere chaotic";
-      setPillText("📍 " + state.placeLabel);
-      updateSourceUI();
+      while (attempt < MAX_ATTEMPTS && !chosen){
+        attempt++;
+        // Slight bias away from poles by limiting lat range
+        const lat = (Math.random() * 160) - 80; // -80 to +80
+        const lon = (Math.random() * 360) - 180;
 
-      await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
-
-      try{
-        const rev = await reverseGeocode(lat, lon);
-        state.countryCode = rev.countryCode || state.countryCode;
-        state.units = countryUsesF(state.countryCode) ? "F" : "C";
-        state.placeLabel = rev.label || state.placeLabel;
+        // Show an immediate fallback label so UI isn't "Near you"
+        const fallbackLabel = formatLatLonFallback(lat, lon);
+        state.placeLabel = "Somewhere chaotic";
         setPillText("📍 " + state.placeLabel);
         updateSourceUI();
 
-        await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
-      }catch(err){
-        console.warn("Reverse geocode failed:", err);
+        // Fetch weather for that coordinate (first attempt)
+        await updateWeatherFromLatLon(lat, lon, fallbackLabel, null, "globe");
+
+        // Try reverse geocode
+        try{
+          // small polite delay between reverse-geocode attempts to avoid hammering
+          await sleep(200 + Math.random() * 300); // 200-500ms jitter
+          const rev = await reverseGeocode(lat, lon);
+          const usefulLabel = rev && rev.label;
+          const looksLikeOcean = looksLikeWater(rev && rev.raw);
+
+          if (usefulLabel && !looksLikeOcean){
+            // Good land result
+            chosen = { lat, lon, rev };
+            chosenRev = rev;
+            break;
+          } else if (usefulLabel && looksLikeOcean){
+            // It's ocean; allow retry
+            console.warn("Spin: landed on ocean-like location:", rev && rev.raw && rev.raw.display_name);
+          } else {
+            // No useful label; retry
+          }
+
+          // If last attempt and no good label, store last rev if it has countryCode or display_name
+          if (attempt === MAX_ATTEMPTS && rev && (rev.label || rev.countryCode || (rev.raw && rev.raw.display_name))){
+            chosen = { lat, lon, rev };
+            chosenRev = rev;
+            break;
+          }
+        }catch(err){
+          console.warn("Spin reverse failed attempt", attempt, err);
+          // continue and retry
+          if (attempt === MAX_ATTEMPTS){
+            // allow fallback to lat/lon
+            chosen = { lat, lon, rev: null };
+          }
+        }
+      }
+
+      // If no chosen after attempts, fallback to last generated lat/lon (shouldn't happen)
+      if (!chosen){
+        const lat = (Math.random() * 160) - 80;
+        const lon = (Math.random() * 360) - 180;
+        chosen = { lat, lon, rev: null };
+      }
+
+      // finalize label and country code
+      const finalLat = chosen.lat;
+      const finalLon = chosen.lon;
+      const rev = chosen.rev;
+      let finalLabel = rev && rev.label ? rev.label : formatLatLonFallback(finalLat, finalLon);
+      let finalCountry = rev && rev.countryCode ? rev.countryCode : null;
+
+      // If reverse indicates water and has display_name with Ocean, make an explicit ocean label
+      if (rev && looksLikeWater(rev.raw)){
+        if (rev.raw && typeof rev.raw.display_name === "string" && /ocean|sea|bay|gulf/i.test(rev.raw.display_name)){
+          finalLabel = (rev.raw.display_name.split(",").slice(0,2).join(", ").trim()) + " (ocean)";
+        } else {
+          finalLabel = formatLatLonFallback(finalLat, finalLon) + " (ocean?)";
+        }
+      }
+
+      // Set place & maybe refetch with country-informed units
+      state.placeLabel = finalLabel;
+      state.countryCode = finalCountry || state.countryCode;
+      setPillText("📍 " + state.placeLabel);
+      updateSourceUI();
+
+      // If reverse provided a country that changes units and user hasn't forced units, re-fetch
+      const newUnits = state.unitOverride ? state.unitOverride : (finalCountry ? (countryUsesF(finalCountry) ? "F" : "C") : state.units);
+      const unitsChanged = newUnits !== state.units;
+      state.units = newUnits;
+      saveState();
+
+      if (unitsChanged && !state.frozen){
+        await updateWeatherFromLatLon(finalLat, finalLon, state.placeLabel, state.countryCode, "globe");
+      } else {
+        // Ensure we at least have a weather result for the chosen coords (if not fetched yet)
+        // updateWeatherFromLatLon was called at each attempt's first phase; ensure latest coords are shown
+        await updateWeatherFromLatLon(finalLat, finalLon, state.placeLabel, state.countryCode, "globe");
       }
     }
 
+    function looksLikeWater(raw){
+      if (!raw) return false;
+      // Nominatim reverse sometimes returns empty address for ocean, or display_name containing "Ocean" etc.
+      const dn = String(raw.display_name || "").toLowerCase();
+      if (!dn) return false;
+      if (dn.includes("ocean") || dn.includes("sea") || dn.includes("gulf") || dn.includes("bay") || dn.includes("strait")) return true;
+      // if address is empty or only contains water-related properties
+      const addr = raw.address || {};
+      if (Object.keys(addr).length === 0) return true;
+      return false;
+    }
+
+    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+    // ---------- Suggestions (debounced + abortable) ----------
     async function suggestLocations(q){
       const s = (q || "").trim();
       if (s.length < 3){
@@ -1054,31 +1261,44 @@
         return;
       }
 
-      if (suggestAbort) suggestAbort.abort();
-      suggestAbort = new AbortController();
-
-      const url =
-        "https://nominatim.openstreetmap.org/search" +
-        "?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(s);
-
-      try{
-        const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept": "application/json" } });
-        if (!res.ok) return;
-        const data = await res.json();
-
-        el.locList.innerHTML = (data || []).map(item => {
-          const label = item.display_name || "";
-          return '<option value="' + escapeHtml(label) + '"></option>';
-        }).join("");
-      }catch(e){
-        // ignore
+      if (suggestAbort) {
+        try{ suggestAbort.abort(); } catch(e){}
       }
+      if (suggestTimer) clearTimeout(suggestTimer);
+
+      suggestTimer = setTimeout(async () => {
+        suggestAbort = new AbortController();
+        const url =
+          "https://nominatim.openstreetmap.org/search" +
+          "?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(s);
+
+        try{
+          const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept": "application/json" } });
+          if (!res.ok) return;
+          const data = await res.json();
+
+          el.locList.innerHTML = (data || []).map(item => {
+            const label = item.display_name || "";
+            return '<option value="' + escapeHtml(label) + '"></option>';
+          }).join("");
+        }catch(e){
+          // ignore aborts and network hiccups
+        } finally {
+          suggestAbort = null;
+        }
+      }, 300); // 300ms debounce
     }
 
+    // ---------- Manual submit ----------
     async function onManualSubmit(){
       const q = (el.manualInput.value || "").trim();
       if (!q){
         showToast("Type a place first.");
+        return;
+      }
+
+      if (state.frozen){
+        showToast("This take is frozen. Unfreeze to change location.");
         return;
       }
 
@@ -1100,10 +1320,62 @@
       }
     }
 
+    // ---------- Freeze / Unfreeze ----------
+    function setFrozenUI(isFrozen){
+      document.body.classList.toggle("is-frozen", isFrozen);
+      el.freezeBtn.setAttribute("aria-pressed", String(!!isFrozen));
+      el.freezeBtn.textContent = isFrozen ? "Unfreeze" : "Freeze this take";
+      el.frozenBadge.style.display = isFrozen ? "inline-flex" : "none";
+      el.spinBtn.disabled = isFrozen;
+      el.gpsBtn.disabled = isFrozen;
+      el.manualInput.disabled = isFrozen;
+      el.unitAuto.disabled = isFrozen;
+      el.unitF.disabled = isFrozen;
+      el.unitC.disabled = isFrozen;
+      if (isFrozen) el.wherePill.classList.add("frozen"); else el.wherePill.classList.remove("frozen");
+    }
+
+    function toggleFreeze(){
+      state.frozen = !state.frozen;
+      setFrozenUI(state.frozen);
+      saveState();
+      showToast(state.frozen ? "Take frozen. No more updates until you unfreeze." : "Unfrozen. Updates enabled.");
+    }
+
+    // ---------- Units segmented control ----------
+    function setUnitControlButtons(){
+      const auto = !state.unitOverride;
+      el.unitAuto.setAttribute("aria-pressed", String(auto));
+      el.unitF.setAttribute("aria-pressed", String(state.unitOverride === "F"));
+      el.unitC.setAttribute("aria-pressed", String(state.unitOverride === "C"));
+    }
+
+    function applyUnitSelection(newSel){ // null, "F", "C"
+      state.unitOverride = newSel;
+      // If user forces, use that as effective units; otherwise determine from country code
+      if (state.unitOverride){
+        state.units = state.unitOverride;
+      } else {
+        state.units = state.countryCode ? (countryUsesF(state.countryCode) ? "F" : "C") : state.units;
+      }
+      setUnitControlButtons();
+      saveState();
+      // If there's a location, refresh weather with new units (unless frozen)
+      if (!state.frozen && Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+        updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
+      } else {
+        updateSourceUI();
+      }
+    }
+
+    // ---------- Init ----------
     function init(){
+      // Wire up UI events
+      el.runSelect.value = state.run || "normal";
       el.runSelect.addEventListener("change", () => {
         state.run = el.runSelect.value || "normal";
-        if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+        saveState();
+        if (Number.isFinite(state.lat) && Number.isFinite(state.lon) && !state.frozen){
           updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
         }
       });
@@ -1127,8 +1399,33 @@
         tryAutoLocation();
       });
 
-      // Start
-      tryAutoLocation();
+      el.freezeBtn.addEventListener("click", toggleFreeze);
+
+      el.unitAuto.addEventListener("click", () => applyUnitSelection(null));
+      el.unitF.addEventListener("click", () => applyUnitSelection("F"));
+      el.unitC.addEventListener("click", () => applyUnitSelection("C"));
+
+      // Initialize UI from state
+      setFrozenUI(state.frozen);
+      setPillText(state.placeLabel || "Near you");
+      setUnitControlButtons();
+      updateSourceUI();
+
+      // If we have saved lat/lon, try to restore last weather quickly (no reverse)
+      if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+        // If frozen, just display lastDecision text if present
+        if (state.frozen && state.lastDecision && state.lastDecision.word){
+          el.bigWord.textContent = state.lastDecision.word;
+          el.oneLiner.textContent = state.lastDecision.line || "";
+          updateSourceUI();
+        } else {
+          // Fetch fresh weather for stored coords
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
+        }
+      } else {
+        // No stored coords -> try auto location
+        tryAutoLocation();
+      }
     }
 
     init();
