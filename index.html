@@ -28,7 +28,6 @@
       --radius:22px;
       --radius2:28px;
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      --freeze-overlay: rgba(80,120,210,.06);
     }
 
     *{box-sizing:border-box}
@@ -164,7 +163,7 @@
       font-weight: 650;
       letter-spacing: .2px;
       user-select:none;
-      overflow: hidden;         /* preserve shape; width controlled by JS */
+      overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
       flex: 0 1 auto;
@@ -403,26 +402,6 @@
       flex-wrap: wrap;
     }
 
-    .support{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.02);
-      text-decoration:none;
-      color: var(--text);
-      font-weight: 780;
-    }
-    .support:hover{border-color: rgba(255,255,255,.18)}
-    .support svg{
-      width: 16px;
-      height: 16px;
-      opacity: .9;
-      flex: 0 0 auto;
-    }
-
     /* Forecast list (replaces freeze UI) */
     .forecast-list{
       display:flex;
@@ -433,16 +412,17 @@
       padding: 6px;
     }
     .forecast-item{
-      min-width: 120px;
+      min-width: 140px;
       border-radius: 14px;
-      padding: 8px 10px;
+      padding: 10px;
       background: rgba(255,255,255,.02);
       border: 1px solid rgba(255,255,255,.06);
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:8px;
       font-size:13px;
       color:var(--muted);
+      align-items:flex-start;
     }
     .forecast-item .day{
       font-weight:820;
@@ -454,6 +434,9 @@
       color:var(--text);
       font-size:13px;
     }
+    .forecast-item .icon{
+      font-size:20px;
+    }
     .forecast-item .verdict{
       font-weight:900;
       font-size:16px;
@@ -463,6 +446,27 @@
       color:var(--muted);
       font-size:12px;
       line-height:1.2;
+    }
+
+    .support{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 780;
+      margin-top:12px;
+    }
+    .support:hover{border-color: rgba(255,255,255,.18)}
+    .support svg{
+      width: 16px;
+      height: 16px;
+      opacity: .9;
+      flex: 0 0 auto;
     }
 
     .site-footer{
@@ -593,25 +597,24 @@
 
           <div class="divider"></div>
 
-          <div class="in-card-footer">
-            <a class="support" href="https://buymeacoffee.com/hoodieornah" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M6.5 8.2h9.2c.8 0 1.4.6 1.4 1.4v3.7c0 2.7-2.2 4.9-4.9 4.9H10c-2.7 0-4.9-2.2-4.9-4.9V9.6c0-.8.6-1.4 1.4-1.4Z" stroke="rgba(255,255,255,.88)" stroke-width="1.7"/>
-                <path d="M17.1 9.6h1.1c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3h-1.1" stroke="rgba(255,255,255,.78)" stroke-width="1.7" stroke-linecap="round"/>
-                <path d="M7.6 21h9.2" stroke="rgba(255,255,255,.50)" stroke-width="1.7" stroke-linecap="round"/>
-              </svg>
-              <span>Support the hoodie science</span>
-            </a>
-
-            <!-- Forecast list (replaces freeze UI) -->
+          <div class="in-card-footer" style="align-items:flex-start;">
             <div id="forecastPanel" style="flex:1 1 auto; min-width:220px;">
-              <div class="forecast-list" id="forecastList" aria-live="polite" aria-atomic="false">
-                <!-- populated dynamically -->
-              </div>
+              <div class="forecast-list" id="forecastList" aria-live="polite" aria-atomic="false"></div>
+              <div style="margin-top:8px;color:var(--muted);font-size:13px;" id="unitsFooter">Units: --</div>
             </div>
 
-            <div id="unitsLine">Units: --</div>
+            <div style="flex-basis:220px;"></div>
           </div>
+
+          <!-- Support moved below forecast (per request) -->
+          <a class="support" href="https://buymeacoffee.com/hoodieornah" target="_blank" rel="noopener" id="supportBtn">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6.5 8.2h9.2c.8 0 1.4.6 1.4 1.4v3.7c0 2.7-2.2 4.9-4.9 4.9H10c-2.7 0-4.9-2.2-4.9-4.9V9.6c0-.8.6-1.4 1.4-1.4Z" stroke="rgba(255,255,255,.88)" stroke-width="1.7"/>
+              <path d="M17.1 9.6h1.1c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3h-1.1" stroke="rgba(255,255,255,.78)" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M7.6 21h9.2" stroke="rgba(255,255,255,.50)" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+            <span>Support the hoodie science</span>
+          </a>
         </section>
 
         <aside class="card-right">
@@ -745,7 +748,7 @@
       locSource: document.getElementById("locSource"),
       tempLine: document.getElementById("tempLine"),
       feelWindLine: document.getElementById("feelWindLine"),
-      unitsLine: document.getElementById("unitsLine"),
+      unitsLine: document.getElementById("unitsFooter"),
       usingLine: document.getElementById("usingLine"),
       usingLoc: document.getElementById("usingLoc"),
       usingUnits: document.getElementById("usingUnits"),
@@ -755,7 +758,8 @@
       modalContent: document.getElementById("modalContent"),
       shareTakeBtn: document.getElementById("shareTakeBtn"),
       closeModalBtn: document.getElementById("closeModalBtn"),
-      forecastList: document.getElementById("forecastList")
+      forecastList: document.getElementById("forecastList"),
+      supportBtn: document.getElementById("supportBtn")
     };
 
     // ---------- Toast ----------
@@ -780,6 +784,17 @@
     function fmtWind(val, units){ if (!Number.isFinite(val)) return "--"; return Math.round(val) + (units === "F" ? " mph" : " km/h"); }
     function escapeHtml(str){ return String(str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
     function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+    // Normalize label storage (strip pin emojis and extra whitespace)
+    function normalizeLabel(raw){
+      if (!raw) return "Somewhere";
+      // remove common pin emojis and repeated occurrences
+      return String(raw).replace(/^[\s📍📌✳️\uFE0F]+|[\u200B]+/g, "").trim();
+    }
+    function displayWithPin(label){
+      const clean = normalizeLabel(label);
+      return "📍 " + clean;
+    }
 
     // ---------- Network helpers ----------
     async function fetchJson(url, timeoutMs = 12000){
@@ -808,13 +823,14 @@
       return await fetchJson(url, 12000);
     }
 
+    // Request daily fields including apparent temperature and weathercode for icons
     async function fetchForecast(lat, lon, units){
       const tempUnit = units === "F" ? "fahrenheit" : "celsius";
       const url =
         "https://api.open-meteo.com/v1/forecast" +
         "?latitude=" + encodeURIComponent(lat) +
         "&longitude=" + encodeURIComponent(lon) +
-        "&daily=temperature_2m_max,temperature_2m_min" +
+        "&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,weathercode" +
         "&temperature_unit=" + tempUnit +
         "&timezone=auto&forecast_days=7";
 
@@ -858,12 +874,12 @@
       return {
         lat: parseFloat(item.lat),
         lon: parseFloat(item.lon),
-        label,
+        label: normalizeLabel(label),
         countryCode: cc
       };
     }
 
-    // ---------- Snark (expanded) ----------
+    // ---------- Snark (same as before) ----------
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -931,11 +947,23 @@
       return { word: "NAH", line: pick(SNARK.hot) };
     }
 
-    // ---------- Curated city pool (reused medium list for no rerolls) ----------
+    // ---------- Weather code -> emoji/icon ----------
+    function weatherCodeToEmoji(code){
+      // mapping based on Open-Meteo weathercode categories
+      // 0: clear, 1-3: partly/mostly cloudy, 45/48: fog, 51-67 drizzle/rain, 71-86 snow, 95-99 thunder
+      if (code === 0) return "☀️";
+      if (code === 1 || code === 2 || code === 3) return "⛅";
+      if (code === 45 || code === 48) return "🌫️";
+      if (code >= 51 && code <= 67) return "🌧️";
+      if (code >= 71 && code <= 86) return "❄️";
+      if (code >= 95 && code <= 99) return "⛈️";
+      return "🌤️";
+    }
+
+    // ---------- Curated city pool (placeholder) ----------
     const CURATED_CITIES = [
       /* (same list used previously — medium ~300 entries)
-         For brevity in conversation it is included here; when you paste the file it will be present exactly
-         as in the prior delivered version (the list is long and covers global cities). */
+         For brevity here; paste your original list into this array as before. */
     ];
 
     // ---------- Spin pool management ----------
@@ -979,10 +1007,12 @@
 
     // ---------- Render / state updates ----------
     let loading = false;
-    function setPill(text){
-      state.placeLabel = text || state.placeLabel || "Somewhere";
-      el.whereText.textContent = state.placeLabel;
-      el.wherePill.setAttribute('title', state.placeLabel);
+    function setPill(rawText){
+      // store normalized label (without pin emoji) and show single pin in UI
+      const clean = normalizeLabel(rawText || state.placeLabel || "Somewhere");
+      state.placeLabel = clean;
+      el.whereText.textContent = displayWithPin(clean);
+      el.wherePill.setAttribute('title', clean);
       adjustPillWidth();
       updateSourceUI();
       saveState();
@@ -1011,6 +1041,7 @@
       el.tempLine.textContent = "--";
       el.feelWindLine.textContent = "Feels like: --  |  Wind: --";
       el.unitsLine.textContent = "Units: --";
+      el.forecastList.innerHTML = "";
     }
 
     function endLoadingUI(){
@@ -1027,11 +1058,11 @@
         state.source === "globe" ? "Globe" : "Auto";
 
       el.usingLine.textContent = sourceName;
-      el.usingLoc.textContent = state.placeLabel;
+      el.usingLoc.textContent = displayWithPin(state.placeLabel || "Somewhere");
       el.usingUnits.textContent = (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
       el.actionsLine && (el.actionsLine.textContent = "Click the location for details or copy");
 
-      el.locLine.textContent = state.placeLabel;
+      el.locLine.textContent = displayWithPin(state.placeLabel || "Somewhere");
       el.locSource.textContent = "Source: " + sourceName + ".";
       el.unitsLine.textContent = "Units: " + (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit (forced)" : "Celsius (forced)") : (state.units === "F" ? "Fahrenheit" : "Celsius"));
     }
@@ -1061,18 +1092,29 @@
         el.forecastList.innerHTML = "";
         return;
       }
-      // build first 5 days
       const days = Math.min(5, daily.time.length);
       const items = [];
       for (let i = 0; i < days; i++){
         const dateStr = daily.time[i];
         const tmax = daily.temperature_2m_max ? daily.temperature_2m_max[i] : null;
         const tmin = daily.temperature_2m_min ? daily.temperature_2m_min[i] : null;
-        const avg = (Number.isFinite(tmax) && Number.isFinite(tmin)) ? ((tmax + tmin) / 2) : (Number.isFinite(tmax) ? tmax : tmin);
-        // convert to Fahrenheit for decision, depending on returned units
-        const tempF = (state.units === "F") ? avg : (Number.isFinite(avg) ? toF(avg) : null);
-        const feelsF = tempF; // approximate
-        const dec = decide(tempF, feelsF, state.run);
+
+        // prefer apparent temperature daily values if available
+        const amax = daily.apparent_temperature_max ? daily.apparent_temperature_max[i] : null;
+        const amin = daily.apparent_temperature_min ? daily.apparent_temperature_min[i] : null;
+
+        // compute an approximate "feels" average
+        let avgFeels;
+        if (Number.isFinite(amax) && Number.isFinite(amin)) avgFeels = (amax + amin) / 2;
+        else if (Number.isFinite(amax)) avgFeels = amax;
+        else if (Number.isFinite(amin)) avgFeels = amin;
+        else if (Number.isFinite(tmax) && Number.isFinite(tmin)) avgFeels = (tmax + tmin) / 2;
+        else avgFeels = Number.isFinite(tmax) ? tmax : (Number.isFinite(tmin) ? tmin : null);
+
+        // For decision, convert to Fahrenheit if needed
+        const tempF_forDecision = (state.units === "F") ? avgFeels : (Number.isFinite(avgFeels) ? toF(avgFeels) : null);
+        const dec = decide(tempF_forDecision, tempF_forDecision, state.run);
+
         const dayLabel = (function(d){
           try{
             const dt = new Date(d + "T00:00:00");
@@ -1081,11 +1123,17 @@
         })(dateStr);
 
         const displayUnits = state.unitOverride || state.units;
+
+        // display numeric temps: show max/min (prefer original temp arrays)
         const displayMax = Number.isFinite(tmax) ? fmtTemp(displayUnits === "F" ? (state.units === "F" ? tmax : toF(tmax)) : (state.units === "F" ? Math.round((tmax - 32) * 5/9) : tmax), displayUnits) : "--";
         const displayMin = Number.isFinite(tmin) ? fmtTemp(displayUnits === "F" ? (state.units === "F" ? tmin : toF(tmin)) : (state.units === "F" ? Math.round((tmin - 32) * 5/9) : tmin), displayUnits) : "--";
 
+        const weatherCode = (daily.weathercode && daily.weathercode[i] != null) ? daily.weathercode[i] : null;
+        const icon = weatherCode == null ? "🌤️" : weatherCodeToEmoji(weatherCode);
+
         const html = `
           <div class="forecast-item" role="listitem" aria-label="${escapeHtml(dayLabel)}">
+            <div class="icon">${escapeHtml(icon)}</div>
             <div class="day">${escapeHtml(dayLabel)}</div>
             <div class="temp">${escapeHtml(displayMax)} / ${escapeHtml(displayMin)}</div>
             <div class="verdict">${escapeHtml(dec.word)}</div>
@@ -1104,12 +1152,11 @@
       state.source = source || state.source;
 
       const effectiveUnits = state.unitOverride ? state.unitOverride : (countryCode ? (countryUsesF(countryCode) ? "F" : "C") : state.units);
-      const unitsChanged = effectiveUnits !== state.units;
       state.units = effectiveUnits;
-      state.placeLabel = label || state.placeLabel || formatLatLonFallback(lat, lon);
+      state.placeLabel = normalizeLabel(label || state.placeLabel || formatLatLonFallback(lat, lon));
       state.countryCode = countryCode || state.countryCode;
 
-      setPill("📍 " + state.placeLabel);
+      setPill(state.placeLabel);
       setLoadingUI();
       try{
         const data = await fetchWeather(lat, lon, state.units);
@@ -1121,7 +1168,7 @@
         el.oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
         showToast("Could not fetch weather. Try again.");
       }finally{
-        // fetch & render forecast after showing current result (non-blocking if it fails)
+        // fetch & render forecast after showing current result
         try{
           const forecastData = await fetchForecast(lat, lon, state.units);
           if (forecastData && forecastData.daily) {
@@ -1173,8 +1220,9 @@
           if (rev && rev.display_name){
             const cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
             state.countryCode = cc || state.countryCode;
-            state.placeLabel = rev.display_name.split(",").slice(0,2).join(",").trim();
-            setPill("📍 " + state.placeLabel);
+            const label = rev.display_name.split(",").slice(0,2).join(",").trim();
+            state.placeLabel = normalizeLabel(label);
+            setPill(state.placeLabel);
             updateSourceUI();
             if (!state.unitOverride){
               const newUnits = cc ? (countryUsesF(cc) ? "F" : "C") : state.units;
@@ -1214,8 +1262,9 @@
           if (rev && rev.display_name){
             const cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
             state.countryCode = cc || state.countryCode;
-            state.placeLabel = rev.display_name.split(",").slice(0,2).join(",").trim();
-            setPill("📍 " + state.placeLabel);
+            const label = rev.display_name.split(",").slice(0,2).join(",").trim();
+            state.placeLabel = normalizeLabel(label);
+            setPill(state.placeLabel);
             updateSourceUI();
             if (!state.unitOverride){
               const newUnits = cc ? (countryUsesF(cc) ? "F" : "C") : state.units;
@@ -1249,14 +1298,13 @@
       if (!pick){
         const lat = (Math.random()*160)-80;
         const lon = (Math.random()*360)-180;
-        // try to reverse geocode so we prefer a name over coords
         try{
           const rev = await reverseGeocode(lat, lon);
           if (rev && rev.display_name){
             const label = rev.display_name.split(",").slice(0,2).join(",").trim();
-            state.placeLabel = label;
+            state.placeLabel = normalizeLabel(label);
             state.countryCode = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
-            setPill("📍 " + state.placeLabel);
+            setPill(state.placeLabel);
             await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "globe");
             return;
           }
@@ -1264,19 +1312,19 @@
 
         state.placeLabel = formatLatLonFallback(lat, lon);
         state.countryCode = null;
-        setPill("📍 " + state.placeLabel);
+        setPill(state.placeLabel);
         await updateWeatherFromLatLon(lat, lon, state.placeLabel, null, "globe");
         return;
       }
 
-      // prefer the label property; if not present attempt reverse geocode
+      // prefer the label property; normalize to avoid duplicate pins
       if (pick.label){
-        state.placeLabel = pick.label;
+        state.placeLabel = normalizeLabel(pick.label);
       } else {
         try{
           const rev = await reverseGeocode(pick.lat, pick.lon);
           if (rev && rev.display_name){
-            state.placeLabel = rev.display_name.split(",").slice(0,2).join(",").trim();
+            state.placeLabel = normalizeLabel(rev.display_name.split(",").slice(0,2).join(",").trim());
             pick.cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : pick.cc;
           } else {
             state.placeLabel = formatLatLonFallback(pick.lat, pick.lon);
@@ -1288,7 +1336,7 @@
 
       state.countryCode = pick.cc || state.countryCode;
       if (!state.unitOverride) state.units = countryUsesF(state.countryCode) ? "F" : "C";
-      setPill("📍 " + state.placeLabel);
+      setPill(state.placeLabel);
       await updateWeatherFromLatLon(pick.lat, pick.lon, state.placeLabel, pick.cc, "globe");
     }
 
@@ -1314,14 +1362,11 @@
     // Autocomplete auto-submit when user picks a datalist option (no Enter)
     el.manualInput.addEventListener('input', () => {
       suggestLocations(el.manualInput.value);
-      // If current value matches a datalist option, auto-submit
       const val = (el.manualInput.value || "").trim();
       if (!val || val.length < 1) return;
       const opts = Array.from(el.locList.options || []).map(o => o.value);
       if (opts.includes(val)){
-        // small delay to allow the browser to finalize the selection
         setTimeout(() => {
-          // protect against double-submits
           if (!loading) onManualSubmit();
         }, 6);
       }
@@ -1367,7 +1412,7 @@
         return;
       }
       const latlon = Number.isFinite(state.lat) && Number.isFinite(state.lon) ? `<div style="margin-top:8px;color:var(--muted);font-size:13px;">Coords: ${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}</div>` : "";
-      const html = `<div><strong>${escapeHtml(full)}</strong>${latlon}<pre style="margin-top:8px;">${escapeHtml(state.lastDecision.word || "")} — ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
+      const html = `<div><strong>${escapeHtml(displayWithPin(full))}</strong>${latlon}<pre style="margin-top:8px;">${escapeHtml(state.lastDecision.word || "")} — ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
       openModal(html);
     });
     el.wherePill.addEventListener("keydown", (e)=>{ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.wherePill.click(); } });
