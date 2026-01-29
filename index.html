@@ -1,991 +1,186 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hoodie or Nah</title>
-  <meta name="description" content="Settle the hoodie debate. Hoodie, maybe, or nah based on your local weather." />
-  <meta name="theme-color" content="#0b0b0f" />
-
-  <!-- Favicons / App Icons -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
-  <link rel="icon" type="image/png" href="/favicon-16.png" sizes="16x16" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-  <link rel="icon" type="image/png" href="/android-chrome-192x192.png" sizes="192x192" />
-  <link rel="icon" type="image/png" href="/android-chrome-512x512.png" sizes="512x512" />
-
-  <!-- Open Graph -->
-  <meta property="og:title" content="Hoodie or Nah" />
-  <meta property="og:description" content="Settle the hoodie debate in one click. Hoodie, maybe, or nah based on your local weather." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://hoodieornah.com" />
-  <meta property="og:image" content="https://hoodieornah.com/og.png" />
-
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Hoodie or Nah" />
-  <meta name="twitter:description" content="Hoodie, maybe, or nah. Based on your weather." />
-  <meta name="twitter:image" content="https://hoodieornah.com/og.png" />
-
-  <style>
-    :root{
-      --bg:#0b0b0f;
-      --panel:#0f1016;
-      --border:rgba(255,255,255,.10);
-      --border2:rgba(255,255,255,.14);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --muted2:rgba(255,255,255,.48);
-      --shadow:0 18px 60px rgba(0,0,0,.55);
-      --radius:22px;
-      --radius2:28px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
-      color-scheme: dark;
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--font);
-      background:
-        radial-gradient(1200px 600px at 10% 0%, rgba(120,160,255,.12), transparent 45%),
-        radial-gradient(900px 500px at 90% 20%, rgba(255,255,255,.06), transparent 55%),
-        var(--bg);
-      color:var(--text);
-    }
-
-    .wrap{
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 18px 18px 14px;
-      position: relative;
-    }
-
-    body.is-frozen .wrap::before{
-      content:"";
-      position:absolute;
-      inset:-12px -10px auto -10px;
-      height: 220px;
-      pointer-events:none;
-      background:
-        radial-gradient(700px 160px at 20% 10%, rgba(160,190,255,.10), transparent 55%),
-        radial-gradient(560px 140px at 85% 10%, rgba(255,255,255,.08), transparent 60%);
-      filter: blur(8px);
-      opacity: .9;
-    }
-
-    body.is-frozen main{
-      box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 40px rgba(140,170,255,.08);
-    }
-
-    .freeze-pop{ animation: freezePop 520ms ease-out 1; }
-    @keyframes freezePop{
-      0%{ transform: translateY(0px) scale(1); }
-      45%{ transform: translateY(-2px) scale(1.01); }
-      100%{ transform: translateY(0px) scale(1); }
-    }
-
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 16px 18px;
-      border:1px solid var(--border);
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      box-shadow: var(--shadow);
-      position: sticky;
-      top: 14px;
-      backdrop-filter: blur(10px);
-      z-index: 5;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 14px;
-      min-width: 0;
-    }
-
-    /* Bigger logo button */
-    .brand-btn{
-      width: 78px;
-      height: 78px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
-      display:grid;
-      place-items:center;
-      padding:0;
-      cursor:pointer;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-      box-shadow: 0 8px 28px rgba(0,0,0,.45);
-      overflow:hidden;
-    }
-    .brand-btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(140,170,255,.35);
-      box-shadow: 0 10px 34px rgba(0,0,0,.55), 0 0 26px rgba(120,160,255,.14);
-    }
-    .brand-btn:active{transform: translateY(0px) scale(.99)}
-    .brand-btn img{
-      width: 62px;
-      height: 62px;
-      display:block;
-      image-rendering: auto;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
-      border-radius: 16px;
-    }
-
-    .wordmark{
-      display:flex;
-      flex-direction:column;
-      line-height:1.05;
-      min-width:0;
-    }
-    .wordmark .title{
-      font-size: 22px;
-      font-weight: 780;
-      letter-spacing: .2px;
-      white-space: nowrap;
-    }
-    .wordmark .tag{
-      font-size: 12px;
-      color: var(--muted2);
-      letter-spacing: .2px;
-      margin-top: 3px;
-    }
-
-    .pill{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      font-weight: 650;
-      letter-spacing: .2px;
-      user-select:none;
-      max-width: 46%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .pill .dot{
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.32);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.04);
-      flex: 0 0 auto;
-    }
-    .pill.frozen{
-      border-color: rgba(255,255,255,.18);
-      background: rgba(255,255,255,.02);
-      color: rgba(255,255,255,.78);
-      cursor: default;
-    }
-    .pill.frozen .dot{
-      background: rgba(255,255,255,.22);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.03);
-    }
-
-    .spinner{
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      border: 2px solid rgba(255,255,255,.24);
-      border-top-color: rgba(255,255,255,.82);
-      animation: spin .75s linear infinite;
-      flex: 0 0 auto;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    main{
-      margin-top: 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius2);
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-      box-shadow: var(--shadow);
-      padding: 16px;
-      transition: box-shadow .22s ease;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1.55fr 1fr;
-      gap: 16px;
-    }
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-      .pill{max-width: 60%}
-    }
-
-    .card{
-      border-radius: var(--radius);
-      border: 1px solid var(--border2);
-      background:
-        radial-gradient(900px 500px at 10% 0%, rgba(120,160,255,.10), transparent 42%),
-        radial-gradient(700px 420px at 85% 10%, rgba(255,255,255,.07), transparent 50%),
-        rgba(0,0,0,.22);
-      padding: 18px;
-      min-height: 390px;
-      position:relative;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-    }
-
-    body.is-frozen .card{ min-height: 0; }
-
-    .card-right{
-      border-radius: var(--radius);
-      border: 1px solid var(--border2);
-      background: rgba(0,0,0,.18);
-      padding: 18px;
-      min-height: 390px;
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
-
-    .big{
-      font-size: 86px;
-      font-weight: 900;
-      letter-spacing: .6px;
-      margin: 8px 0 6px;
-    }
-    @media (max-width: 560px){
-      .big{font-size: 56px}
-    }
-    .sub{
-      color: var(--muted);
-      font-size: 16px;
-      margin: 0 0 10px;
-      max-width: 52ch;
-    }
-
-    .divider{
-      height:1px;
-      background: rgba(255,255,255,.10);
-      margin: 16px 0 12px;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 6px;
-    }
-    @media (max-width: 560px){
-      .stats{grid-template-columns:1fr}
-    }
-
-    .stat{
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.03);
-      border-radius: 16px;
-      padding: 12px 12px;
-    }
-    .stat .k{
-      font-size: 12px;
-      color: var(--muted2);
-      font-weight: 750;
-      letter-spacing: .2px;
-      margin-bottom: 6px;
-    }
-    .stat .v{
-      font-size: 16px;
-      font-weight: 820;
-      letter-spacing: .2px;
-    }
-    .stat .s{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 4px;
-      line-height: 1.35;
-    }
-
-    h3{
-      margin: 0 0 2px;
-      font-size: 22px;
-      font-weight: 820;
-      letter-spacing: .2px;
-    }
-
-    label{
-      display:block;
-      font-size: 13px;
-      color: var(--muted);
-      margin: 10px 0 8px;
-      font-weight: 650;
-    }
-
-    select, input{
-      width:100%;
-      padding: 12px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      outline: none;
-      font-size: 14px;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.15);
-      color-scheme: dark;
-    }
-
-    select{ background-color: rgba(255,255,255,.03); }
-    option{ background-color: #0f1016; color: rgba(255,255,255,.92); }
-    input::placeholder{color: rgba(255,255,255,.35)}
-
-    .btn-row{
-      display:flex;
-      gap: 10px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-
-    button{
-      padding: 12px 14px;
-      border-radius: 999px;
-      border: 1px solid var(--border2);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      font-weight: 740;
-      letter-spacing: .2px;
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
-    }
-    button:hover{
-      transform: translateY(-1px);
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.06);
-    }
-    button:active{transform: translateY(0px) scale(.99)}
-    button:disabled{
-      opacity:.48;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .mini{
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.02);
-      border-radius: 18px;
-      padding: 12px 12px;
-      margin-top: 6px;
-    }
-    .mini .row{
-      display:flex;
-      justify-content:space-between;
-      gap: 12px;
-      align-items:flex-start;
-      padding: 6px 2px;
-      color: var(--muted);
-      font-weight: 650;
-      font-size: 13px;
-    }
-    .mini .row strong{
-      color: var(--text);
-      font-weight: 820;
-    }
-
-    .in-card-footer{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin-top: 14px;
-      color: var(--muted);
-      font-weight: 650;
-      padding: 2px 2px 0;
-      flex-wrap: wrap;
-    }
-
-    .support{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.02);
-      text-decoration:none;
-      color: var(--text);
-      font-weight: 780;
-    }
-    .support:hover{border-color: rgba(255,255,255,.18)}
-    .support svg{
-      width: 16px;
-      height: 16px;
-      opacity: .9;
-      flex: 0 0 auto;
-    }
-
-    .freeze-wrap{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .freeze-btn{ background: rgba(255,255,255,.05); }
-    .freeze-hint{
-      font-size: 12px;
-      color: rgba(255,255,255,.50);
-      line-height: 1.35;
-    }
-
-    .frozen-badge{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.02);
-      color: rgba(255,255,255,.80);
-      font-weight: 780;
-      letter-spacing: .2px;
-      font-size: 12px;
-    }
-
-    .frozen-fill{
-      margin-top: 14px;
-      border: 1px dashed rgba(255,255,255,.14);
-      border-radius: 18px;
-      background:
-        radial-gradient(520px 220px at 20% 0%, rgba(160,190,255,.08), transparent 55%),
-        radial-gradient(420px 180px at 90% 10%, rgba(255,255,255,.06), transparent 55%),
-        rgba(0,0,0,.12);
-      padding: 14px;
-      display:none;
-    }
-    body.is-frozen .frozen-fill{ display:block; }
-    .frozen-fill .title{
-      font-weight: 820;
-      letter-spacing: .2px;
-      margin-bottom: 6px;
-      color: rgba(255,255,255,.86);
-      font-size: 13px;
-    }
-    .frozen-fill .desc{
-      color: rgba(255,255,255,.56);
-      font-size: 12px;
-      line-height: 1.45;
-      margin-bottom: 10px;
-    }
-    .frozen-fill .row{
-      display:flex;
-      gap: 10px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap: wrap;
-    }
-    .frozen-fill code{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 12px;
-      color: rgba(255,255,255,.78);
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 8px 10px;
-      border-radius: 12px;
-      max-width: 100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      flex: 1 1 380px;
-      min-width: 240px;
-    }
-
-    .site-footer{
-      margin-top: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
-      background: rgba(0,0,0,.18);
-      padding: 14px 14px;
-      display:flex;
-      justify-content:space-between;
-      gap: 12px;
-      align-items:flex-start;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .site-footer a{
-      color: rgba(255,255,255,.82);
-      text-decoration:none;
-      border-bottom: 1px solid rgba(255,255,255,.20);
-    }
-    .site-footer a:hover{ border-bottom-color: rgba(255,255,255,.40); }
-
-    .toast{
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.75);
-      color: var(--text);
-      box-shadow: var(--shadow);
-      opacity: 0;
-      pointer-events:none;
-      transition: opacity .18s ease, transform .18s ease;
-      z-index: 30;
-      max-width: min(720px, calc(100% - 24px));
-      text-align:center;
-      font-weight: 700;
-    }
-    .toast.show{
-      opacity: 1;
-      transform: translateX(-50%) translateY(-4px);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <button class="brand-btn" id="brandHome" aria-label="Hoodie or Nah home">
-          <img src="/android-chrome-192x192.png" alt="Hoodie or Nah logo" />
-        </button>
-
-        <div class="wordmark">
-          <div class="title">Hoodie or Nah</div>
-          <div class="tag">Hoodie judgment, delivered.</div>
-        </div>
-      </div>
-
-      <div class="pill" id="wherePill" title="Location">
-        <span class="dot" aria-hidden="true"></span>
-        <span id="whereText">Near you</span>
-      </div>
-    </header>
-
-    <main id="mainShell">
-      <div class="grid">
-        <section class="card" aria-live="polite">
-          <div class="big" id="bigWord">LOADING</div>
-          <p class="sub" id="oneLiner">Grabbing your weather. Try not to panic.</p>
-
-          <div id="frozenLine" class="sub" style="display:none; margin-top:-4px; color: rgba(255,255,255,.52); font-size: 13px;">
-            This take has been frozen in time.
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="stats">
-            <div class="stat">
-              <div class="k">Location</div>
-              <div class="v" id="locLine">Near you</div>
-              <div class="s" id="locSource">Source: guessing until you say otherwise.</div>
-            </div>
-
-            <div class="stat">
-              <div class="k">Right now</div>
-              <div class="v" id="tempLine">--</div>
-              <div class="s" id="feelWindLine">Feels like: --  |  Wind: --</div>
-            </div>
-          </div>
-
-          <div class="divider"></div>
-
-          <div class="in-card-footer">
-            <a class="support" href="https://buymeacoffee.com/hoodieornah" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M6.5 8.2h9.2c.8 0 1.4.6 1.4 1.4v3.7c0 2.7-2.2 4.9-4.9 4.9H10c-2.7 0-4.9-2.2-4.9-4.9V9.6c0-.8.6-1.4 1.4-1.4Z" stroke="rgba(255,255,255,.88)" stroke-width="1.7"/>
-                <path d="M17.1 9.6h1.1c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3h-1.1" stroke="rgba(255,255,255,.78)" stroke-width="1.7" stroke-linecap="round"/>
-                <path d="M7.6 21h9.2" stroke="rgba(255,255,255,.50)" stroke-width="1.7" stroke-linecap="round"/>
-              </svg>
-              <span>Support the hoodie science</span>
-            </a>
-
-            <div class="freeze-wrap">
-              <button class="freeze-btn" id="freezeBtn" type="button">Freeze this take</button>
-              <span class="freeze-hint" id="freezeHint">Locks this exact verdict so it never changes.</span>
-            </div>
-
-            <div id="unitsLine">Units: --</div>
-          </div>
-
-          <div class="frozen-fill" id="frozenFill">
-            <div class="title">Frozen snapshot</div>
-            <div class="desc">This verdict is locked. Copy the link and go start a mild argument.</div>
-            <div class="row">
-              <code id="frozenUrlPreview">Generating link…</code>
-              <button id="copyLinkBtnLeft" type="button" style="padding:10px 12px;">Copy link</button>
-            </div>
-          </div>
-        </section>
-
-        <aside class="card-right">
-          <div>
-            <h3>How do you run?</h3>
-            <select id="runSelect" aria-label="How do you run">
-              <option value="cold">Always cold</option>
-              <option value="normal" selected>Normal</option>
-              <option value="hot">Always hot</option>
-            </select>
-
-            <label for="manualInput">Manual location (optional)</label>
-            <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP" autocomplete="off" />
-            <datalist id="locList"></datalist>
-
-            <div class="btn-row">
-              <button id="spinBtn" type="button">Spin the globe</button>
-              <button id="gpsBtn" type="button">Use my GPS</button>
-            </div>
-          </div>
-
-          <div class="mini" aria-live="polite" id="summaryPanel">
-            <div class="row"><span>Using</span><strong id="usingLine">Auto</strong></div>
-            <div class="row"><span>Location</span><strong id="usingLoc">Near you</strong></div>
-            <div class="row"><span>Units</span><strong id="usingUnits">--</strong></div>
-            <div class="row"><span>Tip</span><strong id="tipLine">Type a city and press Enter.</strong></div>
-          </div>
-
-          <div class="mini" id="frozenPanel" style="display:none;">
-            <div class="row">
-              <span>Mode</span>
-              <strong><span class="frozen-badge">Frozen</span></strong>
-            </div>
-            <div class="row">
-              <span>Share</span>
-              <strong>
-                <button id="copyLinkBtn" type="button" style="padding:10px 12px;">Copy link</button>
-              </strong>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </main>
-
-    <div class="site-footer">
-      <div>
-        <strong style="color:rgba(255,255,255,.86);">Contact</strong><br/>
-        <a href="mailto:info@hoodieornah.com">info@hoodieornah.com</a><br/>
-        <span style="color:rgba(255,255,255,.42);">We read it. Eventually.</span>
-      </div>
-
-      <div style="text-align:right; max-width: 64ch;">
-        Weather data via Open-Meteo. Geocoding via OpenStreetMap Nominatim.<br/>
-        This site is for entertainment and mild arguments only. No warranties. Do not sue us because you wore a hoodie in a blizzard.
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script>
-    const state = {
-      run: "normal",
-      source: "auto",
-      placeLabel: "Near you",
-      lat: null,
-      lon: null,
-      countryCode: null,
-      units: "F",
-      last: { temp: null, feels: null, wind: null },
-      lastDecision: { word: "MAYBE", line: "" },
-      frozen: false
-    };
-
-    const wherePill = document.getElementById("wherePill");
-    const bigWord = document.getElementById("bigWord");
-    const oneLiner = document.getElementById("oneLiner");
-    const toastEl = document.getElementById("toast");
-
-    const runSelect = document.getElementById("runSelect");
-    const manualInput = document.getElementById("manualInput");
-    const locList = document.getElementById("locList");
-    const spinBtn = document.getElementById("spinBtn");
-    const gpsBtn = document.getElementById("gpsBtn");
-    const brandHome = document.getElementById("brandHome");
-
-    const freezeBtn = document.getElementById("freezeBtn");
-    const freezeHint = document.getElementById("freezeHint");
-    const frozenLine = document.getElementById("frozenLine");
-    const frozenPanel = document.getElementById("frozenPanel");
-    const copyLinkBtn = document.getElementById("copyLinkBtn");
-    const mainShell = document.getElementById("mainShell");
-
-    const frozenUrlPreview = document.getElementById("frozenUrlPreview");
-    const copyLinkBtnLeft = document.getElementById("copyLinkBtnLeft");
-
-    const locLine = document.getElementById("locLine");
-    const locSource = document.getElementById("locSource");
-    const tempLine = document.getElementById("tempLine");
-    const feelWindLine = document.getElementById("feelWindLine");
-    const unitsLine = document.getElementById("unitsLine");
-
-    const usingLine = document.getElementById("usingLine");
-    const usingLoc = document.getElementById("usingLoc");
-    const usingUnits = document.getElementById("usingUnits");
-    const tipLine = document.getElementById("tipLine");
-
-    function showToast(msg){
-      toastEl.textContent = msg;
-      toastEl.classList.add("show");
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => toastEl.classList.remove("show"), 2200);
-    }
-
-    function setPill(text, { loading=false, frozen=false } = {}){
-      wherePill.classList.toggle("frozen", !!frozen);
-
-      if (loading){
-        wherePill.innerHTML = '<span class="spinner" aria-hidden="true"></span><span id="whereText">Locating...</span>';
+<!-- PATCH 1: Logo bigger (drop into your <style> section, replacing the existing .brand-btn and .brand-btn img blocks) -->
+<style>
+  .brand-btn{
+    width: 68px;
+    height: 68px;
+    border-radius: 999px;
+    border: 1px solid var(--border2);
+    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
+    display:grid;
+    place-items:center;
+    padding:0;
+    cursor:pointer;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    box-shadow: 0 8px 28px rgba(0,0,0,.45);
+    overflow:hidden;
+  }
+  .brand-btn:hover{
+    transform: translateY(-1px);
+    border-color: rgba(140,170,255,.35);
+    box-shadow: 0 10px 34px rgba(0,0,0,.55), 0 0 26px rgba(120,160,255,.14);
+  }
+  .brand-btn:active{transform: translateY(0px) scale(.99)}
+  .brand-btn img{
+    width: 56px;
+    height: 56px;
+    display:block;
+    image-rendering: auto;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
+    border-radius: 14px;
+  }
+</style>
+
+<script>
+/* PATCH 2: Stop "nothing loads" regressions
+   Paste this into your <script> section:
+   1) Replace your current applyFrozenFromUrl() function with this version
+   2) Add/replace the event listener hookups with the "SAFE HOOKUPS" block below
+*/
+
+/* Replace applyFrozenFromUrl() with this */
+function applyFrozenFromUrl(){
+  const params = new URLSearchParams(window.location.search);
+  const frozen = params.get("frozen") === "1";
+  if (!frozen) return false;
+
+  const loc = params.get("loc") || "Somewhere";
+  const units = (params.get("units") || "F").toUpperCase() === "C" ? "C" : "F";
+  const run = params.get("run") || "normal";
+
+  const temp = parseFloat(params.get("temp"));
+  const feels = parseFloat(params.get("feels"));
+  const wind = parseFloat(params.get("wind"));
+
+  /* Critical guard: bad frozen URLs should fall back to live mode */
+  if (!Number.isFinite(temp) || !Number.isFinite(feels) || !Number.isFinite(wind)) {
+    return false;
+  }
+
+  const verdict = params.get("verdict") || "MAYBE";
+  const snark = params.get("snark") || "This take has been frozen in time.";
+
+  state.placeLabel = loc;
+  state.units = units;
+  state.run = (run === "cold" || run === "hot" || run === "normal") ? run : "normal";
+  state.source = "frozen";
+  state.lastDecision = { word: verdict, line: snark };
+
+  const lat = parseFloat(params.get("lat"));
+  const lon = parseFloat(params.get("lon"));
+  state.lat = Number.isFinite(lat) ? lat : null;
+  state.lon = Number.isFinite(lon) ? lon : null;
+
+  setFrozenUI(true, { pop: false });
+
+  if (runSelect) runSelect.value = state.run;
+
+  renderResult(temp, feels, wind);
+
+  if (locLine) locLine.textContent = state.placeLabel;
+  if (locSource) locSource.textContent = "Source: Frozen.";
+  if (unitsLine) unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
+
+  return true;
+}
+
+/* SAFE HOOKUPS: replace your event listener section with this */
+(function wireEventsSafely(){
+  if (runSelect){
+    runSelect.addEventListener("change", () => {
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        runSelect.value = state.run;
         return;
       }
-      wherePill.innerHTML = '<span class="dot" aria-hidden="true"></span><span id="whereText"></span>';
-      document.getElementById("whereText").textContent = text;
-    }
-
-    function countryUsesF(countryCode){
-      return ["US", "LR", "MM"].includes((countryCode || "").toUpperCase());
-    }
-
-    function localeUsesF(){
-      const lang = (navigator.language || "").toLowerCase();
-      return lang.includes("en-us");
-    }
-
-    function computeUnits(countryCode){
-      if (countryCode) return countryUsesF(countryCode) ? "F" : "C";
-      return localeUsesF() ? "F" : "C";
-    }
-
-    function runOffset(run){
-      if (run === "cold") return -4;
-      if (run === "hot") return +4;
-      return 0;
-    }
-
-    function fmtTemp(val, units){
-      if (!Number.isFinite(val)) return "--";
-      return Math.round(val) + "°" + units;
-    }
-
-    function fmtWind(val, units){
-      if (!Number.isFinite(val)) return "--";
-      return Math.round(val) + (units === "F" ? " mph" : " km/h");
-    }
-
-    function toF(c){ return (c * 9/5) + 32; }
-
-    function setLoading(on){
-      if (!on) return;
-      bigWord.textContent = "LOADING";
-      oneLiner.textContent = "Grabbing your weather. Try not to panic.";
-      tempLine.textContent = "--";
-      feelWindLine.textContent = "Feels like: --  |  Wind: --";
-      unitsLine.textContent = "Units: --";
-      usingUnits.textContent = "--";
-    }
-
-    function updateSourceUI(){
-      const sourceName =
-        state.source === "gps" ? "GPS" :
-        state.source === "manual" ? "Manual" :
-        state.source === "globe" ? "Globe" :
-        state.source === "frozen" ? "Frozen" : "Auto";
-
-      usingLine.textContent = sourceName;
-      usingLoc.textContent = state.placeLabel;
-      usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
-
-      if (state.frozen){
-        tipLine.textContent = "Frozen results cannot be changed. Share it. Defend it. Stand by it.";
-      } else if (state.source === "manual") {
-        tipLine.textContent = "Manual override wins. Always.";
-      } else if (state.source === "gps") {
-        tipLine.textContent = "GPS did the work. Respect.";
-      } else if (state.source === "globe") {
-        tipLine.textContent = "Random place, real judgment.";
-      } else {
-        tipLine.textContent = "Type a city and press Enter.";
+      state.run = runSelect.value;
+      if (Number.isFinite(state.last.temp) && Number.isFinite(state.last.feels) && Number.isFinite(state.last.wind)){
+        state.lastDecision = decide(
+          state.units === "F" ? state.last.temp : toF(state.last.temp),
+          state.units === "F" ? state.last.feels : toF(state.last.feels),
+          state.run
+        );
+        renderResult(state.last.temp, state.last.feels, state.last.wind);
       }
+    });
+  }
 
-      locLine.textContent = state.placeLabel;
-      locSource.textContent = "Source: " + sourceName + ".";
-      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
-    }
+  if (manualInput){
+    manualInput.addEventListener("input", () => {
+      if (state.frozen) return;
+      suggestLocations(manualInput.value).catch(() => {});
+    });
 
-    function lsGet(key, fallback){
-      try{
-        const raw = localStorage.getItem(key);
-        if (raw === null || raw === undefined) return fallback;
-        return JSON.parse(raw);
-      }catch(e){
-        return fallback;
-      }
-    }
-    function lsSet(key, val){
-      try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
-    }
-
-    const SNARK = {
-      deepFreeze: [
-        "That air hurts your face. Respectfully, no.",
-        "If your breath is crunchy, it is coat season.",
-        "Hoodie? Sure. Under the parka.",
-        "The wind is auditioning to be your enemy.",
-        "This is how you end up texting: I cannot feel my hands.",
-        "If you step outside and instantly regret it, yeah, nah.",
-        "This is not hoodie weather. This is survival gear weather.",
-        "The air is trying to fight you. Do not let it win.",
-        "That cold is personal. Dress accordingly.",
-        "Today is brought to you by: layers."
-      ],
-      veryCold: [
-        "Hoodie alone is cute. So is hypothermia.",
-        "If you wear only a hoodie, you are making a statement. A dumb one.",
-        "You can do hoodie only if you also enjoy suffering.",
-        "This is hoodie plus consequences.",
-        "Nah. Add a real jacket and stop pretending.",
-        "Your ears called. They want protection.",
-        "This is the part where you learn about wind chill.",
-        "Hoodie only if you like being humbled.",
-        "This is not the day to test your toughness."
-      ],
-      cold: [
-        "Hoodie plus a jacket. Do not get cocky.",
-        "Layer up. Hoodie needs a bodyguard today.",
-        "Hoodie is allowed, but bring backup.",
-        "If you go hoodie only, at least walk fast.",
-        "A light jacket over the hoodie and you are good.",
-        "This is a hoodie, but be responsible moment.",
-        "Hoodie is fine. The wind is not.",
-        "Hoodie works, but add something that blocks reality."
-      ],
-      prime: [
-        "Prime hoodie weather. Enjoy your moment.",
-        "This is the whole point of hoodies existing.",
-        "Congratulations, you found peak comfort.",
-        "Hoodie time. No notes.",
-        "This is the sweet spot. Do not waste it.",
-        "Yes. Hoodie. Obviously.",
-        "Hoodie season is in session.",
-        "Your hoodie has been waiting for this.",
-        "This is elite weather. Do not ruin it by overthinking."
-      ],
-      mild: [
-        "Hoodie if you like options. Otherwise, nah.",
-        "You can wear a hoodie, but you might regret it at noon.",
-        "Light layer energy. Choose your fighter.",
-        "This is borderline. Proceed with vibes.",
-        "Hoodie: optional. Confidence: required.",
-        "A thin hoodie works. A thick one is a mistake.",
-        "This is weather that changes its mind every hour.",
-        "Hoodie for the morning. Regret for the afternoon."
-      ],
-      warm: [
-        "You are gonna regret sleeves in 10 minutes.",
-        "That hoodie is about to become a portable sauna.",
-        "Nah. Let your arms experience freedom.",
-        "If you wear a hoodie, you are doing it for the look, not the comfort.",
-        "This is short sleeve territory. Do not overthink it.",
-        "Put the hoodie down and step away slowly.",
-        "It is warm. Stop lying to yourself.",
-        "This is the temperature where hoodies become a bad decision."
-      ],
-      hot: [
-        "It is basically a warm hug from the sun. No hoodie.",
-        "Hoodie? In this heat? Bold. Wrong, but bold.",
-        "Nah. Hydrate and stop layering like a villain.",
-        "If you wear a hoodie, you owe your sweat glands an apology.",
-        "This is the kind of heat that makes sleeves illegal.",
-        "The sun is doing too much. Do not join it.",
-        "This is not a hoodie day. This is a regret day.",
-        "Hoodie season is not today. Today is survival season."
-      ]
-    };
-
-    function pickSnark(bucketKey){
-      const arr = SNARK[bucketKey] || [];
-      if (!arr.length) return "Hoodie. Maybe. Nah. We tried.";
-
-      const keep = Math.min(8, Math.max(4, Math.floor(arr.length / 2)));
-      const key = "hon_snark_hist_" + bucketKey;
-      const hist = lsGet(key, []);
-
-      let idx = -1;
-      for (let attempt = 0; attempt < 12; attempt++){
-        const candidate = Math.floor(Math.random() * arr.length);
-        if (!hist.includes(candidate)){
-          idx = candidate;
-          break;
-        }
-      }
-      if (idx === -1) idx = Math.floor(Math.random() * arr.length);
-
-      hist.unshift(idx);
-      hist.length = keep;
-      lsSet(key, hist);
-
-      return arr[idx];
-    }
-
-    function decide(tempF, feelsF, run){
-      const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
-
-      if (t <= 20) return { word: "NAH", line: pickSnark("deepFreeze") };
-      if (t <= 35) return { word: "NAH", line: pickSnark("veryCold") };
-      if (t <= 45) return { word: "MAYBE", line: pickSnark("cold") };
-      if (t <= 60) return { word: "HOODIE", line: pickSnark("prime") };
-      if (t <= 70) return { word: "MAYBE", line: pickSnark("mild") };
-      if (t <= 82) return { word: "NAH", line: pickSnark("warm") };
-      return { word: "NAH", line: pickSnark("hot") };
-    }
-
-    let suggestAbort = null;
-    let suggestTimer = null;
-
-    async function suggestLocations(q){
-      try{
-        if (!q || q.trim().length < 3){
-          locList.innerHTML = "";
+    manualInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        if (state.frozen){
+          showToast("Too late. The verdict has spoken.");
           return;
         }
-        if (suggestAbort) suggestAbort.abort();
-        suggestAbort = new AbortController();
-
-        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(q);
-        const res = await fetch(url, {
-          signal: suggestAbort.signal,
-          headers: { "Accept": "application/json" }
-        });
-        if (!res.ok) return;
-
-        const data = await res.json();
-        locList.innerHTML = data.map(item => '<option value="' + escapeHtml(item.display_name) + '"></option>').join("");
-      }catch(e){
-        // ignore
+        onManualCommit();
       }
-    }
+    });
+  }
 
-    async function geocodeDisplayName(displayName){
-      const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&q=" + encodeURIComponent(displayName);
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("geocode_failed");
-      const data = await res.json();
-      if (!data || !data[0]) throw new Error("no_results");
+  if (spinBtn) spinBtn.addEventListener("click", onSpinGlobe);
+  if (gpsBtn) gpsBtn.addEventListener("click", onUseGPS);
 
-      const item = data[0];
-      const cc = item.address && item.address.country_code ? item.address.country_code.toUpperCase() : null;
+  if (brandHome){
+    brandHome.addEventListener("click", () => {
+      if (state.frozen){
+        showToast("This page is frozen. Copy the link, then keep going.");
+        return;
+      }
+      if (manualInput) manualInput.value = "";
+      if (locList) locList.innerHTML = "";
+      tryAutoLocation();
+    });
+  }
 
-      return {
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-        label: simplifyLabel(item),
-        countryCode: cc
-      };
-    }
+  if (freezeBtn){
+    freezeBtn.addEventListener("click", async () => {
+      if (state.frozen){
+        showToast("Too late. The verdict has spoken.");
+        return;
+      }
+      const url = encodeFrozenUrl();
+      if (!url){
+        showToast("Need a real verdict first. Give it a second.");
+        return;
+      }
 
-    async
+      const ok = await copyToClipboard(url);
+      if (ok) showToast("Judgment frozen. No take-backs.");
+      else showToast("Could not copy link. Your browser is being difficult.");
+
+      window.history.replaceState(null, "", url);
+      setFrozenUI(true, { pop: true });
+    });
+  }
+
+  if (copyLinkBtn){
+    copyLinkBtn.addEventListener("click", async () => {
+      const url = encodeFrozenUrl() || window.location.href;
+      const ok = await copyToClipboard(url);
+      if (ok) showToast("Link copied. Go start arguments.");
+      else showToast("Could not copy link. Your browser is being difficult.");
+
+      /* Unfreeze on copy */
+      clearFrozenUrl();
+      state.source = "manual";
+      setFrozenUI(false, { pop: false });
+    });
+  }
+})();
+
+/* Init stays the same, but make sure it looks like this */
+(function init(){
+  state.run = runSelect ? runSelect.value : "normal";
+
+  const isFrozen = applyFrozenFromUrl();
+  if (isFrozen) return;
+
+  updateSourceUI();
+  tryAutoLocation();
+})();
+</script>
