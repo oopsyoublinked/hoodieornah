@@ -63,7 +63,6 @@
       position: relative;
     }
 
-    /* Frozen effect (subtle, on-brand) */
     body.is-frozen .wrap::before{
       content:"";
       position:absolute;
@@ -81,9 +80,7 @@
       box-shadow: 0 18px 60px rgba(0,0,0,.55), 0 0 40px rgba(140,170,255,.08);
     }
 
-    .freeze-pop{
-      animation: freezePop 520ms ease-out 1;
-    }
+    .freeze-pop{ animation: freezePop 520ms ease-out 1; }
     @keyframes freezePop{
       0%{ transform: translateY(0px) scale(1); }
       45%{ transform: translateY(-2px) scale(1.01); }
@@ -112,9 +109,10 @@
       min-width: 0;
     }
 
+    /* Bigger logo button */
     .brand-btn{
-      width: 64px;
-      height: 64px;
+      width: 78px;
+      height: 78px;
       border-radius: 999px;
       border: 1px solid var(--border2);
       background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
@@ -133,12 +131,12 @@
     }
     .brand-btn:active{transform: translateY(0px) scale(.99)}
     .brand-btn img{
-      width: 50px;
-      height: 50px;
+      width: 62px;
+      height: 62px;
       display:block;
       image-rendering: auto;
       filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
-      border-radius: 14px;
+      border-radius: 16px;
     }
 
     .wordmark{
@@ -242,10 +240,7 @@
       flex-direction:column;
     }
 
-    /* When frozen, do not force a huge empty void */
-    body.is-frozen .card{
-      min-height: 0;
-    }
+    body.is-frozen .card{ min-height: 0; }
 
     .card-right{
       border-radius: var(--radius);
@@ -343,13 +338,8 @@
       color-scheme: dark;
     }
 
-    /* Try to keep dropdown readable in Chromium */
     select{ background-color: rgba(255,255,255,.03); }
-    option{
-      background-color: #0f1016;
-      color: rgba(255,255,255,.92);
-    }
-
+    option{ background-color: #0f1016; color: rgba(255,255,255,.92); }
     input::placeholder{color: rgba(255,255,255,.35)}
 
     .btn-row{
@@ -442,9 +432,7 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .freeze-btn{
-      background: rgba(255,255,255,.05);
-    }
+    .freeze-btn{ background: rgba(255,255,255,.05); }
     .freeze-hint{
       font-size: 12px;
       color: rgba(255,255,255,.50);
@@ -465,7 +453,6 @@
       font-size: 12px;
     }
 
-    /* Fills the “blank void” when frozen so it looks intentional */
     .frozen-fill{
       margin-top: 14px;
       border: 1px dashed rgba(255,255,255,.14);
@@ -533,9 +520,7 @@
       text-decoration:none;
       border-bottom: 1px solid rgba(255,255,255,.20);
     }
-    .site-footer a:hover{
-      border-bottom-color: rgba(255,255,255,.40);
-    }
+    .site-footer a:hover{ border-bottom-color: rgba(255,255,255,.40); }
 
     .toast{
       position: fixed;
@@ -585,7 +570,6 @@
 
     <main id="mainShell">
       <div class="grid">
-        <!-- Left: Result -->
         <section class="card" aria-live="polite">
           <div class="big" id="bigWord">LOADING</div>
           <p class="sub" id="oneLiner">Grabbing your weather. Try not to panic.</p>
@@ -630,7 +614,6 @@
             <div id="unitsLine">Units: --</div>
           </div>
 
-          <!-- Only visible when frozen: fills the empty void + quick share -->
           <div class="frozen-fill" id="frozenFill">
             <div class="title">Frozen snapshot</div>
             <div class="desc">This verdict is locked. Copy the link and go start a mild argument.</div>
@@ -641,7 +624,6 @@
           </div>
         </section>
 
-        <!-- Right: Controls -->
         <aside class="card-right">
           <div>
             <h3>How do you run?</h3>
@@ -668,7 +650,6 @@
             <div class="row"><span>Tip</span><strong id="tipLine">Type a city and press Enter.</strong></div>
           </div>
 
-          <!-- Frozen panel (no Note row) -->
           <div class="mini" id="frozenPanel" style="display:none;">
             <div class="row">
               <span>Mode</span>
@@ -770,6 +751,16 @@
       return ["US", "LR", "MM"].includes((countryCode || "").toUpperCase());
     }
 
+    function localeUsesF(){
+      const lang = (navigator.language || "").toLowerCase();
+      return lang.includes("en-us");
+    }
+
+    function computeUnits(countryCode){
+      if (countryCode) return countryUsesF(countryCode) ? "F" : "C";
+      return localeUsesF() ? "F" : "C";
+    }
+
     function runOffset(run){
       if (run === "cold") return -4;
       if (run === "hot") return +4;
@@ -789,14 +780,13 @@
     function toF(c){ return (c * 9/5) + 32; }
 
     function setLoading(on){
-      if (on){
-        bigWord.textContent = "LOADING";
-        oneLiner.textContent = "Grabbing your weather. Try not to panic.";
-        tempLine.textContent = "--";
-        feelWindLine.textContent = "Feels like: --  |  Wind: --";
-        unitsLine.textContent = "Units: --";
-        usingUnits.textContent = "--";
-      }
+      if (!on) return;
+      bigWord.textContent = "LOADING";
+      oneLiner.textContent = "Grabbing your weather. Try not to panic.";
+      tempLine.textContent = "--";
+      feelWindLine.textContent = "Feels like: --  |  Wind: --";
+      unitsLine.textContent = "Units: --";
+      usingUnits.textContent = "--";
     }
 
     function updateSourceUI(){
@@ -840,7 +830,6 @@
       try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){}
     }
 
-    /* Snark pools + anti-repeat (persisted) */
     const SNARK = {
       deepFreeze: [
         "That air hurts your face. Respectfully, no.",
@@ -955,29 +944,30 @@
       return { word: "NAH", line: pickSnark("hot") };
     }
 
-    /* Autocomplete */
     let suggestAbort = null;
+    let suggestTimer = null;
 
     async function suggestLocations(q){
-      if (!q || q.trim().length < 3){
-        locList.innerHTML = "";
-        return;
+      try{
+        if (!q || q.trim().length < 3){
+          locList.innerHTML = "";
+          return;
+        }
+        if (suggestAbort) suggestAbort.abort();
+        suggestAbort = new AbortController();
+
+        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(q);
+        const res = await fetch(url, {
+          signal: suggestAbort.signal,
+          headers: { "Accept": "application/json" }
+        });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        locList.innerHTML = data.map(item => '<option value="' + escapeHtml(item.display_name) + '"></option>').join("");
+      }catch(e){
+        // ignore
       }
-      if (suggestAbort) suggestAbort.abort();
-      suggestAbort = new AbortController();
-
-      const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(q);
-      const res = await fetch(url, {
-        signal: suggestAbort.signal,
-        headers: { "Accept": "application/json" }
-      });
-      if (!res.ok) return;
-
-      const data = await res.json();
-      locList.innerHTML = data.map(item => {
-        const label = item.display_name;
-        return '<option value="' + escapeHtml(label) + '"></option>';
-      }).join("");
     }
 
     async function geocodeDisplayName(displayName){
@@ -998,441 +988,4 @@
       };
     }
 
-    async function reverseGeocode(lat, lon){
-      const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon);
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("reverse_failed");
-      const data = await res.json();
-      const cc = data.address && data.address.country_code ? data.address.country_code.toUpperCase() : null;
-      return {
-        label: simplifyLabel(data),
-        countryCode: cc
-      };
-    }
-
-    function simplifyLabel(obj){
-      const a = obj.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
-      const stateName = a.state || a.region || "";
-      const country = a.country || "";
-      const cc = a.country_code ? a.country_code.toUpperCase() : null;
-
-      if (cc === "US"){
-        const st = a.state_code || stateName;
-        if (city && st) return city + ", " + st;
-        if (obj.display_name) return obj.display_name.split(",").slice(0,2).join(",").trim();
-        return "Near you";
-      }
-
-      if (city && country) return city + ", " + country;
-      if (obj.display_name) return obj.display_name.split(",").slice(0,2).join(",").trim();
-      return "Near you";
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    /* Weather */
-    async function fetchWeather(lat, lon, units){
-      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
-      const windUnit = units === "F" ? "mph" : "kmh";
-
-      const url =
-        "https://api.open-meteo.com/v1/forecast" +
-        "?latitude=" + encodeURIComponent(lat) +
-        "&longitude=" + encodeURIComponent(lon) +
-        "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
-        "&temperature_unit=" + tempUnit +
-        "&windspeed_unit=" + windUnit +
-        "&timezone=auto";
-
-      const res = await fetch(url, { headers: { "Accept": "application/json" } });
-      if (!res.ok) throw new Error("weather_failed");
-      return await res.json();
-    }
-
-    function renderResult(temp, feels, wind){
-      state.last = { temp, feels, wind };
-
-      const tempF = state.units === "F" ? temp : toF(temp);
-      const feelsF = state.units === "F" ? feels : toF(feels);
-
-      let d;
-      if (state.frozen && state.lastDecision && state.lastDecision.line){
-        d = state.lastDecision;
-      } else {
-        d = decide(tempF, feelsF, state.run);
-        state.lastDecision = d;
-      }
-
-      bigWord.textContent = d.word;
-      oneLiner.textContent = d.line;
-
-      tempLine.textContent = fmtTemp(temp, state.units);
-      feelWindLine.textContent = "Feels like: " + fmtTemp(feels, state.units) + "  |  Wind: " + fmtWind(wind, state.units);
-      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
-      usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
-    }
-
-    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        return;
-      }
-
-      state.lat = lat;
-      state.lon = lon;
-      state.countryCode = countryCode || state.countryCode;
-      state.source = source || state.source;
-
-      state.units = countryUsesF(state.countryCode) ? "F" : "C";
-      state.placeLabel = label || "Near you";
-
-      setPill("📍 " + state.placeLabel);
-      updateSourceUI();
-
-      setLoading(true);
-
-      try{
-        const data = await fetchWeather(lat, lon, state.units);
-        const cur = data.current || {};
-        const temp = cur.temperature_2m;
-        const feels = cur.apparent_temperature;
-        const wind = cur.wind_speed_10m;
-
-        renderResult(temp, feels, wind);
-      }catch(e){
-        bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
-        showToast("Could not fetch weather. Try again.");
-      }
-    }
-
-    async function tryAutoLocation(){
-      if (state.frozen) return;
-
-      state.source = "auto";
-      state.placeLabel = "Near you";
-      setPill("Near you");
-      updateSourceUI();
-      setLoading(true);
-
-      if (!navigator.geolocation){
-        bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No GPS here. Type a city and we will judge it anyway.";
-        return;
-      }
-
-      setPill("", { loading: true });
-
-      const opts = { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 };
-
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        try{
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          const rev = await reverseGeocode(lat, lon);
-          await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
-        }catch(err){
-          setPill("Near you");
-          bigWord.textContent = "MAYBE";
-          oneLiner.textContent = "Could not resolve your city. Type one and we will be dramatic about it.";
-          showToast("Location lookup failed");
-        }
-      }, (err) => {
-        setPill("Near you");
-        bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No location, no problem. Type a place and let us argue about hoodies.";
-        if (err && err.code === 1) showToast("Location access denied");
-        else showToast("GPS error or timeout");
-      }, opts);
-    }
-
-    async function onUseGPS(){
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        return;
-      }
-      if (!navigator.geolocation){
-        showToast("No GPS available in this browser.");
-        return;
-      }
-      state.source = "gps";
-      setPill("", { loading: true });
-      updateSourceUI();
-
-      const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 };
-
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        try{
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          const rev = await reverseGeocode(lat, lon);
-          await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
-        }catch(e){
-          setPill("Near you");
-          showToast("Could not resolve your city");
-        }
-      }, (err) => {
-        setPill("Near you");
-        if (err && err.code === 1) showToast("Location access denied");
-        else showToast("GPS error or timeout");
-      }, opts);
-    }
-
-    /* Globe spins + anti-repeat (persisted) */
-    const globeSpins = [
-      { label: "Seattle, WA", lat: 47.6062, lon: -122.3321, cc:"US" },
-      { label: "San Francisco, CA", lat: 37.7749, lon: -122.4194, cc:"US" },
-      { label: "Los Angeles, CA", lat: 34.0522, lon: -118.2437, cc:"US" },
-      { label: "Phoenix, AZ", lat: 33.4484, lon: -112.0740, cc:"US" },
-      { label: "Denver, CO", lat: 39.7392, lon: -104.9903, cc:"US" },
-      { label: "Dallas, TX", lat: 32.7767, lon: -96.7970, cc:"US" },
-      { label: "Houston, TX", lat: 29.7604, lon: -95.3698, cc:"US" },
-      { label: "Chicago, IL", lat: 41.8781, lon: -87.6298, cc:"US" },
-      { label: "Miami, FL", lat: 25.7617, lon: -80.1918, cc:"US" },
-      { label: "New York, NY", lat: 40.7128, lon: -74.0060, cc:"US" },
-      { label: "Boston, MA", lat: 42.3601, lon: -71.0589, cc:"US" },
-      { label: "Las Vegas, NV", lat: 36.1699, lon: -115.1398, cc:"US" },
-      { label: "Anchorage, AK", lat: 61.2181, lon: -149.9003, cc:"US" },
-      { label: "Honolulu, HI", lat: 21.3069, lon: -157.8583, cc:"US" },
-
-      { label: "Vancouver, Canada", lat: 49.2827, lon: -123.1207, cc:"CA" },
-      { label: "Calgary, Canada", lat: 51.0447, lon: -114.0719, cc:"CA" },
-      { label: "Toronto, Canada", lat: 43.6532, lon: -79.3832, cc:"CA" },
-      { label: "Montreal, Canada", lat: 45.5019, lon: -73.5674, cc:"CA" },
-
-      { label: "Mexico City, Mexico", lat: 19.4326, lon: -99.1332, cc:"MX" },
-      { label: "Guadalajara, Mexico", lat: 20.6597, lon: -103.3496, cc:"MX" },
-      { label: "Cancun, Mexico", lat: 21.1619, lon: -86.8515, cc:"MX" },
-      { label: "Bogota, Colombia", lat: 4.7110, lon: -74.0721, cc:"CO" },
-      { label: "Lima, Peru", lat: -12.0464, lon: -77.0428, cc:"PE" },
-      { label: "Santiago, Chile", lat: -33.4489, lon: -70.6693, cc:"CL" },
-      { label: "Buenos Aires, Argentina", lat: -34.6037, lon: -58.3816, cc:"AR" },
-      { label: "Rio de Janeiro, Brazil", lat: -22.9068, lon: -43.1729, cc:"BR" },
-
-      { label: "Reykjavik, Iceland", lat: 64.1466, lon: -21.9426, cc:"IS" },
-      { label: "Dublin, Ireland", lat: 53.3498, lon: -6.2603, cc:"IE" },
-      { label: "London, UK", lat: 51.5072, lon: -0.1276, cc:"GB" },
-      { label: "Edinburgh, UK", lat: 55.9533, lon: -3.1883, cc:"GB" },
-      { label: "Paris, France", lat: 48.8566, lon: 2.3522, cc:"FR" },
-      { label: "Amsterdam, Netherlands", lat: 52.3676, lon: 4.9041, cc:"NL" },
-      { label: "Berlin, Germany", lat: 52.5200, lon: 13.4050, cc:"DE" },
-      { label: "Copenhagen, Denmark", lat: 55.6761, lon: 12.5683, cc:"DK" },
-      { label: "Stockholm, Sweden", lat: 59.3293, lon: 18.0686, cc:"SE" },
-      { label: "Oslo, Norway", lat: 59.9139, lon: 10.7522, cc:"NO" },
-      { label: "Helsinki, Finland", lat: 60.1699, lon: 24.9384, cc:"FI" },
-      { label: "Rome, Italy", lat: 41.9028, lon: 12.4964, cc:"IT" },
-      { label: "Barcelona, Spain", lat: 41.3851, lon: 2.1734, cc:"ES" },
-      { label: "Lisbon, Portugal", lat: 38.7223, lon: -9.1393, cc:"PT" },
-      { label: "Athens, Greece", lat: 37.9838, lon: 23.7275, cc:"GR" },
-
-      { label: "Cairo, Egypt", lat: 30.0444, lon: 31.2357, cc:"EG" },
-      { label: "Nairobi, Kenya", lat: -1.2921, lon: 36.8219, cc:"KE" },
-      { label: "Cape Town, South Africa", lat: -33.9249, lon: 18.4241, cc:"ZA" },
-      { label: "Dubai, UAE", lat: 25.2048, lon: 55.2708, cc:"AE" },
-
-      { label: "Istanbul, Turkey", lat: 41.0082, lon: 28.9784, cc:"TR" },
-      { label: "Mumbai, India", lat: 19.0760, lon: 72.8777, cc:"IN" },
-      { label: "Bangkok, Thailand", lat: 13.7563, lon: 100.5018, cc:"TH" },
-      { label: "Singapore", lat: 1.3521, lon: 103.8198, cc:"SG" },
-      { label: "Hong Kong", lat: 22.3193, lon: 114.1694, cc:"HK" },
-      { label: "Seoul, South Korea", lat: 37.5665, lon: 126.9780, cc:"KR" },
-      { label: "Tokyo, Japan", lat: 35.6762, lon: 139.6503, cc:"JP" },
-      { label: "Sapporo, Japan", lat: 43.0618, lon: 141.3545, cc:"JP" },
-
-      { label: "Sydney, Australia", lat: -33.8688, lon: 151.2093, cc:"AU" },
-      { label: "Melbourne, Australia", lat: -37.8136, lon: 144.9631, cc:"AU" },
-      { label: "Auckland, New Zealand", lat: -36.8509, lon: 174.7645, cc:"NZ" }
-    ];
-
-    function pickGlobeIndex(){
-      const n = globeSpins.length;
-      if (n <= 1) return 0;
-
-      const keep = Math.min(14, Math.max(6, Math.floor(n / 6)));
-      const histKey = "hon_globe_hist";
-      const hist = lsGet(histKey, []);
-
-      let idx = -1;
-      for (let attempt = 0; attempt < 25; attempt++){
-        const candidate = Math.floor(Math.random() * n);
-        if (!hist.includes(candidate)){
-          idx = candidate;
-          break;
-        }
-      }
-      if (idx === -1) idx = Math.floor(Math.random() * n);
-
-      hist.unshift(idx);
-      hist.length = keep;
-      lsSet(histKey, hist);
-
-      return idx;
-    }
-
-    async function onSpinGlobe(){
-      if (state.frozen){
-        showToast("Too late. The verdict has spoken.");
-        return;
-      }
-      const idx = pickGlobeIndex();
-      const pick = globeSpins[idx];
-      state.source = "globe";
-      await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc, "globe");
-    }
-
-    /* Freeze mode */
-    function encodeFrozenUrl(){
-      if (!Number.isFinite(state.last.temp) || !Number.isFinite(state.last.feels) || !Number.isFinite(state.last.wind)){
-        return null;
-      }
-      if (!state.placeLabel || state.placeLabel === "Near you"){
-        return null;
-      }
-
-      const p = new URLSearchParams();
-      p.set("frozen", "1");
-      p.set("loc", state.placeLabel);
-      p.set("lat", String(state.lat ?? ""));
-      p.set("lon", String(state.lon ?? ""));
-      p.set("units", state.units);
-      p.set("run", state.run);
-      p.set("source", state.source);
-      p.set("temp", String(state.last.temp));
-      p.set("feels", String(state.last.feels));
-      p.set("wind", String(state.last.wind));
-      p.set("verdict", state.lastDecision.word || "");
-      p.set("snark", state.lastDecision.line || "");
-      return window.location.origin + window.location.pathname + "?" + p.toString();
-    }
-
-    function setFrozenUrlPreview(url){
-      if (!frozenUrlPreview) return;
-      if (!url){
-        frozenUrlPreview.textContent = "Generating link…";
-        return;
-      }
-      try{
-        const u = new URL(url);
-        const short = u.origin + u.pathname + "?" + u.searchParams.toString();
-        frozenUrlPreview.textContent = short;
-        frozenUrlPreview.title = short;
-      }catch(e){
-        frozenUrlPreview.textContent = url;
-        frozenUrlPreview.title = url;
-      }
-    }
-
-    async function copyToClipboard(text){
-      try{
-        await navigator.clipboard.writeText(text);
-        return true;
-      }catch(e){
-        try{
-          const ta = document.createElement("textarea");
-          ta.value = text;
-          ta.style.position = "fixed";
-          ta.style.left = "-9999px";
-          ta.style.top = "0";
-          document.body.appendChild(ta);
-          ta.focus();
-          ta.select();
-          const ok = document.execCommand("copy");
-          document.body.removeChild(ta);
-          return ok;
-        }catch(err){
-          return false;
-        }
-      }
-    }
-
-    function setFrozenUI(on, { pop=false, urlPreview=null } = {}){
-      state.frozen = !!on;
-
-      if (state.frozen){
-        document.body.classList.add("is-frozen");
-        if (pop){
-          mainShell.classList.remove("freeze-pop");
-          void mainShell.offsetWidth;
-          mainShell.classList.add("freeze-pop");
-        }
-
-        setPill("📍 " + state.placeLabel + " • Frozen", { frozen: true });
-        frozenLine.style.display = "block";
-        frozenPanel.style.display = "block";
-
-        freezeBtn.textContent = "Take frozen";
-        freezeBtn.disabled = true;
-        freezeHint.textContent = "This verdict is locked.";
-
-        runSelect.disabled = true;
-        manualInput.disabled = true;
-        spinBtn.disabled = true;
-        gpsBtn.disabled = true;
-        locList.innerHTML = "";
-
-        setFrozenUrlPreview(urlPreview);
-
-        updateSourceUI();
-      } else {
-        document.body.classList.remove("is-frozen");
-        mainShell.classList.remove("freeze-pop");
-
-        setPill("📍 " + state.placeLabel, { frozen: false });
-        frozenLine.style.display = "none";
-        frozenPanel.style.display = "none";
-
-        freezeBtn.textContent = "Freeze this take";
-        freezeBtn.disabled = false;
-        freezeHint.textContent = "Locks this exact verdict so it never changes.";
-
-        runSelect.disabled = false;
-        manualInput.disabled = false;
-        spinBtn.disabled = false;
-        gpsBtn.disabled = false;
-
-        updateSourceUI();
-      }
-    }
-
-    function applyFrozenFromUrl(){
-      const params = new URLSearchParams(window.location.search);
-      const frozen = params.get("frozen") === "1";
-      if (!frozen) return false;
-
-      const loc = params.get("loc") || "Somewhere";
-      const units = (params.get("units") || "F").toUpperCase() === "C" ? "C" : "F";
-      const run = params.get("run") || "normal";
-
-      const temp = parseFloat(params.get("temp"));
-      const feels = parseFloat(params.get("feels"));
-      const wind = parseFloat(params.get("wind"));
-
-      const verdict = params.get("verdict") || "MAYBE";
-      const snark = params.get("snark") || "This take has been frozen in time.";
-
-      state.placeLabel = loc;
-      state.units = units;
-      state.run = (run === "cold" || run === "hot" || run === "normal") ? run : "normal";
-      state.source = "frozen";
-      state.lastDecision = { word: verdict, line: snark };
-
-      const lat = parseFloat(params.get("lat"));
-      const lon = parseFloat(params.get("lon"));
-      state.lat = Number.isFinite(lat) ? lat : null;
-      state.lon = Number.isFinite(lon) ? lon : null;
-
-      setFrozenUI(true, { pop: false, urlPreview: window.location.href });
-
-      runSelect.value = state.run;
-
-      renderResult(temp, feels, wind);
-
-      locLine.textContent = state
+    async
