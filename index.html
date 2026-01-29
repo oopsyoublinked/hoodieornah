@@ -1,3 +1,14 @@
+Got you. Here is a single updated `index.html` with all five fixes:
+
+* Header logo is back to your **PNG** (big enough to read)
+* Left panel uses the “empty space” for a **Location + Conditions** row (same vibe as feels like)
+* Right panel spacing tightened and filled with a small **“What we’re using”** summary so it doesn’t feel hollow
+* “Support the hoodie science” has an actual **coffee icon** again
+* Added a real **site footer** with email + basic disclaimer/credits
+
+Replace your current `index.html` with this whole file:
+
+```
 <!doctype html>
 <html lang="en">
 <head>
@@ -32,7 +43,6 @@
     :root{
       --bg:#0b0b0f;
       --panel:#0f1016;
-      --panel2:#0d0e14;
       --border:rgba(255,255,255,.10);
       --border2:rgba(255,255,255,.14);
       --text:rgba(255,255,255,.92);
@@ -41,7 +51,6 @@
       --shadow:0 18px 60px rgba(0,0,0,.55);
       --radius:22px;
       --radius2:28px;
-      --glow: 0 0 0 1px rgba(255,255,255,.06), 0 0 24px rgba(120,160,255,.10);
       --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
     }
 
@@ -60,7 +69,7 @@
     .wrap{
       max-width: 1280px;
       margin: 0 auto;
-      padding: 18px 18px 28px;
+      padding: 18px 18px 14px;
     }
 
     header{
@@ -86,8 +95,8 @@
     }
 
     .brand-btn{
-      width: 46px;
-      height: 46px;
+      width: 54px;
+      height: 54px;
       border-radius: 999px;
       border: 1px solid var(--border2);
       background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.10), rgba(255,255,255,.02));
@@ -97,6 +106,7 @@
       cursor:pointer;
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
       box-shadow: 0 8px 28px rgba(0,0,0,.45);
+      overflow:hidden;
     }
     .brand-btn:hover{
       transform: translateY(-1px);
@@ -104,12 +114,13 @@
       box-shadow: 0 10px 34px rgba(0,0,0,.55), 0 0 26px rgba(120,160,255,.14);
     }
     .brand-btn:active{transform: translateY(0px) scale(.99)}
-    .brand-btn svg{
-      width: 28px;
-      height: 28px;
+    .brand-btn img{
+      width: 40px;
+      height: 40px;
       display:block;
-      opacity:.92;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,.45));
+      image-rendering: auto;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
+      border-radius: 12px;
     }
 
     .wordmark{
@@ -148,7 +159,6 @@
       text-overflow:ellipsis;
       white-space:nowrap;
     }
-
     .pill .dot{
       width: 8px;
       height: 8px;
@@ -196,7 +206,7 @@
         radial-gradient(700px 420px at 85% 10%, rgba(255,255,255,.07), transparent 50%),
         rgba(0,0,0,.22);
       padding: 18px;
-      min-height: 420px;
+      min-height: 390px;
       position:relative;
       overflow:hidden;
     }
@@ -206,7 +216,10 @@
       border: 1px solid var(--border2);
       background: rgba(0,0,0,.18);
       padding: 18px;
-      min-height: 420px;
+      min-height: 390px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
     }
 
     .big{
@@ -222,26 +235,7 @@
       color: var(--muted);
       font-size: 16px;
       margin: 0 0 10px;
-      max-width: 44ch;
-    }
-
-    .result-row{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 16px;
-      margin-top: 14px;
-    }
-    .temp{
-      font-size: 42px;
-      font-weight: 860;
-      letter-spacing: .2px;
-    }
-    .meta{
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-      text-align:right;
+      max-width: 52ch;
     }
 
     .divider{
@@ -250,8 +244,43 @@
       margin: 16px 0 12px;
     }
 
+    .stats{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    @media (max-width: 560px){
+      .stats{grid-template-columns:1fr}
+    }
+
+    .stat{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      padding: 12px 12px;
+    }
+    .stat .k{
+      font-size: 12px;
+      color: var(--muted2);
+      font-weight: 750;
+      letter-spacing: .2px;
+      margin-bottom: 6px;
+    }
+    .stat .v{
+      font-size: 16px;
+      font-weight: 820;
+      letter-spacing: .2px;
+    }
+    .stat .s{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
     h3{
-      margin: 0 0 10px;
+      margin: 0 0 2px;
       font-size: 22px;
       font-weight: 820;
       letter-spacing: .2px;
@@ -261,7 +290,7 @@
       display:block;
       font-size: 13px;
       color: var(--muted);
-      margin: 12px 0 8px;
+      margin: 10px 0 8px;
       font-weight: 650;
     }
 
@@ -281,7 +310,7 @@
     .btn-row{
       display:flex;
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 4px;
       flex-wrap: wrap;
     }
 
@@ -308,17 +337,40 @@
       transform:none;
     }
 
-    footer{
+    .mini{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.02);
+      border-radius: 18px;
+      padding: 12px 12px;
+      margin-top: 6px;
+    }
+    .mini .row{
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      align-items:flex-start;
+      padding: 6px 2px;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 13px;
+    }
+    .mini .row strong{
+      color: var(--text);
+      font-weight: 820;
+    }
+
+    .in-card-footer{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 12px;
-      margin-top: 12px;
+      margin-top: 14px;
       color: var(--muted);
       font-weight: 650;
-      padding: 6px 4px 0;
+      padding: 2px 2px 0;
     }
-    footer .support{
+
+    .support{
       display:flex;
       align-items:center;
       gap: 10px;
@@ -328,14 +380,37 @@
       background: rgba(255,255,255,.02);
       text-decoration:none;
       color: var(--text);
+      font-weight: 780;
     }
-    footer .support:hover{border-color: rgba(255,255,255,.18)}
-    .coin{
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.18);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.05);
+    .support:hover{border-color: rgba(255,255,255,.18)}
+    .support svg{
+      width: 16px;
+      height: 16px;
+      opacity: .9;
+      flex: 0 0 auto;
+    }
+
+    .site-footer{
+      margin-top: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      background: rgba(0,0,0,.18);
+      padding: 14px 14px;
+      display:flex;
+      justify-content:space-between;
+      gap: 12px;
+      align-items:flex-start;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .site-footer a{
+      color: rgba(255,255,255,.82);
+      text-decoration:none;
+      border-bottom: 1px solid rgba(255,255,255,.20);
+    }
+    .site-footer a:hover{
+      border-bottom-color: rgba(255,255,255,.40);
     }
 
     .toast{
@@ -361,23 +436,6 @@
       opacity: 1;
       transform: translateX(-50%) translateY(-4px);
     }
-
-    .hoodie-mark{
-      display:inline-block;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-
-    .qmark{
-      transform-origin: 50% 55%;
-      animation: qpop 900ms ease-out 1;
-    }
-    @keyframes qpop{
-      0%{transform: translateY(2px) scale(.96); opacity:.0}
-      35%{transform: translateY(0px) scale(1.04); opacity:.92}
-      70%{transform: translateY(0px) scale(1.0); opacity:1}
-      100%{transform: translateY(0px) scale(1.0); opacity:1}
-    }
   </style>
 </head>
 
@@ -386,15 +444,8 @@
     <header>
       <div class="brand">
         <button class="brand-btn" id="brandHome" aria-label="Hoodie or Nah home">
-          <!-- Clean, sharp hoodie mark -->
-          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <path d="M22 20c2-7 8-11 10-11s8 4 10 11" stroke="rgba(255,255,255,.88)" stroke-width="3.5" stroke-linecap="round"/>
-            <path d="M16 28c3-5 7-8 16-8s13 3 16 8" stroke="rgba(255,255,255,.78)" stroke-width="3.5" stroke-linecap="round"/>
-            <path d="M16 28v18c0 6 7 10 16 10s16-4 16-10V28" stroke="rgba(255,255,255,.70)" stroke-width="3.5" stroke-linecap="round"/>
-            <path class="qmark" d="M34.5 30.8c0-2.1-1.6-3.6-3.8-3.6-1.5 0-2.7.6-3.6 1.8" stroke="rgba(255,255,255,.92)" stroke-width="3.2" stroke-linecap="round"/>
-            <path class="qmark" d="M29.8 40.2v.2" stroke="rgba(255,255,255,.92)" stroke-width="5.2" stroke-linecap="round"/>
-            <path class="qmark" d="M30.3 33.2c1.9 0 3.1 1 3.1 2.6 0 1.3-.7 2-1.7 2.6-.7.4-1.1.8-1.1 1.5" stroke="rgba(255,255,255,.92)" stroke-width="3.2" stroke-linecap="round"/>
-          </svg>
+          <!-- PNG logo (big enough to actually see) -->
+          <img src="/android-chrome-192x192.png" alt="Hoodie or Nah logo" />
         </button>
 
         <div class="wordmark">
@@ -418,77 +469,101 @@
 
           <div class="divider"></div>
 
-          <div class="result-row">
-            <div class="temp" id="tempText">--</div>
-            <div class="meta" id="metaText">
-              Feels like: --<br/>
-              Wind: --<br/>
-              Units: --
+          <!-- Fill the space with structured info instead of a void -->
+          <div class="stats">
+            <div class="stat">
+              <div class="k">Location</div>
+              <div class="v" id="locLine">Near you</div>
+              <div class="s" id="locSource">Source: guessing until you say otherwise.</div>
             </div>
+
+            <div class="stat">
+              <div class="k">Right now</div>
+              <div class="v" id="tempLine">--</div>
+              <div class="s" id="feelWindLine">Feels like: --  |  Wind: --</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="in-card-footer">
+            <a class="support" href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6.5 8.2h9.2c.8 0 1.4.6 1.4 1.4v3.7c0 2.7-2.2 4.9-4.9 4.9H10c-2.7 0-4.9-2.2-4.9-4.9V9.6c0-.8.6-1.4 1.4-1.4Z" stroke="rgba(255,255,255,.88)" stroke-width="1.7"/>
+                <path d="M17.1 9.6h1.1c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3h-1.1" stroke="rgba(255,255,255,.78)" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M7.6 21h9.2" stroke="rgba(255,255,255,.50)" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>
+              <span>Support the hoodie science</span>
+            </a>
+
+            <div id="unitsLine">Units: --</div>
           </div>
         </section>
 
         <!-- Right: Controls -->
         <aside class="card-right">
-          <h3>How do you run?</h3>
-          <select id="runSelect" aria-label="How do you run">
-            <option value="cold">Always cold</option>
-            <option value="normal" selected>Normal</option>
-            <option value="hot">Always hot</option>
-          </select>
+          <div>
+            <h3>How do you run?</h3>
+            <select id="runSelect" aria-label="How do you run">
+              <option value="cold">Always cold</option>
+              <option value="normal" selected>Normal</option>
+              <option value="hot">Always hot</option>
+            </select>
 
-          <label for="manualInput">Manual location (optional)</label>
-          <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP (example)" autocomplete="off" />
-          <datalist id="locList"></datalist>
+            <label for="manualInput">Manual location (optional)</label>
+            <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP (example)" autocomplete="off" />
+            <datalist id="locList"></datalist>
 
-          <div class="btn-row">
-            <button id="spinBtn" type="button">Spin the globe</button>
-            <button id="gpsBtn" type="button">Use my GPS</button>
+            <div class="btn-row">
+              <button id="spinBtn" type="button">Spin the globe</button>
+              <button id="gpsBtn" type="button">Use my GPS</button>
+            </div>
           </div>
 
-          <label style="margin-top:16px;">Tip</label>
-          <div style="color:var(--muted); font-size:13px; line-height:1.5;">
-            Pick a vibe, type a place, or let GPS do its thing. The left panel updates when we fetch weather.
+          <!-- Use the space with a compact summary panel -->
+          <div class="mini" aria-live="polite">
+            <div class="row"><span>Using</span><strong id="usingLine">Auto</strong></div>
+            <div class="row"><span>Location</span><strong id="usingLoc">Near you</strong></div>
+            <div class="row"><span>Units</span><strong id="usingUnits">--</strong></div>
+            <div class="row"><span>Tip</span><strong id="tipLine">Type a city and press Enter.</strong></div>
           </div>
         </aside>
       </div>
-
-      <footer>
-        <a class="support" href="https://www.buymeacoffee.com/" target="_blank" rel="noopener">
-          <span>Support the hoodie science</span>
-          <span class="coin" aria-hidden="true"></span>
-        </a>
-        <div>Hoodie judgment, delivered.</div>
-      </footer>
     </main>
+
+    <!-- Real footer -->
+    <div class="site-footer">
+      <div>
+        <strong style="color:rgba(255,255,255,.86);">Contact</strong><br/>
+        <a href="mailto:info@hoodieornah.com">info@hoodieornah.com</a><br/>
+        <span style="color:rgba(255,255,255,.42);">We read it. Eventually.</span>
+      </div>
+
+      <div style="text-align:right; max-width: 64ch;">
+        Weather data via Open-Meteo. Geocoding via OpenStreetMap Nominatim.<br/>
+        This site is for entertainment and mild arguments only. No warranties. Don’t sue us because you wore a hoodie in a blizzard.
+      </div>
+    </div>
   </div>
 
   <div class="toast" id="toast"></div>
 
   <script>
-    // -----------------------------
-    // State
-    // -----------------------------
     const state = {
       run: "normal",
-      source: "auto", // auto | gps | manual | globe
+      source: "auto",
       placeLabel: "Near you",
       lat: null,
       lon: null,
       countryCode: null,
-      isLoading: true,
-      units: "F"
+      units: "F",
+      last: { temp: null, feels: null, wind: null }
     };
 
-    // -----------------------------
-    // DOM
-    // -----------------------------
     const wherePill = document.getElementById("wherePill");
     const whereText = document.getElementById("whereText");
     const bigWord = document.getElementById("bigWord");
     const oneLiner = document.getElementById("oneLiner");
-    const tempText = document.getElementById("tempText");
-    const metaText = document.getElementById("metaText");
     const toastEl = document.getElementById("toast");
 
     const runSelect = document.getElementById("runSelect");
@@ -498,9 +573,17 @@
     const gpsBtn = document.getElementById("gpsBtn");
     const brandHome = document.getElementById("brandHome");
 
-    // -----------------------------
-    // Helpers
-    // -----------------------------
+    const locLine = document.getElementById("locLine");
+    const locSource = document.getElementById("locSource");
+    const tempLine = document.getElementById("tempLine");
+    const feelWindLine = document.getElementById("feelWindLine");
+    const unitsLine = document.getElementById("unitsLine");
+
+    const usingLine = document.getElementById("usingLine");
+    const usingLoc = document.getElementById("usingLoc");
+    const usingUnits = document.getElementById("usingUnits");
+    const tipLine = document.getElementById("tipLine");
+
     function showToast(msg){
       toastEl.textContent = msg;
       toastEl.classList.add("show");
@@ -518,31 +601,25 @@
     }
 
     function countryUsesF(countryCode){
-      // Fahrenheit countries: US, Liberia, Myanmar
       return ["US", "LR", "MM"].includes((countryCode || "").toUpperCase());
     }
 
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
     function runOffset(run){
-      // Cold people need warmer threshold, hot people need cooler threshold
-      if (run === "cold") return -4;  // feels colder, so recommend more layers sooner
-      if (run === "hot") return +4;   // feels warmer, so recommend fewer layers
+      if (run === "cold") return -4;
+      if (run === "hot") return +4;
       return 0;
     }
 
     function decide(tempF, feelsF, run){
-      // Use feels-like as the real decider if we have it
       const t = (Number.isFinite(feelsF) ? feelsF : tempF) + runOffset(run);
 
-      // These are intentionally conservative so 25F is never "hoodie sweetspot"
-      if (t <= 25) return { word: "NAH", line: "That air hurts your face. Bundle up.", note: "Heavy coat recommended." };
-      if (t <= 35) return { word: "NAH", line: "Hoodie alone is cute. So is hypothermia.", note: "Coat or layered hoodie." };
-      if (t <= 45) return { word: "MAYBE", line: "Hoodie plus a jacket. Don’t get cocky.", note: "Light jacket over hoodie." };
-      if (t <= 60) return { word: "HOODIE", line: "This is prime hoodie weather. Enjoy your moment.", note: "Hoodie is perfect." };
-      if (t <= 70) return { word: "MAYBE", line: "Hoodie if you like options. Otherwise, nah.", note: "Light layer optional." };
-      if (t <= 82) return { word: "NAH", line: "You’re gonna regret sleeves in 10 minutes.", note: "T-shirt weather." };
-      return { word: "NAH", line: "It’s basically a warm hug from the sun. No hoodie.", note: "Stay cool." };
+      if (t <= 25) return { word: "NAH", line: "That air hurts your face. Bundle up." };
+      if (t <= 35) return { word: "NAH", line: "Hoodie alone is cute. So is hypothermia." };
+      if (t <= 45) return { word: "MAYBE", line: "Hoodie plus a jacket. Don’t get cocky." };
+      if (t <= 60) return { word: "HOODIE", line: "Prime hoodie weather. Enjoy your moment." };
+      if (t <= 70) return { word: "MAYBE", line: "Hoodie if you like options. Otherwise, nah." };
+      if (t <= 82) return { word: "NAH", line: "You’re gonna regret sleeves in 10 minutes." };
+      return { word: "NAH", line: "It’s basically a warm hug from the sun. No hoodie." };
     }
 
     function fmtTemp(val, units){
@@ -550,25 +627,44 @@
       return Math.round(val) + "°" + units;
     }
 
-    function fmtWind(ms, units){
-      if (!Number.isFinite(ms)) return "--";
-      // Open-Meteo gives windspeed in km/h if requested, but we will request mph for F and km/h for C.
-      return Math.round(ms) + (units === "F" ? " mph" : " km/h");
+    function fmtWind(val, units){
+      if (!Number.isFinite(val)) return "--";
+      return Math.round(val) + (units === "F" ? " mph" : " km/h");
     }
 
+    function toF(c){ return (c * 9/5) + 32; }
+
     function setLoading(on){
-      state.isLoading = on;
       if (on){
         bigWord.textContent = "LOADING";
         oneLiner.textContent = "Grabbing your weather. Try not to panic.";
-        tempText.textContent = "--";
-        metaText.innerHTML = "Feels like: --<br/>Wind: --<br/>Units: --";
+        tempLine.textContent = "--";
+        feelWindLine.textContent = "Feels like: --  |  Wind: --";
+        unitsLine.textContent = "Units: --";
+        usingUnits.textContent = "--";
       }
     }
 
-    // -----------------------------
-    // Geocoding (Nominatim)
-    // -----------------------------
+    function updateSourceUI(){
+      const sourceName =
+        state.source === "gps" ? "GPS" :
+        state.source === "manual" ? "Manual" :
+        state.source === "globe" ? "Globe" : "Auto";
+
+      usingLine.textContent = sourceName;
+      usingLoc.textContent = state.placeLabel;
+      usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
+
+      if (state.source === "manual") tipLine.textContent = "Manual override wins. Always.";
+      else if (state.source === "gps") tipLine.textContent = "GPS did the work. Respect.";
+      else if (state.source === "globe") tipLine.textContent = "Random place, real judgment.";
+      else tipLine.textContent = "Type a city and press Enter.";
+
+      locLine.textContent = state.placeLabel;
+      locSource.textContent = "Source: " + sourceName + ".";
+      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
+    }
+
     let suggestAbort = null;
 
     async function suggestLocations(q){
@@ -589,7 +685,6 @@
       const data = await res.json();
       locList.innerHTML = data.map(item => {
         const label = item.display_name;
-        // Store lat/lon on option via value only, we resolve again on submit
         return '<option value="' + escapeHtml(label) + '"></option>';
       }).join("");
     }
@@ -625,16 +720,17 @@
     }
 
     function simplifyLabel(obj){
-      // Prefer "City, ST" for US, otherwise "City, Country"
       const a = obj.address || {};
       const city = a.city || a.town || a.village || a.hamlet || a.county || a.state || "";
-      const state = a.state || a.region || "";
+      const stateName = a.state || a.region || "";
       const country = a.country || "";
       const cc = a.country_code ? a.country_code.toUpperCase() : null;
 
       if (cc === "US"){
-        const st = a.state_code || state;
-        return (city && st) ? (city + ", " + st) : (obj.display_name ? obj.display_name.split(",").slice(0,2).join(",").trim() : "Near you");
+        const st = a.state_code || stateName;
+        if (city && st) return city + ", " + st;
+        if (obj.display_name) return obj.display_name.split(",").slice(0,2).join(",").trim();
+        return "Near you";
       }
 
       if (city && country) return city + ", " + country;
@@ -651,11 +747,7 @@
         .replaceAll("'","&#039;");
     }
 
-    // -----------------------------
-    // Weather (Open-Meteo)
-    // -----------------------------
     async function fetchWeather(lat, lon, units){
-      // We request temperature_unit and windspeed_unit so we can display correctly.
       const tempUnit = units === "F" ? "fahrenheit" : "celsius";
       const windUnit = units === "F" ? "mph" : "kmh";
 
@@ -673,32 +765,22 @@
       return await res.json();
     }
 
-    function toF(c){ return (c * 9/5) + 32; }
+    function renderResult(temp, feels, wind){
+      state.last = { temp, feels, wind };
 
-    // -----------------------------
-    // Render
-    // -----------------------------
-    function renderResult({ temp, feels, wind, units }){
-      const { word, line } = decide(
-        units === "F" ? temp : toF(temp),
-        units === "F" ? feels : toF(feels),
-        state.run
-      );
+      const tempF = state.units === "F" ? temp : toF(temp);
+      const feelsF = state.units === "F" ? feels : toF(feels);
 
-      bigWord.textContent = word;
-      oneLiner.textContent = line;
+      const d = decide(tempF, feelsF, state.run);
+      bigWord.textContent = d.word;
+      oneLiner.textContent = d.line;
 
-      tempText.textContent = fmtTemp(temp, units);
-
-      metaText.innerHTML =
-        "Feels like: " + fmtTemp(feels, units) + "<br/>" +
-        "Wind: " + fmtWind(wind, units) + "<br/>" +
-        "Units: " + (units === "F" ? "Fahrenheit" : "Celsius");
+      tempLine.textContent = fmtTemp(temp, state.units);
+      feelWindLine.textContent = "Feels like: " + fmtTemp(feels, state.units) + "  |  Wind: " + fmtWind(wind, state.units);
+      unitsLine.textContent = "Units: " + (state.units === "F" ? "Fahrenheit" : "Celsius");
+      usingUnits.textContent = state.units === "F" ? "Fahrenheit" : "Celsius";
     }
 
-    // -----------------------------
-    // Actions
-    // -----------------------------
     async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
       state.lat = lat;
       state.lon = lon;
@@ -706,9 +788,10 @@
       state.source = source || state.source;
 
       state.units = countryUsesF(state.countryCode) ? "F" : "C";
+      state.placeLabel = label || "Near you";
 
-      // Pill should reflect the active location, not "Near you"
-      setPill("📍 " + label);
+      setPill("📍 " + state.placeLabel);
+      updateSourceUI();
 
       setLoading(true);
 
@@ -719,10 +802,8 @@
         const feels = cur.apparent_temperature;
         const wind = cur.wind_speed_10m;
 
-        setLoading(false);
-        renderResult({ temp, feels, wind, units: state.units });
+        renderResult(temp, feels, wind);
       }catch(e){
-        setLoading(false);
         bigWord.textContent = "MAYBE";
         oneLiner.textContent = "Weather fetch failed. The hoodie gods are silent.";
         showToast("Could not fetch weather. Try again.");
@@ -730,19 +811,18 @@
     }
 
     async function tryAutoLocation(){
-      // Start in a sane state. Do not block the right-side controls.
+      state.source = "auto";
+      state.placeLabel = "Near you";
       setPill("Near you");
+      updateSourceUI();
       setLoading(true);
 
-      // If geolocation is available, attempt it quickly, but do not stall the UI forever.
       if (!navigator.geolocation){
-        setLoading(false);
         bigWord.textContent = "MAYBE";
-        oneLiner.textContent = "No GPS available here. Type a city and we’ll judge it anyway.";
+        oneLiner.textContent = "No GPS here. Type a city and we’ll judge it anyway.";
         return;
       }
 
-      // Show subtle spinner inside pill while browser resolves
       setPill("", { loading: true });
 
       const opts = { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 };
@@ -752,18 +832,15 @@
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
           const rev = await reverseGeocode(lat, lon);
-
           await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
         }catch(err){
           setPill("Near you");
-          setLoading(false);
           bigWord.textContent = "MAYBE";
           oneLiner.textContent = "Couldn’t resolve your city. Type one and we’ll be dramatic about it.";
           showToast("Location lookup failed");
         }
       }, (err) => {
         setPill("Near you");
-        setLoading(false);
         bigWord.textContent = "MAYBE";
         oneLiner.textContent = "No location, no problem. Type a place and let’s argue about hoodies.";
         if (err && err.code === 1) showToast("Location access denied");
@@ -772,20 +849,21 @@
     }
 
     async function onUseGPS(){
-      // Manual trigger
       if (!navigator.geolocation){
         showToast("No GPS available in this browser.");
         return;
       }
+      state.source = "gps";
       setPill("", { loading: true });
+      updateSourceUI();
 
       const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 };
+
       navigator.geolocation.getCurrentPosition(async (pos) => {
         try{
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
           const rev = await reverseGeocode(lat, lon);
-
           await updateWeatherFromLatLon(lat, lon, rev.label, rev.countryCode, "gps");
         }catch(e){
           setPill("Near you");
@@ -812,6 +890,7 @@
 
     async function onSpinGlobe(){
       const pick = globeSpins[Math.floor(Math.random() * globeSpins.length)];
+      state.source = "globe";
       await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc, "globe");
     }
 
@@ -824,22 +903,17 @@
 
       try{
         const g = await geocodeDisplayName(q);
+        state.source = "manual";
         await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual");
       }catch(e){
         showToast("No results. Try a slightly different spelling.");
       }
     }
 
-    // -----------------------------
-    // Events
-    // -----------------------------
     runSelect.addEventListener("change", () => {
       state.run = runSelect.value;
-      // Re-render decision immediately if we already have weather values in DOM
-      // Best-effort: trigger a refresh if we have coordinates.
-      if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-        // Just refetch for simplicity (also updates feels/wind)
-        updateWeatherFromLatLon(state.lat, state.lon, (document.getElementById("whereText")?.textContent || state.placeLabel).replace(/^📍\s*/, ""), state.countryCode, state.source);
+      if (Number.isFinite(state.lat) && Number.isFinite(state.lon) && Number.isFinite(state.last.temp)){
+        renderResult(state.last.temp, state.last.feels, state.last.wind);
       }
     });
 
@@ -863,17 +937,12 @@
       tryAutoLocation();
     });
 
-    // -----------------------------
-    // Init
-    // -----------------------------
     (function init(){
       state.run = runSelect.value;
-      // Light, once-only question mark animation already handled by CSS.
-      // Start auto-location attempt, but never lock the UI.
+      updateSourceUI();
       tryAutoLocation();
     })();
   </script>
 </body>
 </html>
-
-
+```
