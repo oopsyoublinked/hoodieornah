@@ -90,33 +90,41 @@
     }
 
     .brand .mark{
-      width: 38px;
-      height: 38px;
+      width: 46px;
+      height: 46px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.14);
       background:
-        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.14), transparent 60%),
+        radial-gradient(16px 16px at 30% 30%, rgba(255,255,255,.14), transparent 60%),
         rgba(255,255,255,.04);
       display:grid;
       place-items:center;
       box-shadow: 0 10px 25px rgba(0,0,0,.45);
-      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      transition: transform .18s ease, filter .18s ease;
     }
 
     .brand:hover .mark{
-      transform: translateY(-1px) scale(1.02);
-      filter: drop-shadow(0 0 12px rgba(255,255,255,.10));
+      transform: translateY(-1px) scale(1.03);
+      filter: drop-shadow(0 0 12px rgba(255,255,255,.12));
+    }
+
+    .brand .mark img{
+      width: 32px;
+      height: 32px;
+      display:block;
+      opacity:.95;
     }
 
     .brand .word{
       display:flex;
       flex-direction:column;
-      line-height:1.05;
+      line-height:1.02;
     }
 
     .brand .word strong{
       font-size: 18px;
-      letter-spacing: .01em;
+      letter-spacing: .015em;
+      font-weight: 850;
     }
     .brand .word span{
       font-size: 12px;
@@ -146,9 +154,11 @@
       user-select:none;
       white-space: nowrap;
       transition: background .16s ease, border-color .16s ease, transform .16s ease;
+      max-width: 320px;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
     .pill:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
-    .pill[aria-pressed="true"]{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
 
     .seg{
       display:flex;
@@ -245,6 +255,7 @@
     }
     .forecast::-webkit-scrollbar{ height: 10px; }
     .forecast::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.10); border-radius: 10px; }
+
     .forecast-item{
       scroll-snap-align: start;
       min-width: 128px;
@@ -287,9 +298,8 @@
       min-height: 34px;
     }
 
-    /* Footer layout tweak: remove awkward dead space and nudge support lower */
     .left-footer{
-      margin-top: 16px;
+      margin-top: 10px;
       display:block;
     }
     .cta{
@@ -297,9 +307,9 @@
       gap: 10px;
       align-items:center;
       flex-wrap: wrap;
-      margin-top: 12px;
+      margin-top: 18px; /* moved down */
     }
-    #supportBtn{ margin-top: 6px; }
+    #supportBtn{ margin-top: 2px; }
     #unitsLine{
       margin-top: 10px;
       color: var(--muted2);
@@ -383,7 +393,6 @@
     .using .k{ color: var(--muted2); }
     .using .v{ color: var(--text); font-weight: 650; display:flex; align-items:center; gap:8px; justify-content:flex-end; }
     .using .v .pin{ opacity:.9; }
-    .using .help{ grid-column: 1 / -1; text-align:right; color: var(--muted2); font-size: 12px; }
 
     .details{
       margin-top: 14px;
@@ -416,6 +425,7 @@
     .details-title{ font-size:16px; font-weight:800; color:var(--text); }
     .details-meta{ color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
     .details-meta svg{ width:34px; height:34px; flex:0 0 auto; }
+
     .sunrow{ width:100%; margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .sunbox{ border:1px solid rgba(255,255,255,.10); border-radius:14px; padding:10px 12px; background: rgba(255,255,255,.02); }
     .sunlabel{ display:block; font-size:12px; color:var(--muted); letter-spacing:.02em; }
@@ -494,42 +504,6 @@
     }
     .loader-mark svg{ width: 26px; height: 26px; opacity:.9; }
 
-    .modal-backdrop{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.60);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 200;
-      padding: 18px;
-    }
-    .modal{
-      width: min(720px, 96vw);
-      border: 1px solid rgba(255,255,255,.14);
-      border-radius: 18px;
-      background: rgba(15,15,20,.92);
-      box-shadow: var(--shadow);
-      padding: 14px;
-      color: var(--text);
-    }
-    .modal header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .modal header b{ font-size: 14px; }
-    .modal header button{
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 8px 10px;
-      cursor:pointer;
-    }
-
     .qmark-anim{
       transform-origin: 50% 50%;
       animation: popQ 0.9s ease 1;
@@ -547,7 +521,7 @@
     <div class="topbar">
       <div class="brand" id="brandHome" title="Back to auto location">
         <div class="mark" aria-hidden="true">
-          <img src="/android-chrome-192x192.png" alt="" style="width:26px;height:26px;display:block;" />
+          <img src="/android-chrome-192x192.png" alt="" />
         </div>
         <div class="word">
           <strong>Hoodie or Nah</strong>
@@ -561,7 +535,7 @@
           <button class="unit-btn" id="unitF" aria-pressed="false">°F</button>
           <button class="unit-btn" id="unitC" aria-pressed="false">°C</button>
         </div>
-        <div class="pill" id="wherePill" title="Click for details or copy">
+        <div class="pill" id="wherePill" title="Click for today details">
           <span class="spinner" id="pillSpinner" style="display:none"></span>
           <span class="pin">📍</span>
           <span id="pillText">Near you</span>
@@ -595,7 +569,7 @@
             <div class="stat">
               <small>Right now</small>
               <strong id="tempLine">-</strong>
-              <div class="sub" id="feelWind">-</div>
+              <div class="sub" id="sunMiniLine">Sunrise: - | Sunset: -</div>
             </div>
           </div>
 
@@ -636,18 +610,17 @@
             <div class="k">Using</div><div class="v" id="usingSource">Auto</div>
             <div class="k">Location</div><div class="v"><span class="pin">📍</span><span id="usingLocation">Near you</span></div>
             <div class="k">Units</div><div class="v" id="usingUnits">Auto</div>
-            <div class="k">Actions</div><div class="v" style="justify-content:flex-end;color:var(--muted2);font-weight:600;">Click the location for details or copy</div>
-            <div class="help"></div>
+            <div class="k">Tip</div><div class="v" style="justify-content:flex-end;color:var(--muted2);font-weight:600;">Tap a day to see sunrise and sunset.</div>
           </div>
 
-          <div class="details" id="detailsDrawer" aria-hidden="true">
+          <div class="details" id="detailsDrawer">
             <div class="details-header">
-              <b>Details</b>
+              <b>Forecast details</b>
               <button id="drawerClose" type="button">Close</button>
             </div>
             <div class="details-body">
-              <div class="details-title" id="drawerTitle">Select a day for details</div>
-              <div class="details-meta" id="drawerMeta">No day selected.</div>
+              <div class="details-title" id="drawerTitle">Today</div>
+              <div class="details-meta" id="drawerMeta">Loading…</div>
               <div id="drawerContent" style="margin-top:6px;color:var(--muted)"></div>
               <div class="sunrow" id="drawerSun" aria-live="polite"></div>
             </div>
@@ -674,16 +647,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-label="Location details">
-      <header>
-        <b>Details</b>
-        <button id="closeModalBtn" type="button">Close</button>
-      </header>
-      <div id="modalContent"></div>
-    </div>
-  </div>
-
   <script>
     const el = {
       bigWord: document.getElementById("bigWord"),
@@ -691,7 +654,7 @@
       locLabel: document.getElementById("locLabel"),
       locSource: document.getElementById("locSource"),
       tempLine: document.getElementById("tempLine"),
-      feelWind: document.getElementById("feelWind"),
+      sunMiniLine: document.getElementById("sunMiniLine"),
       forecastList: document.getElementById("forecastList"),
       runSelect: document.getElementById("runSelect"),
       manualInput: document.getElementById("manualInput"),
@@ -705,7 +668,6 @@
       usingSource: document.getElementById("usingSource"),
       usingLocation: document.getElementById("usingLocation"),
       usingUnits: document.getElementById("usingUnits"),
-      supportBtn: document.getElementById("supportBtn"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       detailsDrawer: document.getElementById("detailsDrawer"),
       drawerTitle: document.getElementById("drawerTitle"),
@@ -714,9 +676,6 @@
       drawerSun: document.getElementById("drawerSun"),
       drawerClose: document.getElementById("drawerClose"),
       toast: document.getElementById("toast"),
-      modalBackdrop: document.getElementById("modalBackdrop"),
-      modalContent: document.getElementById("modalContent"),
-      closeModalBtn: document.getElementById("closeModalBtn"),
       brandHome: document.getElementById("brandHome"),
       unitAuto: document.getElementById("unitAuto"),
       unitF: document.getElementById("unitF"),
@@ -755,28 +714,24 @@
       unitOverride: null,
       run: "normal",
       lastDecision: null,
-      pillBehavior: "modal",
     };
 
     let loading = false;
     let latestForecastMeta = [];
     let selectedForecastIndex = null;
+    let lastAutocompletePick = "";
 
     function saveState(){
-      try{
-        localStorage.setItem("hoodieornah_state_v2", JSON.stringify(state));
-      }catch(e){}
+      try{ localStorage.setItem("hoodieornah_state_v3", JSON.stringify(state)); }catch(e){}
     }
     function loadState(){
       try{
-        const raw = localStorage.getItem("hoodieornah_state_v2");
+        const raw = localStorage.getItem("hoodieornah_state_v3");
         return raw ? JSON.parse(raw) : null;
       }catch(e){ return null; }
     }
 
-    function setCached(key, val){
-      CACHE.set(key, { val, at: Date.now() });
-    }
+    function setCached(key, val){ CACHE.set(key, { val, at: Date.now() }); }
     function getCached(key){
       const hit = CACHE.get(key);
       if (!hit) return null;
@@ -784,13 +739,11 @@
       return hit.val;
     }
 
-    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
     function showToast(msg){
       el.toast.textContent = msg;
       el.toast.classList.add("show");
       clearTimeout(showToast._t);
-      showToast._t = setTimeout(()=> el.toast.classList.remove("show"), 2200);
+      showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2200);
     }
 
     function setLoadingUI(){
@@ -821,15 +774,22 @@
       return cc ? set.has(String(cc).toUpperCase()) : true;
     }
 
-    function fixUnitButtonLabels(){
-      el.unitF.textContent = "°F";
-      el.unitC.textContent = "°C";
+    function normalizeLabel(raw){
+      if (!raw) return "Near you";
+      const cleaned = String(raw)
+        .replace(/[\u{1F4CD}\u{1F4CC}\u{1F4CB}📍📌\uFE0F]/gu, "")
+        .replace(/\s+/g," ")
+        .trim();
+      if (/^-?\d+(\.\d+)?[°,]/.test(cleaned)) return "Near you";
+      if (/random spot/i.test(cleaned)) return "Near you";
+      if (/somewhere on earth/i.test(cleaned)) return "Near you";
+      return cleaned || "Near you";
     }
 
     function setPill(text){
       el.pillText.textContent = normalizeLabel(text);
-      adjustPillWidth();
       el.usingLocation.textContent = normalizeLabel(text);
+      adjustPillWidth();
     }
 
     function adjustPillWidth(){
@@ -849,167 +809,18 @@
       el.unitsLine.textContent = "Units: " + (state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit" : "Celsius") : "Auto");
     }
 
-    function normalizeLabel(raw){
-      if (!raw) return "Near you";
-      const cleaned = String(raw).replace(/[\u{1F4CD}\u{1F4CC}\u{1F4CB}📍📌\uFE0F]/gu, "").replace(/\s+/g," ").trim();
-      if (/^-?\d+(\.\d+)?[°,]/.test(cleaned)) return "Near you";
-      return cleaned || "Near you";
-    }
-    function displayWithPin(label){
-      const clean = normalizeLabel(label);
-      return "📍 " + clean;
+    function setUnitControlButtons(){
+      const u = state.unitOverride;
+      el.unitAuto.setAttribute("aria-pressed", String(!u));
+      el.unitF.setAttribute("aria-pressed", String(u === "F"));
+      el.unitC.setAttribute("aria-pressed", String(u === "C"));
+      updateSourceUI();
     }
 
-    function formatPlaceFromRev(rev){
-      if (!rev) return null;
-      const a = rev.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.municipality || a.locality || a.suburb;
-      const regionShort = a.state_code || a.region_code || a.province_code || null;
-      const region = regionShort || a.state || a.region || a.province;
-      const country = a.country;
-      const cc = a.country_code ? String(a.country_code).toUpperCase() : null;
-
-      const parts = [];
-      if (city) parts.push(city);
-      if (cc === "US" || cc === "CA" || cc === "AU"){
-        if (region) parts.push(region);
-      } else {
-        if (!city && region) parts.push(region);
-      }
-      if (!parts.length && country) parts.push(country);
-      else if (parts.length === 1 && country && cc !== "US" && cc !== "CA" && cc !== "AU") parts.push(country);
-
-      const label = parts.filter(Boolean).join(", ").trim();
-      return label || null;
-    }
-
-    async function reverseGeocodeToLabel(lat, lon){
-      const rev = await reverseGeocode(lat, lon);
-      if (!rev) return { label: null, cc: null };
-      const cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
-      const label = formatPlaceFromRev(rev) || (rev.display_name ? rev.display_name.split(",").slice(0,2).join(",").trim() : null);
-      return { label: label ? normalizeLabel(label) : null, cc };
-    }
-
-    async function pickRandomGeocodedSpot(maxAttempts = 10){
-      for (let i = 0; i < maxAttempts; i++){
-        const lat = (Math.random() * 160) - 80;
-        const lon = (Math.random() * 360) - 180;
-        try{
-          const got = await reverseGeocodeToLabel(lat, lon);
-          if (got && got.label && got.label !== "Near you"){
-            return { lat, lon, label: got.label, cc: got.cc || null };
-          }
-        }catch(e){}
-      }
-      return null;
-    }
-
-    async function fetchJson(url, timeoutMs = 12000){
-      const ctrl = new AbortController();
-      const t = setTimeout(()=>ctrl.abort(), timeoutMs);
-      try{
-        const res = await fetch(url, { signal: ctrl.signal, headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error("http_" + res.status);
-        return await res.json();
-      } finally {
-        clearTimeout(t);
-      }
-    }
-
-    async function reverseGeocode(lat, lon){
-      const url =
-        "https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1" +
-        "&lat=" + encodeURIComponent(lat) +
-        "&lon=" + encodeURIComponent(lon);
-      return await fetchJson(url, 12000);
-    }
-
-    async function geocodeDisplayName(q){
-      const url =
-        "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1" +
-        "&q=" + encodeURIComponent(q);
-      const res = await fetchJson(url, 12000);
-      if (!Array.isArray(res) || !res[0]) throw new Error("no_results");
-      const item = res[0];
-      const label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : q;
-      const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
-      return {
-        lat: parseFloat(item.lat),
-        lon: parseFloat(item.lon),
-        label: normalizeLabel(label),
-        countryCode: cc
-      };
-    }
-
-    function normalizeForecastResponse(raw, unitsReturned){
-      if (!raw || !raw.daily) return null;
-      const d = raw.daily;
-      const toCIfNeeded = (val) => {
-        if (!Number.isFinite(val)) return null;
-        return unitsReturned === "fahrenheit" ? toC(val) : val;
-      };
-      const normalized = {
-        time: Array.isArray(d.time) ? d.time.slice(0,7) : [],
-        temperature_2m_max_C: Array.isArray(d.temperature_2m_max) ? d.temperature_2m_max.map(v => toCIfNeeded(v)) : [],
-        temperature_2m_min_C: Array.isArray(d.temperature_2m_min) ? d.temperature_2m_min.map(v => toCIfNeeded(v)) : [],
-        apparent_temperature_max_C: Array.isArray(d.apparent_temperature_max) ? d.apparent_temperature_max.map(v => toCIfNeeded(v)) : [],
-        apparent_temperature_min_C: Array.isArray(d.apparent_temperature_min) ? d.apparent_temperature_min.map(v => toCIfNeeded(v)) : [],
-        sunrise: Array.isArray(d.sunrise) ? d.sunrise.slice(0,7) : [],
-        sunset: Array.isArray(d.sunset) ? d.sunset.slice(0,7) : [],
-        weathercode: Array.isArray(d.weathercode) ? d.weathercode.slice(0,7) : []
-      };
-      return normalized;
-    }
-
-    async function fetchForecast(lat, lon, units){
-      const key = `forecast:${lat.toFixed(4)},${lon.toFixed(4)}`;
-      const cached = getCached(key);
-      if (cached) return cached;
-
-      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
-      const url =
-        "https://api.open-meteo.com/v1/forecast" +
-        "?latitude=" + encodeURIComponent(lat) +
-        "&longitude=" + encodeURIComponent(lon) +
-        "&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,weathercode,sunrise,sunset" +
-        "&temperature_unit=" + tempUnit +
-        "&timezone=auto&forecast_days=7";
-
-      const raw = await fetchJson(url, 12000);
-      const normalized = normalizeForecastResponse(raw, tempUnit);
-      if (!normalized) throw new Error("invalid_forecast");
-      setCached(key, normalized);
-      return normalized;
-    }
-
-    async function fetchWeather(lat, lon, units){
-      const key = `weather:${lat.toFixed(4)},${lon.toFixed(4)}`;
-      const cached = getCached(key);
-      if (cached) return cached;
-
-      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
-      const windUnit = units === "F" ? "mph" : "kmh";
-
-      const url =
-        "https://api.open-meteo.com/v1/forecast" +
-        "?latitude=" + encodeURIComponent(lat) +
-        "&longitude=" + encodeURIComponent(lon) +
-        "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
-        "&temperature_unit=" + tempUnit +
-        "&windspeed_unit=" + windUnit +
-        "&timezone=auto";
-
-      const raw = await fetchJson(url, 12000);
-      const cur = raw.current || {};
-      const normalized = {
-        temperature_C: (units === "F" ? toC(cur.temperature_2m) : cur.temperature_2m),
-        apparent_C: (units === "F" ? toC(cur.apparent_temperature) : cur.apparent_temperature),
-        wind: cur.wind_speed_10m,
-        fetchedAt: Date.now()
-      };
-      setCached(key, normalized);
-      return normalized;
+    function fmtTemp(tempC, units){
+      if (!Number.isFinite(tempC)) return "-";
+      const v = units === "F" ? Math.round(toF(tempC)) : Math.round(tempC);
+      return v + "°" + units;
     }
 
     function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
@@ -1040,39 +851,40 @@
         "Hoodie recommended. Bonus points for pockets.",
         "If you skip the hoodie, you will think about it all day.",
         "Hoodie season. Lean into it.",
-        "Hoodie on. The wind is being rude.",
+        "Hoodie on. The air is spicy.",
         "Hoodie is the correct moral choice here.",
         "You want sleeves and plausible deniability. Hoodie.",
-        "Yes hoodie. The air is spicy.",
+        "Yes hoodie. The air is rude.",
         "Hoodie now. Your future self is grateful.",
         "Hoodie. You can still look cool while surviving.",
         "Hoodie. Do not let the forecast bully you.",
         "Hoodie is the safe play. Do not overthink it.",
-        "Hoodie weather. Proceed with confidence."
+        "Hoodie weather. Proceed with confidence.",
+        "Hoodie. The morning is plotting against you.",
+        "Hoodie. Tiny chill, big attitude.",
+        "Hoodie. The outdoors is acting up."
       ],
       MAYBE: [
         "Could go either way. Hoodie if you like options.",
         "Borderline. Hoodie for the shade, nah for the sun.",
         "A true toss-up. Bring the hoodie just to feel powerful.",
         "This is a vibe check, not a science. Maybe hoodie.",
-        "You can raw-dog it, or you can hoodie. Your call.",
         "Maybe hoodie. Depends on your tolerance for drama.",
         "Not cold, not warm. Annoyingly in-between.",
         "Hoodie if you will be outside longer than five minutes.",
-        "Maybe hoodie. The wind might try something.",
+        "Maybe hoodie. The breeze might try something.",
         "This is the gray area. Dress like you have plans.",
         "Coin-flip weather. Hoodie is the insurance policy.",
         "You will be fine either way. Probably.",
         "Maybe hoodie. Mostly for the pockets.",
         "This is prime 'start with hoodie, regret later' territory.",
         "Maybe. If you run cold, hoodie. If you run hot, nah.",
-        "Maybe. You will argue with yourself in the mirror.",
         "Borderline. Hoodie for mornings, nah for afternoons.",
-        "Maybe hoodie. Commit to ambiguity."
+        "Maybe hoodie. Commit to ambiguity.",
+        "Maybe. The sun and shade are fighting."
       ],
       NAH: [
         "Nope. Hoodie would be a personal attack on your pores.",
-        "Hoodie? Only if you are trying to escape the sun by staying inside.",
         "Nah. Let your shoulders live a little.",
         "Skip the hoodie. You are not in a music video.",
         "Nah. Hoodie would be overachieving.",
@@ -1088,7 +900,8 @@
         "Skip it. The sun is winning.",
         "Nah. Hoodie is too dramatic for this temp.",
         "No hoodie. Keep it simple.",
-        "Nah. You will survive without the comfort blanket."
+        "Nah. Save the hoodie for later when it is actually spicy outside.",
+        "Nah. You are free. Do not self-impose sleeves."
       ]
     };
 
@@ -1104,18 +917,6 @@
       const fallback = pool[0] || "";
       usedSet.add(fallback);
       return fallback;
-    }
-
-    function fmtTemp(tempC, units){
-      if (!Number.isFinite(tempC)) return "-";
-      const v = units === "F" ? Math.round(toF(tempC)) : Math.round(tempC);
-      return v + "°" + units;
-    }
-
-    function fmtWind(wind, units){
-      if (!Number.isFinite(wind)) return "--";
-      const u = units === "F" ? "mph" : "km/h";
-      return Math.round(wind) + " " + u;
     }
 
     function iconFor(code){
@@ -1134,7 +935,6 @@
 
     function svgFor(code){
       const i = iconFor(code);
-      const t = i.text;
       const glyph = i.glyph;
       const svg = `
         <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -1142,16 +942,162 @@
           <text x="32" y="40" text-anchor="middle" font-size="28">${glyph}</text>
         </svg>
       `;
-      return { svg, text: t };
+      return { svg, text: i.text };
+    }
+
+    function formatTimeLocal(isoOrNull){
+      if (!isoOrNull) return "-";
+      const d = new Date(isoOrNull);
+      if (isNaN(d.getTime())) return "-";
+      return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    }
+
+    async function fetchJson(url, timeoutMs = 12000){
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), timeoutMs);
+      try{
+        const res = await fetch(url, { signal: ctrl.signal, headers: { "Accept": "application/json" } });
+        if (!res.ok) throw new Error("http_" + res.status);
+        return await res.json();
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function reverseGeocode(lat, lon){
+      const url =
+        "https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1" +
+        "&lat=" + encodeURIComponent(lat) +
+        "&lon=" + encodeURIComponent(lon);
+      return await fetchJson(url, 12000);
+    }
+
+    function formatPlaceFromRev(rev){
+      if (!rev) return null;
+      const a = rev.address || {};
+      const city = a.city || a.town || a.village || a.hamlet || a.municipality || a.locality || a.suburb;
+      const regionShort = a.state_code || a.region_code || a.province_code || null;
+      const region = regionShort || a.state || a.region || a.province;
+      const country = a.country;
+      const cc = a.country_code ? String(a.country_code).toUpperCase() : null;
+
+      const parts = [];
+      if (city) parts.push(city);
+      if (cc === "US" || cc === "CA" || cc === "AU"){
+        if (region) parts.push(region);
+      } else {
+        if (!city && region) parts.push(region);
+      }
+      if (!parts.length && country) parts.push(country);
+      else if (parts.length === 1 && country && cc !== "US" && cc !== "CA" && cc !== "AU") parts.push(country);
+
+      const label = parts.filter(Boolean).join(", ").trim();
+      return label || null;
+    }
+
+    async function reverseGeocodeToLabel(lat, lon){
+      const rev = await reverseGeocode(lat, lon);
+      const cc = rev && rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
+      const label = formatPlaceFromRev(rev) || (rev && rev.display_name ? rev.display_name.split(",").slice(0,2).join(",").trim() : null);
+      return { label: label ? normalizeLabel(label) : null, cc };
+    }
+
+    async function geocodeSearch(q, limit = 8){
+      const url =
+        "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=" + encodeURIComponent(limit) +
+        "&q=" + encodeURIComponent(q);
+      const res = await fetchJson(url, 12000);
+      if (!Array.isArray(res)) return [];
+      return res;
+    }
+
+    async function geocodeDisplayName(q){
+      const res = await geocodeSearch(q, 1);
+      if (!res[0]) throw new Error("no_results");
+      const item = res[0];
+      const label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : q;
+      const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
+      return {
+        lat: parseFloat(item.lat),
+        lon: parseFloat(item.lon),
+        label: normalizeLabel(label),
+        countryCode: cc
+      };
+    }
+
+    function normalizeForecastResponse(raw, unitsReturned){
+      if (!raw || !raw.daily) return null;
+      const d = raw.daily;
+      const toCIfNeeded = (val) => {
+        if (!Number.isFinite(val)) return null;
+        return unitsReturned === "fahrenheit" ? toC(val) : val;
+      };
+      return {
+        time: Array.isArray(d.time) ? d.time.slice(0,7) : [],
+        temperature_2m_max_C: Array.isArray(d.temperature_2m_max) ? d.temperature_2m_max.map(v => toCIfNeeded(v)) : [],
+        temperature_2m_min_C: Array.isArray(d.temperature_2m_min) ? d.temperature_2m_min.map(v => toCIfNeeded(v)) : [],
+        apparent_temperature_max_C: Array.isArray(d.apparent_temperature_max) ? d.apparent_temperature_max.map(v => toCIfNeeded(v)) : [],
+        apparent_temperature_min_C: Array.isArray(d.apparent_temperature_min) ? d.apparent_temperature_min.map(v => toCIfNeeded(v)) : [],
+        sunrise: Array.isArray(d.sunrise) ? d.sunrise.slice(0,7) : [],
+        sunset: Array.isArray(d.sunset) ? d.sunset.slice(0,7) : [],
+        weathercode: Array.isArray(d.weathercode) ? d.weathercode.slice(0,7) : []
+      };
+    }
+
+    async function fetchForecast(lat, lon, units){
+      const key = `forecast:${lat.toFixed(4)},${lon.toFixed(4)}:${units}`;
+      const cached = getCached(key);
+      if (cached) return cached;
+
+      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
+      const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=" + encodeURIComponent(lat) +
+        "&longitude=" + encodeURIComponent(lon) +
+        "&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,weathercode,sunrise,sunset" +
+        "&temperature_unit=" + tempUnit +
+        "&timezone=auto&forecast_days=7";
+
+      const raw = await fetchJson(url, 12000);
+      const normalized = normalizeForecastResponse(raw, tempUnit);
+      if (!normalized) throw new Error("invalid_forecast");
+      setCached(key, normalized);
+      return normalized;
+    }
+
+    async function fetchWeather(lat, lon, units){
+      const key = `weather:${lat.toFixed(4)},${lon.toFixed(4)}:${units}`;
+      const cached = getCached(key);
+      if (cached) return cached;
+
+      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
+      const url =
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=" + encodeURIComponent(lat) +
+        "&longitude=" + encodeURIComponent(lon) +
+        "&current=temperature_2m,apparent_temperature" +
+        "&temperature_unit=" + tempUnit +
+        "&timezone=auto";
+
+      const raw = await fetchJson(url, 12000);
+      const cur = raw.current || {};
+      const normalized = {
+        temperature_C: (units === "F" ? toC(cur.temperature_2m) : cur.temperature_2m),
+        apparent_C: (units === "F" ? toC(cur.apparent_temperature) : cur.apparent_temperature),
+        fetchedAt: Date.now()
+      };
+      setCached(key, normalized);
+      return normalized;
     }
 
     function buildForecastMeta(forecast){
       const out = [];
-      const usedQuips = new Set();
+      const usedQuips = new Set(); // prevents duplicates across the 5-day strip
       const times = forecast.time || [];
       for (let i = 0; i < Math.min(5, times.length); i++){
         const day = new Date(times[i] + "T00:00:00");
         const dayLabel = day.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+
         const tmaxC = forecast.temperature_2m_max_C[i];
         const tminC = forecast.temperature_2m_min_C[i];
         const amaxC = forecast.apparent_temperature_max_C[i];
@@ -1164,7 +1110,10 @@
 
         out.push({
           dayLabel,
+          isoDate: times[i],
           tmaxC, tminC, amaxC, aminC,
+          sunrise: forecast.sunrise[i] || null,
+          sunset: forecast.sunset[i] || null,
           weatherCode: code,
           dec: { word: d.word, line }
         });
@@ -1195,33 +1144,84 @@
           <div class="forecast-mid">${escapeHtml(maxT)} / ${escapeHtml(minT)} <strong>${escapeHtml(m.dec.word)}</strong></div>
           <div class="forecast-line">${escapeHtml(m.dec.line)}</div>
         `;
+
+        div.addEventListener("click", () => selectForecastIndex(idx));
+        div.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            selectForecastIndex(idx);
+          }
+        });
+
         el.forecastList.appendChild(div);
       });
 
-      const shouldAutoSelect = opts.forceSelectFirst || selectedForecastIndex == null;
-      if (latestForecastMeta.length && shouldAutoSelect){
-        selectForecastIndex(0, { openDrawerNow: true });
+      const shouldSelectFirst = opts.forceSelectFirst || selectedForecastIndex == null;
+      if (latestForecastMeta.length && shouldSelectFirst){
+        selectForecastIndex(0);
       } else if (selectedForecastIndex != null && latestForecastMeta[selectedForecastIndex]){
         selectForecastIndex(selectedForecastIndex);
-      } else if (!latestForecastMeta.length){
-        closeDrawer();
       }
+    }
+
+    function setSunMiniFromMeta(meta){
+      if (!meta){ el.sunMiniLine.textContent = "Sunrise: - | Sunset: -"; return; }
+      const sr = formatTimeLocal(meta.sunrise);
+      const ss = formatTimeLocal(meta.sunset);
+      el.sunMiniLine.textContent = `Sunrise: ${sr} | Sunset: ${ss}`;
+    }
+
+    function selectForecastIndex(idx){
+      selectedForecastIndex = idx;
+
+      const items = Array.from(el.forecastList.querySelectorAll(".forecast-item"));
+      items.forEach((node, i) => node.classList.toggle("selected", i === idx));
+
+      const meta = latestForecastMeta[idx];
+      if (!meta) return;
+
+      // Auto-show details without requiring a click after load or location changes
+      el.drawerTitle.textContent = idx === 0 ? "Today" : meta.dayLabel;
+
+      const icon = svgFor(meta.weatherCode);
+      const displayUnits = state.unitOverride || state.units;
+      const maxT = Number.isFinite(meta.tmaxC) ? fmtTemp(meta.tmaxC, displayUnits) : "--";
+      const minT = Number.isFinite(meta.tminC) ? fmtTemp(meta.tminC, displayUnits) : "--";
+
+      el.drawerMeta.innerHTML = icon.svg + `<span>${escapeHtml(icon.text)} · High ${escapeHtml(maxT)} · Low ${escapeHtml(minT)}</span>`;
+      el.drawerContent.textContent = meta.dec.line;
+
+      el.drawerSun.innerHTML = `
+        <div class="sunbox">
+          <span class="sunlabel">Sunrise</span>
+          <span class="sunvalue">${escapeHtml(formatTimeLocal(meta.sunrise))}</span>
+        </div>
+        <div class="sunbox">
+          <span class="sunlabel">Sunset</span>
+          <span class="sunvalue">${escapeHtml(formatTimeLocal(meta.sunset))}</span>
+        </div>
+      `;
+
+      // Also swap the "Right now" subline to the selected day, and default to today on load
+      setSunMiniFromMeta(meta);
     }
 
     function renderResultFromNormalized(cur){
       const displayUnits = state.unitOverride || state.units;
       const temp = fmtTemp(cur.temperature_C, displayUnits);
-      const feels = fmtTemp(cur.apparent_C, displayUnits);
+      const feelsC = cur.apparent_C;
 
       el.tempLine.textContent = temp;
-      el.feelWind.textContent = `Feels like: ${feels} | Wind: ${fmtWind(cur.wind, displayUnits)}`;
 
-      const d = hoodieDecision(cur.apparent_C, cur.wind, state.run || "normal");
+      const d = hoodieDecision(feelsC, null, state.run || "normal");
       const word = d.word;
-      const line = pickUniqueQuip(word, new Set()); // single pick for the hero line, no need to compare
+
+      // Hero quip does not need uniqueness relative to forecast; forecast uniqueness is handled separately
+      const line = pickUniqueQuip(word, new Set());
 
       state.lastDecision = { word, line };
       saveState();
+
       el.bigWord.textContent = word;
       el.oneLiner.textContent = line;
     }
@@ -1230,8 +1230,6 @@
       state.lat = lat;
       state.lon = lon;
       state.source = source || state.source;
-
-      const effectiveUnits = state.unitOverride || state.units;
       state.placeLabel = normalizeLabel(label || state.placeLabel);
       state.countryCode = countryCode || state.countryCode;
 
@@ -1239,22 +1237,32 @@
       updateSourceUI();
       saveState();
 
+      const effectiveUnits = state.unitOverride || state.units;
+
       try{
         const [cur, forecast] = await Promise.all([
           fetchWeather(lat, lon, effectiveUnits),
           fetchForecast(lat, lon, effectiveUnits),
         ]);
-        renderResultFromNormalized(cur);
-        renderForecast(forecast, { forceSelectFirst: !!opts.forceSelectFirst });
 
+        renderResultFromNormalized(cur);
+        renderForecast(forecast, { forceSelectFirst: true });
+
+        // Ensure unit auto detection follows location (Celsius vs Fahrenheit)
         if (countryCode && !state.unitOverride){
           const should = countryUsesF(countryCode) ? "F" : "C";
           if (should !== state.units){
             state.units = should;
             saveState();
             setUnitControlButtons();
-            renderResultFromNormalized(cur);
-            renderForecast(forecast, { forceSelectFirst: true });
+
+            // Re-fetch with new unit preference to keep temps consistent with API response
+            const [cur2, forecast2] = await Promise.all([
+              fetchWeather(lat, lon, state.units),
+              fetchForecast(lat, lon, state.units),
+            ]);
+            renderResultFromNormalized(cur2);
+            renderForecast(forecast2, { forceSelectFirst: true });
             updateSourceUI();
           }
         }
@@ -1264,7 +1272,7 @@
     }
 
     function popNextSpinIndex(){
-      const key = "hoodieornah_spinbag_v1";
+      const key = "hoodieornah_spinbag_v2";
       let bag = [];
       try{ bag = JSON.parse(localStorage.getItem(key) || "[]"); }catch(e){}
       if (!Array.isArray(bag) || bag.length !== CURATED_CITIES.length){
@@ -1294,6 +1302,7 @@
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
+        // Immediately load weather, then replace label with reverse geocode name
         await updateWeatherFromLatLon(lat, lon, "Near you", null, "auto", { forceSelectFirst: true });
 
         try{
@@ -1303,11 +1312,15 @@
             state.countryCode = got.cc || state.countryCode;
             setPill(state.placeLabel);
             updateSourceUI();
+            saveState();
+
             if (!state.unitOverride && got.cc){
               const newUnits = countryUsesF(got.cc) ? "F" : "C";
               if (newUnits !== state.units){
                 state.units = newUnits;
+                saveState();
                 setUnitControlButtons();
+                setLoadingUI();
                 await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "auto", { forceSelectFirst: true });
               }
             }
@@ -1317,10 +1330,10 @@
         }catch(e){
           setPill("Near you");
         }
-
       }, () => {
         setPill("Near you");
         endLoadingUI();
+        showToast("Location unavailable. Try typing a city.");
       }, opts);
     }
 
@@ -1331,39 +1344,27 @@
       setPill("Locating...");
       setLoadingUI();
 
-      const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 0 };
-
+      const opts = { enableHighAccuracy: true, timeout: 9000, maximumAge: 300000 };
       navigator.geolocation.getCurrentPosition(async (pos) => {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps", { forceSelectFirst: true });
-
+        // GPS should show a real place name, not "Somewhere on earth"
+        let label = "Near you";
+        let cc = null;
         try{
           const got = await reverseGeocodeToLabel(lat, lon);
-          const cc = got && got.cc ? got.cc : null;
-          const label = got && got.label ? got.label : null;
+          if (got && got.label) label = got.label;
+          if (got && got.cc) cc = got.cc;
+        }catch(e){}
 
-          if (cc) state.countryCode = cc || state.countryCode;
-          if (label){
-            state.placeLabel = label;
-            setPill(state.placeLabel);
-            updateSourceUI();
-            if (!state.unitOverride){
-              const newUnits = cc ? (countryUsesF(cc) ? "F" : "C") : state.units;
-              if (newUnits !== state.units){
-                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps", { forceSelectFirst: true });
-              }
-            }
-          }
-        }catch(err){ console.warn("Reverse geocode failed:", err); }
+        await updateWeatherFromLatLon(lat, lon, label, cc, "gps", { forceSelectFirst: true });
       }, (err) => {
-        console.warn("GPS failed:", err);
-        setPill("Near you");
-        el.bigWord.textContent = "MAYBE";
-        el.oneLiner.textContent = "Location failed. Type a city and we will still judge it.";
-        showToast(err && err.code === 1 ? "Location access denied" : "GPS error or timeout");
         endLoadingUI();
+        setPill("Near you");
+        updateSourceUI();
+        if (err && err.code === 1) showToast("Location access denied.");
+        else showToast("GPS failed. Try typing a city.");
       }, opts);
     }
 
@@ -1373,324 +1374,179 @@
       setPill("Spinning...");
       setLoadingUI();
 
-      await sleep(320);
+      const pick = CURATED_CITIES[popNextSpinIndex()];
+      // This will always be a real location name, never "Random spot"
+      await updateWeatherFromLatLon(pick.lat, pick.lon, pick.label, pick.cc || null, "globe", { forceSelectFirst: true });
+    }
 
-      const idx = popNextSpinIndex();
-      const pick = CURATED_CITIES[idx];
+    function setManualSuggestions(items){
+      el.locList.innerHTML = "";
+      const seen = new Set();
+      items.forEach(it => {
+        const label = it.display_name ? it.display_name.split(",").slice(0,2).join(",").trim() : "";
+        const clean = normalizeLabel(label);
+        if (!clean || clean === "Near you") return;
+        if (seen.has(clean)) return;
+        seen.add(clean);
+        const opt = document.createElement("option");
+        opt.value = clean;
+        el.locList.appendChild(opt);
+      });
+    }
 
-      if (!pick){
-        const got = await pickRandomGeocodedSpot(12);
-        if (got){
-          state.placeLabel = got.label;
-          state.countryCode = got.cc || null;
-          if (!state.unitOverride && state.countryCode) state.units = countryUsesF(state.countryCode) ? "F" : "C";
-          setPill(state.placeLabel);
-          await updateWeatherFromLatLon(got.lat, got.lon, state.placeLabel, state.countryCode, "globe", { forceSelectFirst: true });
-          return;
-        }
+    let suggestT = null;
+    async function onManualInputChange(isUserTyping){
+      const q = el.manualInput.value.trim();
+      if (!q) { el.locList.innerHTML = ""; return; }
 
-        state.placeLabel = "Somewhere on Earth";
-        state.countryCode = null;
-        setPill(state.placeLabel);
-        await updateWeatherFromLatLon((Math.random()*160)-80, (Math.random()*360)-180, state.placeLabel, null, "globe", { forceSelectFirst: true });
+      // If they just picked an option, do not immediately repopulate the datalist (prevents dropdown from reappearing)
+      if (!isUserTyping && q === lastAutocompletePick){
+        el.locList.innerHTML = "";
         return;
       }
 
-      let label = pick.label ? normalizeLabel(pick.label) : null;
-      let cc = pick.cc ? String(pick.cc).toUpperCase() : null;
-
-      if (!label){
+      clearTimeout(suggestT);
+      suggestT = setTimeout(async () => {
         try{
-          const got = await reverseGeocodeToLabel(pick.lat, pick.lon);
-          if (got && got.label) label = got.label;
-          if (got && got.cc) cc = got.cc;
-        }catch(e){}
-      }
-
-      state.placeLabel = label || "Somewhere on Earth";
-      state.countryCode = cc || state.countryCode;
-
-      if (!state.unitOverride && state.countryCode) state.units = countryUsesF(state.countryCode) ? "F" : "C";
-      setPill(state.placeLabel);
-      await updateWeatherFromLatLon(pick.lat, pick.lon, state.placeLabel, cc, "globe", { forceSelectFirst: true });
+          const res = await geocodeSearch(q, 8);
+          setManualSuggestions(res);
+        }catch(e){
+          el.locList.innerHTML = "";
+        }
+      }, 180);
     }
 
-    let suggestTimer = null, suggestAbort = null;
-    function suggestLocations(q){
-      if (loading) return;
-      const s = (q||"").trim();
-      if (s.length < 3){ el.locList.innerHTML = ""; return; }
-      if (suggestAbort){ try{ suggestAbort.abort(); }catch(e){} }
-      if (suggestTimer) clearTimeout(suggestTimer);
-      suggestTimer = setTimeout(async ()=>{
-        suggestAbort = new AbortController();
-        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=8&q=" + encodeURIComponent(s);
-        try{
-          const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept":"application/json" } });
-          if (!res.ok) return;
-          const data = await res.json();
+    async function onManualPickCommit(){
+      const q = el.manualInput.value.trim();
+      if (!q) return;
 
-          const seen = new Set();
-          const opts = [];
-          for (const item of (data || [])){
-            const v = (item && item.display_name) ? String(item.display_name) : "";
-            if (!v) continue;
-            if (seen.has(v)) continue;
-            seen.add(v);
-            opts.push(v);
-            if (opts.length >= 6) break;
-          }
-
-          el.locList.innerHTML = opts.map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
-        }catch(e){} finally { suggestAbort = null; }
-      }, 260);
-    }
-
-    function suppressDatalistOnce(){
-      try{
-        el.locList.innerHTML = "";
-        const curList = el.manualInput.getAttribute("list");
-        if (!curList) return;
-        el.manualInput.removeAttribute("list");
-        setTimeout(() => {
-          el.manualInput.setAttribute("list", curList);
-        }, 400);
-      }catch(e){}
-    }
-
-    el.manualInput.addEventListener('input', () => {
-      suggestLocations(el.manualInput.value);
-      const val = (el.manualInput.value || "").trim();
-      if (!val) return;
-
-      const opts = Array.from(el.locList.options || []).map(o => o.value);
-      if (opts.includes(val)){
-        setTimeout(() => {
-          if (!loading) onManualSubmit(true);
-        }, 6);
-      }
-    });
-
-    async function onManualSubmit(fromPick){
-      const q = (el.manualInput.value || "").trim();
-      if (!q){ showToast("Type a place first."); return; }
       state.source = "manual";
       updateSourceUI();
-      setPill("Searching...");
+      setPill("Finding it...");
       setLoadingUI();
+
       try{
-        const g = await geocodeDisplayName(q);
-        await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual", { forceSelectFirst: true });
+        const got = await geocodeDisplayName(q);
+        lastAutocompletePick = got.label;
 
-        el.manualInput.value = g.label;
+        // Kill the datalist right after selection so it does not pop back open
+        el.locList.innerHTML = "";
         el.manualInput.blur();
-        suppressDatalistOnce();
-        if (fromPick) showToast("Locked in: " + g.label);
+
+        await updateWeatherFromLatLon(got.lat, got.lon, got.label, got.countryCode || null, "manual", { forceSelectFirst: true });
       }catch(e){
-        console.error(e);
-        el.bigWord.textContent = "MAYBE";
-        el.oneLiner.textContent = "Could not find that place. Try a nearby city or add a country.";
-        showToast("No results for that location.");
-        setPill("Near you");
         endLoadingUI();
+        showToast("Nope. Try a different city or ZIP.");
+        setPill(state.placeLabel || "Near you");
       }
     }
 
-    function openDrawer(){
-      el.detailsDrawer.setAttribute('aria-hidden', 'false');
-    }
-    function closeDrawer(){
-      el.detailsDrawer.setAttribute('aria-hidden', 'true');
-      el.drawerTitle.textContent = "Select a day for details";
-      el.drawerMeta.textContent = "No day selected.";
-      el.drawerContent.innerHTML = "";
-      el.drawerSun.innerHTML = "";
-      selectedForecastIndex = null;
-      Array.from(el.forecastList.children).forEach(card => card.classList.remove("selected"));
-    }
-
-    function showDayInDrawer(meta, idx){
-      if (!meta) return;
-      openDrawer();
-      el.drawerTitle.textContent = meta.dayLabel;
-
-      const displayUnits = state.unitOverride || state.units;
-      const maxDisplay = Number.isFinite(meta.tmaxC) ? (displayUnits === "F" ? Math.round(toF(meta.tmaxC)) : Math.round(meta.tmaxC)) : null;
-      const minDisplay = Number.isFinite(meta.tminC) ? (displayUnits === "F" ? Math.round(toF(meta.tminC)) : Math.round(meta.tminC)) : null;
-      const feelMax = Number.isFinite(meta.amaxC) ? (displayUnits === "F" ? Math.round(toF(meta.amaxC)) : Math.round(meta.amaxC)) : null;
-      const feelMin = Number.isFinite(meta.aminC) ? (displayUnits === "F" ? Math.round(toF(meta.aminC)) : Math.round(meta.aminC)) : null;
-      const icon = svgFor(meta.weatherCode);
-
-      el.drawerMeta.innerHTML = `${icon.svg} <span style="font-weight:700;color:var(--text)">${escapeHtml(icon.text)}</span>`;
-
-      const fkey = (Number.isFinite(state.lat) && Number.isFinite(state.lon)) ? `forecast:${state.lat.toFixed(4)},${state.lon.toFixed(4)}` : null;
-      const forecast = fkey ? getCached(fkey) : null;
-
-      const sunriseRaw = (forecast && Array.isArray(forecast.sunrise)) ? forecast.sunrise[idx] : null;
-      const sunsetRaw  = (forecast && Array.isArray(forecast.sunset))  ? forecast.sunset[idx]  : null;
-
-      const fmtClock = (v) => {
-        if (!v) return "--";
-        const d = new Date(v);
-        if (Number.isNaN(d.getTime())) return "--";
-        return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-      };
-
-      el.drawerContent.innerHTML = `
-        <div style="margin-top:6px;display:grid;gap:6px;line-height:1.35;">
-          <div><strong style="color:var(--text)">Temps:</strong> ${escapeHtml(maxDisplay != null ? (maxDisplay + "°" + displayUnits) : "--")} / ${escapeHtml(minDisplay != null ? (minDisplay + "°" + displayUnits) : "--")}</div>
-          <div><strong style="color:var(--text)">Feels:</strong> ${escapeHtml(feelMax != null ? (feelMax + "°" + displayUnits) : "--")} / ${escapeHtml(feelMin != null ? (feelMin + "°" + displayUnits) : "--")}</div>
-          <div><strong style="color:var(--text)">Verdict:</strong> ${escapeHtml(meta.dec.word)}</div>
-          <div style="color:var(--muted2);">${escapeHtml(meta.dec.line)}</div>
-        </div>
-      `;
-
-      el.drawerSun.innerHTML = `
-        <div class="sunbox">
-          <span class="sunlabel">Sunrise</span>
-          <span class="sunvalue">${escapeHtml(fmtClock(sunriseRaw))}</span>
-        </div>
-        <div class="sunbox">
-          <span class="sunlabel">Sunset</span>
-          <span class="sunvalue">${escapeHtml(fmtClock(sunsetRaw))}</span>
-        </div>
-      `;
-    }
-
-    function selectForecastIndex(idx, opts = {}){
-      if (!latestForecastMeta[idx]) return;
-      selectedForecastIndex = idx;
-      Array.from(el.forecastList.children).forEach((card, i) => {
-        card.classList.toggle("selected", i === idx);
-      });
-      showDayInDrawer(latestForecastMeta[idx], idx);
-      if (opts.openDrawerNow) openDrawer();
-    }
-
-    el.forecastList.addEventListener('click', (ev) => {
-      const item = ev.target.closest('.forecast-item');
-      if (!item) return;
-      const idx = Array.from(el.forecastList.children).indexOf(item);
-      selectForecastIndex(idx);
-    });
-    el.forecastList.addEventListener('keydown', (ev) => {
-      if (ev.key === "Enter" || ev.key === " ") {
-        const item = ev.target.closest('.forecast-item');
-        if (!item) return;
-        ev.preventDefault();
-        const idx = Array.from(el.forecastList.children).indexOf(item);
-        selectForecastIndex(idx);
-      }
-    });
-
-    el.drawerClose.addEventListener('click', closeDrawer);
-
-    function openModal(titleHtml){
-      el.modalBackdrop.style.display = "flex";
-      el.modalBackdrop.setAttribute("aria-hidden", "false");
-      el.modalContent.innerHTML = titleHtml;
-    }
-    function closeModal(){ el.modalBackdrop.style.display = "none"; el.modalBackdrop.setAttribute("aria-hidden", "true"); }
-
-    el.wherePill.addEventListener("click", async ()=>{
-      const full = normalizeLabel(state.placeLabel || "Near you");
-      if (state.pillBehavior === "copy"){
-        try{
-          await navigator.clipboard.writeText(full);
-          showToast("Location copied to clipboard");
-        }catch(e){
-          showToast(full);
-        }
-        return;
-      }
-      const html = `<div><strong>${escapeHtml(displayWithPin(full))}</strong><pre style="margin-top:8px;">${escapeHtml((state.lastDecision && state.lastDecision.word) || "")} - ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
-      openModal(html);
-    });
-    el.wherePill.addEventListener("keydown", (e)=>{ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.wherePill.click(); } });
-
-    el.closeModalBtn.addEventListener("click", closeModal);
-    el.modalBackdrop.addEventListener("click", (e)=>{ if (e.target === el.modalBackdrop) closeModal(); });
-
-    el.modalContent.addEventListener("dblclick", ()=>{
-      state.pillBehavior = (state.pillBehavior === "modal") ? "copy" : "modal";
-      saveState();
-      showToast("Pill behavior: " + (state.pillBehavior === "modal" ? "details modal" : "copy-on-click"));
-    });
-
-    function setUnitControlButtons(){
-      const auto = !state.unitOverride;
-      el.unitAuto.setAttribute("aria-pressed", String(auto));
-      el.unitF.setAttribute("aria-pressed", String(state.unitOverride === "F"));
-      el.unitC.setAttribute("aria-pressed", String(state.unitOverride === "C"));
-    }
-    function applyUnitSelection(newSel){
-      state.unitOverride = newSel;
-      if (state.unitOverride) state.units = state.unitOverride;
-      else state.units = state.countryCode ? (countryUsesF(state.countryCode) ? "F" : "C") : state.units;
-      setUnitControlButtons();
-      saveState();
-      if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-        const wkey = `weather:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
-        const fkey = `forecast:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
-        const cachedCur = getCached(wkey);
-        const cachedF = getCached(fkey);
-        if (cachedCur) renderResultFromNormalized(cachedCur);
-        if (cachedF) renderForecast(cachedF, { forceSelectFirst: selectedForecastIndex == null });
-        if (!cachedCur || !cachedF){
-          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: selectedForecastIndex == null });
-        }
-      } else {
-        updateSourceUI();
-      }
-    }
-
-    el.manualInput.addEventListener('keydown', (e) => { if (e.key === "Enter"){ e.preventDefault(); onManualSubmit(false); } });
-    el.spinBtn.addEventListener("click", onSpinGlobe);
-    el.gpsBtn.addEventListener("click", onUseGPS);
-    el.brandHome.addEventListener("click", () => { el.manualInput.value = ""; suppressDatalistOnce(); tryAutoLocation(); });
-    el.unitAuto.addEventListener("click", () => applyUnitSelection(null));
-    el.unitF.addEventListener("click", () => applyUnitSelection("F"));
-    el.unitC.addEventListener("click", () => applyUnitSelection("C"));
-
-    function init(){
-      fixUnitButtonLabels();
+    function wireUp(){
       el.runSelect.value = state.run || "normal";
-      el.runSelect.addEventListener("change", () => {
-        state.run = el.runSelect.value || "normal";
-        saveState();
-        if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-          const wkey = `weather:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
-          const fkey = `forecast:${state.lat.toFixed(4)},${state.lon.toFixed(4)}`;
-          const cachedCur = getCached(wkey);
-          const cachedF = getCached(fkey);
-          if (cachedCur) renderResultFromNormalized(cachedCur);
-          if (cachedF) renderForecast(cachedF, { forceSelectFirst: true });
-          if (!cachedCur || !cachedF) updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        }
-      });
-
-      setUnitControlButtons();
       setPill(state.placeLabel || "Near you");
+      setUnitControlButtons();
       updateSourceUI();
 
-      if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
-        if (state.lastDecision && state.lastDecision.word){
-          el.bigWord.textContent = state.lastDecision.word;
-          el.oneLiner.textContent = state.lastDecision.line || "";
-          updateSourceUI();
-          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
+      el.brandHome.addEventListener("click", () => {
+        state.unitOverride = null;
+        saveState();
+        setUnitControlButtons();
+        tryAutoLocation();
+      });
+
+      el.wherePill.addEventListener("click", () => {
+        // Jump to today details
+        if (latestForecastMeta && latestForecastMeta.length){
+          selectForecastIndex(0);
+          el.detailsDrawer.scrollIntoView({ behavior: "smooth", block: "start" });
         } else {
+          showToast("Pick a location first.");
+        }
+      });
+
+      el.drawerClose.addEventListener("click", () => {
+        // "Close" just scrolls away nicely; we keep it populated so it auto-shows on load
+        el.detailsDrawer.scrollIntoView({ behavior: "smooth", block: "end" });
+      });
+
+      el.spinBtn.addEventListener("click", onSpinGlobe);
+      el.gpsBtn.addEventListener("click", onUseGPS);
+
+      el.unitAuto.addEventListener("click", () => {
+        state.unitOverride = null;
+        saveState();
+        setUnitControlButtons();
+        if (state.lat != null && state.lon != null){
+          setLoadingUI();
           updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
         }
-      } else {
-        tryAutoLocation();
-      }
+      });
+      el.unitF.addEventListener("click", () => {
+        state.unitOverride = "F";
+        saveState();
+        setUnitControlButtons();
+        if (state.lat != null && state.lon != null){
+          setLoadingUI();
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
+        }
+      });
+      el.unitC.addEventListener("click", () => {
+        state.unitOverride = "C";
+        saveState();
+        setUnitControlButtons();
+        if (state.lat != null && state.lon != null){
+          setLoadingUI();
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
+        }
+      });
 
-      adjustPillWidth();
-      window.addEventListener("resize", adjustPillWidth);
+      el.runSelect.addEventListener("change", () => {
+        state.run = el.runSelect.value;
+        saveState();
+        if (state.lat != null && state.lon != null){
+          setLoadingUI();
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
+        }
+      });
+
+      // Autocomplete behavior
+      el.manualInput.addEventListener("input", () => onManualInputChange(true));
+      el.manualInput.addEventListener("change", () => onManualPickCommit());
+
+      // Enter key commits manual search
+      el.manualInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter"){
+          e.preventDefault();
+          onManualPickCommit();
+        }
+      });
+
+      // If you click elsewhere, clear suggestions so they do not reopen
+      document.addEventListener("click", (e) => {
+        const t = e.target;
+        if (t !== el.manualInput){
+          el.locList.innerHTML = "";
+        }
+      }, { capture: true });
     }
 
-    init();
+    // Boot
+    wireUp();
+
+    // If we have saved coords, load immediately and auto-select today details
+    (async function init(){
+      try{
+        if (Number.isFinite(state.lat) && Number.isFinite(state.lon)){
+          setLoadingUI();
+          await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
+        } else {
+          tryAutoLocation();
+        }
+      } catch (e){
+        endLoadingUI();
+        tryAutoLocation();
+      }
+    })();
   </script>
 </body>
 </html>
