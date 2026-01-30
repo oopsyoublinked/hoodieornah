@@ -54,7 +54,7 @@
       padding:14px 18px; border:1px solid var(--stroke); border-radius:999px;
       background: linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,.02));
       box-shadow: var(--shadow2); position:sticky; top:10px; backdrop-filter: blur(14px); z-index:50;
-      overflow:hidden;
+      overflow: visible;
     }
     .brand{
       display:flex; align-items:center; gap:12px; min-width:220px; cursor:pointer; user-select:none;
@@ -72,7 +72,8 @@
     .brand .word span{ font-size:12px; color: var(--muted); letter-spacing:.02em; }
 
     .controls{ display:flex; align-items:center; gap:10px; flex:1 1 auto; }
-    /* Pill row and pills fix */
+
+    /* Pills: desktop unclipped, mobile wraps */
     .pillrow{
       display:flex;
       gap:8px;
@@ -81,8 +82,8 @@
       border-radius:999px;
       background: rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.08);
-      flex-wrap: wrap;
-      overflow:hidden;
+      flex-wrap: nowrap;
+      overflow: visible;
     }
     .seg, .pill{ height:36px; min-height:36px; align-items:center; }
     .seg{
@@ -108,7 +109,7 @@
       white-space: nowrap;
       overflow: visible;
       text-overflow: ellipsis;
-      max-width: 280px;
+      max-width: none;
     }
     .pill:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
     .pill[aria-pressed="true"]{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
@@ -138,7 +139,7 @@
     }
     .stat small{ display:block; color: var(--muted2); font-size:12px; margin-bottom:6px; }
     .stat strong{ display:block; font-size:15px; }
-    .stat .sub{ margin-top:4px; color: var(--muted2); font-size:12px; }
+    .stat .sub{ margin-top:4px; color: var (--muted2); font-size:12px; }
 
     .forecast{
       margin-top:14px; display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:12px; width:100%;
@@ -183,7 +184,7 @@
     .btn{
       display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:9px 12px;
       border:1px solid rgba(255,255,255,.16); border-radius:999px; background: rgba(255,255,255,.07);
-      color: var(--text); font-size:13px; cursor:pointer; text-decoration:none;
+      color: var (--text); font-size:13px; cursor:pointer; text-decoration:none;
       transition: transform .16s ease, background .16s ease, border-color .16s ease; user-select:none;
     }
     .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); }
@@ -435,7 +436,6 @@
 
           <div class="forecast" id="forecastList" aria-label="5 day forecast"></div>
 
-          <!-- details will be moved here on mobile -->
           <div class="how-decided">
             <b>How we decided:</b> feels-like temp, wind, and how you said you run. Not your fashion sense.
           </div>
@@ -769,7 +769,7 @@
     function applyMobileLayout(){
       if (mobileApplied) return;
       const main = el.mainLayout;
-      // Order: controls (already above), rightCard (form), leftCard (verdict/forecast), detailsCard, then rest.
+      // Order: form (rightCard) -> main verdict/forecast (leftCard) -> detailsCard
       if (main.firstChild !== el.rightCard){
         main.insertBefore(el.rightCard, main.firstChild);
       }
@@ -783,8 +783,7 @@
     }
     function revertMobileLayout(){
       if (!mobileApplied) return;
-      const main = el.mainLayout;
-      // Restore original order: leftCard, rightCard, detailsCard at end
+      // Restore original order: leftCard, rightCard, detailsCard (at end)
       if (placeholders.leftParent){
         placeholders.leftParent.insertBefore(el.leftCard, placeholders.leftNext);
       }
@@ -1296,7 +1295,7 @@
           const results = await geocodeDisplayName(q);
           if (seq !== suggestSeq) return;
           el.locList.innerHTML = results.map(r =>
-            "<option value=\"" + r.label.replaceAll(\"\\\"\",\"&quot;\") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
+            "<option value=\"" + r.label.replaceAll("\"","&quot;") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
           ).join("");
         }catch(err){ console.error(err); }
       }, 250);
