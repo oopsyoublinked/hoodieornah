@@ -150,7 +150,7 @@
       margin-top:10px; color: var(--text); font-size:13px; line-height:1.4;
       max-width:620px; padding:8px 10px; border-radius:10px; background: var(--panel2); border:1px solid var(--stroke);
     }
-    .how-decided b{ color: var (--text); font-weight:800; }
+    .how-decided b{ color: var(--text); font-weight:800; }
 
     .wear-box{
       margin-top:12px; border:1px solid rgba(255,255,255,.14); border-radius:14px;
@@ -814,7 +814,7 @@
       const data = await res.json();
       return (data || []).map((r) => {
         const a = r.address || {};
-               const cc = (a.country_code || "").toUpperCase() || null;
+        const cc = (a.country_code || "").toUpperCase() || null;
         const label = r.display_name || q;
         return { label, lat: Number(r.lat), lon: Number(r.lon), countryCode: cc };
       }).filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
@@ -1109,7 +1109,7 @@
           const results = await geocodeDisplayName(q);
           if (seq !== suggestSeq) return;
           el.locList.innerHTML = results.map(r =>
-            "<option value=\"" + r.label.replaceAll(\"\\\"\",\"&quot;\") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
+            "<option value=\"" + r.label.replaceAll("\"","&quot;") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
           ).join("");
         }catch(err){ console.error(err); }
       }, 250);
