@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="theme-dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,12 +22,6 @@
   <meta property="og:url" content="https://hoodieornah.com" />
   <meta property="og:image" content="https://hoodieornah.com/og.png" />
 
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Hoodie or Nah?" />
-  <meta name="twitter:description" content="Settle the hoodie debate in one click based on the weather." />
-  <meta name="twitter:image" content="https://hoodieornah.com/og.png" />
-
   <style>
     :root{
       --bg:#0b0b0f;
@@ -43,6 +37,18 @@
       --radius: 22px;
       --radius2: 16px;
     }
+	    .theme-light{
+      --bg:#f6f7fb;
+      --panel: rgba(0,0,0,.06);
+      --panel2: rgba(0,0,0,.04);
+      --stroke: rgba(0,0,0,.10);
+      --text: rgba(0,0,0,.90);
+      --muted: rgba(0,0,0,.62);
+      --muted2: rgba(0,0,0,.50);
+      --accent: rgba(0,0,0,.88);
+      --shadow: 0 18px 45px rgba(0,0,0,.18);
+      --shadow2: 0 10px 25px rgba(0,0,0,.16);
+    }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
@@ -56,6 +62,7 @@
         var(--bg);
       color: var(--text);
       overflow-x:hidden;
+      transition: background .25s ease, color .25s ease;
     }
 
     .wrap{
@@ -88,8 +95,7 @@
       cursor:pointer;
       user-select:none;
     }
-
-    .brand .mark{
+	    .brand .mark{
       width: 38px;
       height: 38px;
       border-radius: 999px;
@@ -101,6 +107,13 @@
       place-items:center;
       box-shadow: 0 10px 25px rgba(0,0,0,.45);
       transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+    }
+
+    .theme-light .brand .mark{
+      border-color: rgba(0,0,0,.08);
+      background:
+        radial-gradient(14px 14px at 30% 30%, rgba(0,0,0,.07), transparent 60%),
+        rgba(0,0,0,.03);
     }
 
     .brand:hover .mark{
@@ -149,8 +162,7 @@
     }
     .pill:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
     .pill[aria-pressed="true"]{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
-
-    .seg{
+	    .seg{
       display:flex;
       align-items:center;
       border: 1px solid rgba(255,255,255,.12);
@@ -170,16 +182,8 @@
     .seg button:hover{ background: rgba(255,255,255,.05); color: var(--text); }
     .seg button[aria-pressed="true"]{ background: rgba(255,255,255,.08); color: var(--text); }
 
-    /* NEW: Freeze toggle next to location pill */
-    .pillrow{
-      display:flex;
-      align-items:center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content:flex-end;
-    }
-
-    .toggle{
+    /* theme toggle */
+    .theme-toggle{
       display:inline-flex;
       align-items:center;
       gap: 8px;
@@ -193,9 +197,9 @@
       font-size: 13px;
       color: var(--text);
     }
-    .toggle:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
-    .toggle small{ color: var(--muted2); font-size: 12px; }
-    .switch{
+    .theme-toggle:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
+    .theme-toggle small{ color: var(--muted2); font-size: 12px; }
+    .theme-switch{
       width: 34px;
       height: 20px;
       border-radius: 999px;
@@ -203,8 +207,9 @@
       background: rgba(0,0,0,.18);
       position: relative;
       flex: 0 0 auto;
+      transition: background .16s ease, border-color .16s ease;
     }
-    .switch::after{
+    .theme-switch::after{
       content:"";
       width: 16px;
       height: 16px;
@@ -213,17 +218,16 @@
       position:absolute;
       top: 1px;
       left: 1px;
-      transition: transform .16s ease;
+      transition: transform .16s ease, background .16s ease;
     }
-    .toggle[aria-pressed="true"] .switch{
+    .theme-toggle[aria-pressed="true"] .theme-switch{
       background: rgba(255,255,255,.10);
       border-color: rgba(255,255,255,.22);
     }
-    .toggle[aria-pressed="true"] .switch::after{
+    .theme-toggle[aria-pressed="true"] .theme-switch::after{
       transform: translateX(14px);
     }
-
-    .main{
+	    .main{
       margin-top: 14px;
       display:grid;
       grid-template-columns: 1.25fr .95fr;
@@ -287,23 +291,18 @@
     .stat small{ display:block; color: var(--muted2); font-size:12px; margin-bottom: 6px; }
     .stat strong{ display:block; font-size: 15px; }
     .stat .sub{ margin-top: 4px; color: var(--muted2); font-size: 12px; }
-
+	    /* Forecast: 5 cards visible, wrap on small screens */
     .forecast{
       margin-top: 14px;
-      display:flex;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 10px;
-      overflow-x:auto;
-      padding-bottom: 6px;
-      scroll-snap-type: x mandatory;
-
-      /* NEW: hide scrollbar but keep scrolling */
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+      overflow: visible;
+      padding-bottom: 0;
     }
-    .forecast::-webkit-scrollbar{ display:none; }
     .forecast-item{
       scroll-snap-align: start;
-      min-width: 128px;
+      min-width: 0;
       border: 1px solid rgba(255,255,255,.10);
       border-radius: 18px;
       background: rgba(0,0,0,.10);
@@ -355,9 +354,7 @@
       margin-top: 12px;
     }
     #supportBtn{ margin-top: 6px; }
-
-    /* NEW: replaces Units: Auto line near Support */
-    .how-decided{
+	    .how-decided{
       margin-top: 10px;
       color: var(--muted2);
       font-size: 12px;
@@ -365,6 +362,35 @@
       max-width: 560px;
     }
     .how-decided b{ color: rgba(255,255,255,.80); font-weight: 750; }
+
+    /* What to wear section */
+    .wear-box{
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.12);
+      color: var(--text);
+    }
+    .wear-title{
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .wear-list{
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .wear-list li::before{
+      content:"• ";
+      color: var(--muted2);
+    }
 
     .btn{
       display:inline-flex;
@@ -396,8 +422,7 @@
       color: var(--muted);
       font-size: 13px;
     }
-
-    label{ display:block; margin-top: 12px; color: var(--muted2); font-size: 12px; letter-spacing: .02em; }
+	    label{ display:block; margin-top: 12px; color: var(--muted2); font-size: 12px; letter-spacing: .02em; }
     select, input{
       width:100%;
       margin-top: 6px;
@@ -460,11 +485,24 @@
     }
     .details-header b{ font-size: 13px; }
 
-    /* NEW: close button removed entirely (no styles needed) */
     .details-body{ padding: 12px; }
     .details-title{ font-size:16px; font-weight:800; color:var(--text); }
     .details-meta{ color:var(--muted); font-size:13px; display:flex; align-items:center; gap:8px; }
     .details-meta svg{ width:34px; height:34px; flex:0 0 auto; }
+	    .ataglance{
+      margin-top: 10px;
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .ataglance .chip{
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--text);
+      background: rgba(255,255,255,.05);
+    }
 
     .sunrow{ width:100%; margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .sunbox{ border:1px solid rgba(255,255,255,.10); border-radius:14px; padding:10px 12px; background: rgba(255,255,255,.02); }
@@ -518,8 +556,7 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin{ to{ transform: rotate(360deg); } }
-
-    .loading-overlay{
+	    .loading-overlay{
       position:absolute;
       inset:0;
       background: radial-gradient(420px 240px at 20% 0%, rgba(255,255,255,.06), transparent 60%),
@@ -583,11 +620,11 @@
             <span id="pillText">Near you</span>
           </div>
 
-          <div class="toggle" id="freezeToggle" role="button" tabindex="0" aria-pressed="false" title="Freeze keeps your current spot on reload">
-            <div class="switch" aria-hidden="true"></div>
+          <div class="theme-toggle" id="themeToggle" role="button" tabindex="0" aria-pressed="false" title="Toggle light/dark">
+            <div class="theme-switch" aria-hidden="true"></div>
             <div>
-              <div style="font-weight:700;line-height:1;">Freeze</div>
-              <small>Lock this spot</small>
+              <div style="font-weight:700;line-height:1;" id="themeLabel">Dark</div>
+              <small id="themeSub">Click to lighten</small>
             </div>
           </div>
         </div>
@@ -634,6 +671,10 @@
             <div class="how-decided" id="howDecidedLine">
               <b>How we decided:</b> feels-like temp, wind, and how you said you run. Not your fashion sense.
             </div>
+            <div class="wear-box" id="wearBox" aria-live="polite" style="display:none;">
+              <div class="wear-title">What to wear</div>
+              <ul class="wear-list" id="wearList"></ul>
+            </div>
           </div>
         </div>
       </div>
@@ -663,7 +704,7 @@
             <div class="k">Using</div><div class="v" id="usingSource">Auto</div>
             <div class="k">Location</div><div class="v"><span class="pin">📍</span><span id="usingLocation">Near you</span></div>
             <div class="k">Units</div><div class="v" id="usingUnits">Auto</div>
-            <div class="k">Freeze</div><div class="v" id="usingFreeze">Off</div>
+            <div class="k">Theme</div><div class="v" id="usingTheme">Dark</div>
             <div class="help"></div>
           </div>
 
@@ -676,6 +717,7 @@
               <div class="details-title" id="drawerTitle">Today</div>
               <div class="details-meta" id="drawerMeta">Loading...</div>
               <div id="drawerContent" style="margin-top:6px;color:var(--muted)"></div>
+              <div class="ataglance" id="atGlanceRow" aria-live="polite"></div>
               <div class="sunrow" id="drawerSun" aria-live="polite"></div>
             </div>
           </div>
@@ -721,20 +763,25 @@
       usingSource: document.getElementById("usingSource"),
       usingLocation: document.getElementById("usingLocation"),
       usingUnits: document.getElementById("usingUnits"),
-      usingFreeze: document.getElementById("usingFreeze"),
+      usingTheme: document.getElementById("usingTheme"),
       supportBtn: document.getElementById("supportBtn"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       detailsDrawer: document.getElementById("detailsDrawer"),
       drawerTitle: document.getElementById("drawerTitle"),
       drawerMeta: document.getElementById("drawerMeta"),
       drawerContent: document.getElementById("drawerContent"),
+      atGlanceRow: document.getElementById("atGlanceRow"),
       drawerSun: document.getElementById("drawerSun"),
       toast: document.getElementById("toast"),
       brandHome: document.getElementById("brandHome"),
       unitAuto: document.getElementById("unitAuto"),
       unitF: document.getElementById("unitF"),
       unitC: document.getElementById("unitC"),
-      freezeToggle: document.getElementById("freezeToggle"),
+      themeToggle: document.getElementById("themeToggle"),
+      themeLabel: document.getElementById("themeLabel"),
+      themeSub: document.getElementById("themeSub"),
+      wearBox: document.getElementById("wearBox"),
+      wearList: document.getElementById("wearList"),
       howDecidedLine: document.getElementById("howDecidedLine"),
     };
 
@@ -756,888 +803,3 @@
       { label: "Helsinki, Finland", lat: 60.1699, lon: 24.9384, cc: "FI" },
       { label: "Buenos Aires, Argentina", lat: -34.6037, lon: -58.3816, cc: "AR" },
     ];
-
-    const CACHE = new Map();
-    const CACHE_TTL_MS = 7 * 60 * 1000;
-
-    const state = loadState() || {
-      source: "auto",
-      lat: null,
-      lon: null,
-      placeLabel: "Near you",
-      countryCode: null,
-      units: "F",
-      unitOverride: null,
-      run: "normal",
-      lastDecision: null,
-      freeze: false
-    };
-
-    let loading = false;
-    let latestForecastMeta = [];
-    let selectedForecastIndex = null;
-    function saveState(){
-      try{
-        localStorage.setItem("hoodieornah_state_v3", JSON.stringify(state));
-      }catch(e){}
-    }
-    function loadState(){
-      try{
-        const raw = localStorage.getItem("hoodieornah_state_v3");
-        return raw ? JSON.parse(raw) : null;
-      }catch(e){ return null; }
-    }
-
-    function setCached(key, val){
-      CACHE.set(key, { val, at: Date.now() });
-    }
-    function getCached(key){
-      const hit = CACHE.get(key);
-      if (!hit) return null;
-      if ((Date.now() - hit.at) > CACHE_TTL_MS) { CACHE.delete(key); return null; }
-      return hit.val;
-    }
-
-    function showToast(msg){
-      el.toast.textContent = msg;
-      el.toast.classList.add("show");
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(()=> el.toast.classList.remove("show"), 2200);
-    }
-
-    function setLoadingUI(){
-      loading = true;
-      el.loadingOverlay.classList.add("show");
-      el.pillSpinner.style.display = "inline-block";
-    }
-    function endLoadingUI(){
-      loading = false;
-      el.loadingOverlay.classList.remove("show");
-      el.pillSpinner.style.display = "none";
-    }
-
-    function escapeHtml(str){
-      return String(str || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function toF(c){ return (c * 9/5) + 32; }
-    function toC(f){ return (f - 32) * 5/9; }
-
-    function countryUsesF(cc){
-      const set = new Set(["US","BS","BZ","KY","PW","LR","FM","MH"]);
-      return cc ? set.has(String(cc).toUpperCase()) : true;
-    }
-
-    function normalizeLabel(raw){
-      if (!raw) return "Near you";
-      const cleaned = String(raw).replace(/[\u{1F4CD}\u{1F4CC}\u{1F4CB}📍📌\uFE0F]/gu, "").replace(/\s+/g," ").trim();
-      if (/^-?\d+(\.\d+)?[°,]/.test(cleaned)) return "Near you";
-      return cleaned || "Near you";
-    }
-
-    function setPill(text){
-      el.pillText.textContent = normalizeLabel(text);
-      el.usingLocation.textContent = normalizeLabel(text);
-      adjustPillWidth();
-    }
-
-    function adjustPillWidth(){
-      const t = el.pillText.textContent || "";
-      const approx = Math.min(320, Math.max(120, (t.length * 8) + 64));
-      el.wherePill.style.maxWidth = approx + "px";
-    }
-
-    function setFreezeUI(){
-      const on = !!state.freeze;
-      el.freezeToggle.setAttribute("aria-pressed", on ? "true" : "false");
-      el.usingFreeze.textContent = on ? "On" : "Off";
-    }
-
-    function updateSourceUI(){
-      const src = state.source;
-      el.usingSource.textContent = src === "gps" ? "GPS" : (src === "globe" ? "Globe" : (src === "manual" ? "Manual" : "Auto"));
-      el.locSource.textContent = "Source: " + el.usingSource.textContent + ".";
-      el.locLabel.textContent = normalizeLabel(state.placeLabel);
-      el.usingLocation.textContent = normalizeLabel(state.placeLabel);
-
-      const u = state.unitOverride ? (state.unitOverride === "F" ? "Fahrenheit" : "Celsius") : "Auto";
-      el.usingUnits.textContent = u;
-    }
-
-    function setUnitControlButtons(){
-      const isAuto = !state.unitOverride;
-      el.unitAuto.setAttribute("aria-pressed", isAuto ? "true" : "false");
-      el.unitF.setAttribute("aria-pressed", state.unitOverride === "F" ? "true" : "false");
-      el.unitC.setAttribute("aria-pressed", state.unitOverride === "C" ? "true" : "false");
-    }
-
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
-    function hoodieDecision(tempC, wind, runPref){
-      const feelsC = tempC;
-      const windFactor = clamp((wind || 0), 0, 28) * 0.06;
-      let adj = feelsC - (windFactor * 4.0);
-      if (runPref === "cold") adj -= 2.0;
-      if (runPref === "hot") adj += 2.0;
-
-      if (adj <= -2) return { word:"HOODIE", band:"cold_snap" };
-      if (adj <= 6) return { word:"HOODIE", band:"hoodie_prime" };
-      if (adj <= 12) return { word:"MAYBE", band:"maybe_cool" };
-      if (adj <= 18) return { word:"MAYBE", band:"maybe_warm" };
-      if (adj <= 24) return { word:"NAH", band:"nah_warm" };
-      return { word:"NAH", band:"nah_hot" };
-    }
-
-    const QUIPS = {
-      HOODIE: [
-        "Yes. Hoodie plus life choices that include layers.",
-        "Yep. Hoodie weather. Enjoy the smug warmth.",
-        "Hoodie time. Your ears will send a thank-you note.",
-        "Put the hood up and pretend you are mysterious.",
-        "Wear the hoodie. Regret is for bare wrists.",
-        "This is hoodie weather and it knows it.",
-        "Hoodie recommended. Bonus points for pockets.",
-        "If you skip the hoodie, you will think about it all day.",
-        "Hoodie season. Lean into it.",
-        "Hoodie on. The wind is being rude.",
-        "Hoodie is the correct moral choice here.",
-        "You want sleeves and plausible deniability. Hoodie.",
-        "Yes hoodie. The air is spicy.",
-        "Hoodie now. Your future self is grateful.",
-        "Hoodie. You can still look cool while surviving.",
-        "Hoodie. Do not let the forecast bully you.",
-        "Hoodie is the safe play. Do not overthink it.",
-        "Hoodie weather. Proceed with confidence."
-      ],
-      MAYBE: [
-        "Could go either way. Hoodie if you like options.",
-        "Borderline. Hoodie for the shade, nah for the sun.",
-        "A true toss-up. Bring the hoodie just to feel powerful.",
-        "This is a vibe check, not a science. Maybe hoodie.",
-        "You can raw-dog it, or you can hoodie. Your call.",
-        "Maybe hoodie. Depends on your tolerance for drama.",
-        "Not cold, not warm. Annoyingly in-between.",
-        "Hoodie if you will be outside longer than five minutes.",
-        "Maybe hoodie. The wind might try something.",
-        "This is the gray area. Dress like you have plans.",
-        "Coin-flip weather. Hoodie is the insurance policy.",
-        "You will be fine either way. Probably.",
-        "Maybe hoodie. Mostly for the pockets.",
-        "This is prime 'start with hoodie, regret later' territory.",
-        "Maybe. If you run cold, hoodie. If you run hot, nah.",
-        "Maybe. You will argue with yourself in the mirror.",
-        "Borderline. Hoodie for mornings, nah for afternoons.",
-        "Maybe hoodie. Commit to ambiguity."
-      ],
-      NAH: [
-        "Nope. Hoodie would be a personal attack on your pores.",
-        "Hoodie? Only if you are trying to escape the sun by staying inside.",
-        "Nah. Let your shoulders live a little.",
-        "Skip the hoodie. You are not in a music video.",
-        "Nah. Hoodie would be overachieving.",
-        "No hoodie. Hydrate and pretend you are fine.",
-        "Nah. If you wear one, you will unzip it instantly.",
-        "Hoodie is not needed. Save it for the thermostat wars.",
-        "No hoodie. The air is doing enough already.",
-        "Nah. You will feel silly in 30 seconds.",
-        "Skip it. This is short-sleeve confidence weather.",
-        "Nah. Your hood will just become a backpack.",
-        "No hoodie. Your future sweat glands object.",
-        "Nah. Hoodie is a trap right now.",
-        "Skip it. The sun is winning.",
-        "Nah. Hoodie is too dramatic for this temp.",
-        "No hoodie. Keep it simple.",
-        "Nah. You will survive without the comfort blanket."
-      ]
-    };
-
-    function pickUniqueQuip(word, usedSet){
-      const pool = (QUIPS[word] || []).slice();
-      for (let i = pool.length - 1; i > 0; i--){
-        const j = Math.floor(Math.random() * (i + 1));
-        const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
-      }
-      for (const q of pool){
-        if (!usedSet.has(q)) { usedSet.add(q); return q; }
-      }
-      const fallback = pool[0] || "";
-      usedSet.add(fallback);
-      return fallback;
-    }
-
-    function fmtTemp(tempC, units){
-      if (!Number.isFinite(tempC)) return "-";
-      const v = units === "F" ? Math.round(toF(tempC)) : Math.round(tempC);
-      return v + "°" + units;
-    }
-
-    function fmtWind(wind, units){
-      if (!Number.isFinite(wind)) return "--";
-      const u = units === "F" ? "mph" : "km/h";
-      return Math.round(wind) + " " + u;
-    }
-
-    function iconFor(code){
-      const c = Number(code);
-      if ([0].includes(c)) return { text:"Clear", glyph:"☀️" };
-      if ([1,2].includes(c)) return { text:"Partly cloudy", glyph:"⛅" };
-      if ([3].includes(c)) return { text:"Overcast", glyph:"☁️" };
-      if ([45,48].includes(c)) return { text:"Fog", glyph:"🌫️" };
-      if ([51,53,55,56,57].includes(c)) return { text:"Drizzle", glyph:"🌦️" };
-      if ([61,63,65,66,67].includes(c)) return { text:"Rain", glyph:"🌧️" };
-      if ([71,73,75,77].includes(c)) return { text:"Snow", glyph:"🌨️" };
-      if ([80,81,82].includes(c)) return { text:"Showers", glyph:"🌧️" };
-      if ([95,96,99].includes(c)) return { text:"Thunderstorm", glyph:"⛈️" };
-      return { text:"Weather", glyph:"🌡️" };
-    }
-
-    function svgFor(code){
-      const i = iconFor(code);
-      const glyph = i.glyph;
-      const svg = `
-        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-          <rect x="1" y="1" width="62" height="62" rx="18" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.12)"></rect>
-          <text x="32" y="40" text-anchor="middle" font-size="28">${glyph}</text>
-        </svg>
-      `;
-      return { svg, text: i.text };
-    }
-    async function fetchJson(url, timeoutMs = 12000){
-      const ctrl = new AbortController();
-      const t = setTimeout(()=>ctrl.abort(), timeoutMs);
-      try{
-        const res = await fetch(url, { signal: ctrl.signal, headers: { "Accept": "application/json" } });
-        if (!res.ok) throw new Error("http_" + res.status);
-        return await res.json();
-      } finally {
-        clearTimeout(t);
-      }
-    }
-
-    async function reverseGeocode(lat, lon){
-      const url =
-        "https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1" +
-        "&lat=" + encodeURIComponent(lat) +
-        "&lon=" + encodeURIComponent(lon);
-      return await fetchJson(url, 12000);
-    }
-
-    function formatPlaceFromRev(rev){
-      if (!rev) return null;
-      const a = rev.address || {};
-      const city = a.city || a.town || a.village || a.hamlet || a.municipality || a.locality || a.suburb;
-      const regionShort = a.state_code || a.region_code || a.province_code || null;
-      const region = regionShort || a.state || a.region || a.province;
-      const country = a.country;
-      const cc = a.country_code ? String(a.country_code).toUpperCase() : null;
-
-      const parts = [];
-      if (city) parts.push(city);
-      if (cc === "US" || cc === "CA" || cc === "AU"){
-        if (region) parts.push(region);
-      } else {
-        if (!city && region) parts.push(region);
-      }
-      if (!parts.length && country) parts.push(country);
-      else if (parts.length === 1 && country && cc !== "US" && cc !== "CA" && cc !== "AU") parts.push(country);
-
-      const label = parts.filter(Boolean).join(", ").trim();
-      return label || null;
-    }
-
-    async function reverseGeocodeToLabel(lat, lon){
-      const rev = await reverseGeocode(lat, lon);
-      if (!rev) return { label: null, cc: null };
-      const cc = rev.address && rev.address.country_code ? String(rev.address.country_code).toUpperCase() : null;
-      const label = formatPlaceFromRev(rev) || (rev.display_name ? rev.display_name.split(",").slice(0,2).join(",").trim() : null);
-      return { label: label ? normalizeLabel(label) : null, cc };
-    }
-
-    async function geocodeDisplayName(q){
-      const url =
-        "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6" +
-        "&q=" + encodeURIComponent(q);
-      const res = await fetchJson(url, 12000);
-      if (!Array.isArray(res) || !res.length) throw new Error("no_results");
-      return res.map(item => {
-        const label = item.display_name ? item.display_name.split(",").slice(0,2).join(",").trim() : q;
-        const cc = item.address && item.address.country_code ? String(item.address.country_code).toUpperCase() : null;
-        return {
-          lat: parseFloat(item.lat),
-          lon: parseFloat(item.lon),
-          label: normalizeLabel(label),
-          countryCode: cc
-        };
-      });
-    }
-
-    function normalizeForecastResponse(raw, unitsReturned){
-      if (!raw || !raw.daily) return null;
-      const d = raw.daily;
-      const toCIfNeeded = (val) => {
-        if (!Number.isFinite(val)) return null;
-        return unitsReturned === "fahrenheit" ? toC(val) : val;
-      };
-      return {
-        time: Array.isArray(d.time) ? d.time.slice(0,7) : [],
-        temperature_2m_max_C: Array.isArray(d.temperature_2m_max) ? d.temperature_2m_max.map(v => toCIfNeeded(v)) : [],
-        temperature_2m_min_C: Array.isArray(d.temperature_2m_min) ? d.temperature_2m_min.map(v => toCIfNeeded(v)) : [],
-        apparent_temperature_max_C: Array.isArray(d.apparent_temperature_max) ? d.apparent_temperature_max.map(v => toCIfNeeded(v)) : [],
-        apparent_temperature_min_C: Array.isArray(d.apparent_temperature_min) ? d.apparent_temperature_min.map(v => toCIfNeeded(v)) : [],
-        sunrise: Array.isArray(d.sunrise) ? d.sunrise.slice(0,7) : [],
-        sunset: Array.isArray(d.sunset) ? d.sunset.slice(0,7) : [],
-        weathercode: Array.isArray(d.weathercode) ? d.weathercode.slice(0,7) : []
-      };
-    }
-
-    async function fetchForecast(lat, lon, units){
-      const key = `forecast:${lat.toFixed(4)},${lon.toFixed(4)}:${units}`;
-      const cached = getCached(key);
-      if (cached) return cached;
-
-      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
-      const url =
-        "https://api.open-meteo.com/v1/forecast" +
-        "?latitude=" + encodeURIComponent(lat) +
-        "&longitude=" + encodeURIComponent(lon) +
-        "&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,weathercode,sunrise,sunset" +
-        "&temperature_unit=" + tempUnit +
-        "&timezone=auto&forecast_days=7";
-
-      const raw = await fetchJson(url, 12000);
-      const normalized = normalizeForecastResponse(raw, tempUnit);
-      if (!normalized) throw new Error("invalid_forecast");
-      setCached(key, normalized);
-      return normalized;
-    }
-
-    async function fetchWeather(lat, lon, units){
-      const key = `weather:${lat.toFixed(4)},${lon.toFixed(4)}:${units}`;
-      const cached = getCached(key);
-      if (cached) return cached;
-
-      const tempUnit = units === "F" ? "fahrenheit" : "celsius";
-      const windUnit = units === "F" ? "mph" : "kmh";
-
-      const url =
-        "https://api.open-meteo.com/v1/forecast" +
-        "?latitude=" + encodeURIComponent(lat) +
-        "&longitude=" + encodeURIComponent(lon) +
-        "&current=temperature_2m,apparent_temperature,wind_speed_10m" +
-        "&temperature_unit=" + tempUnit +
-        "&windspeed_unit=" + windUnit +
-        "&timezone=auto";
-
-      const raw = await fetchJson(url, 12000);
-      const cur = raw.current || {};
-      const normalized = {
-        temperature_C: (units === "F" ? toC(cur.temperature_2m) : cur.temperature_2m),
-        apparent_C: (units === "F" ? toC(cur.apparent_temperature) : cur.apparent_temperature),
-        wind: cur.wind_speed_10m,
-        fetchedAt: Date.now()
-      };
-      setCached(key, normalized);
-      return normalized;
-    }
-
-    function buildForecastMeta(forecast){
-      const out = [];
-      const usedQuips = new Set();
-      const times = forecast.time || [];
-
-      for (let i = 0; i < Math.min(5, times.length); i++){
-        const day = new Date(times[i] + "T00:00:00");
-        const dayLabel = day.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
-
-        const tmaxC = forecast.temperature_2m_max_C[i];
-        const tminC = forecast.temperature_2m_min_C[i];
-        const amaxC = forecast.apparent_temperature_max_C[i];
-        const aminC = forecast.apparent_temperature_min_C[i];
-        const code = forecast.weathercode[i];
-
-        const avgApp = (Number.isFinite(amaxC) && Number.isFinite(aminC))
-          ? ((amaxC + aminC)/2)
-          : (Number.isFinite(tmaxC) ? tmaxC : 10);
-
-        const d = hoodieDecision(avgApp, null, state.run || "normal");
-        const line = pickUniqueQuip(d.word, usedQuips);
-
-        out.push({
-          dayLabel,
-          tmaxC, tminC, amaxC, aminC,
-          weatherCode: code,
-          sunrise: forecast.sunrise[i],
-          sunset: forecast.sunset[i],
-          dec: { word: d.word, line }
-        });
-      }
-      return out;
-    }
-
-    function renderForecast(forecast, opts = {}){
-      latestForecastMeta = buildForecastMeta(forecast);
-      el.forecastList.innerHTML = "";
-
-      latestForecastMeta.forEach((m, idx) => {
-        const icon = svgFor(m.weatherCode);
-        const displayUnits = state.unitOverride || state.units;
-
-        const maxT = Number.isFinite(m.tmaxC) ? fmtTemp(m.tmaxC, displayUnits) : "--";
-        const minT = Number.isFinite(m.tminC) ? fmtTemp(m.tminC, displayUnits) : "--";
-
-        const div = document.createElement("div");
-        div.className = "forecast-item";
-        div.tabIndex = 0;
-        div.setAttribute("role","button");
-        div.setAttribute("aria-label", `Details for ${m.dayLabel}`);
-        div.dataset.idx = String(idx);
-        div.innerHTML = `
-          <div class="forecast-top">
-            <b>${escapeHtml(m.dayLabel)}</b>
-            ${icon.svg}
-          </div>
-          <div class="forecast-mid">${escapeHtml(maxT)} / ${escapeHtml(minT)} <strong>${escapeHtml(m.dec.word)}</strong></div>
-          <div class="forecast-line">${escapeHtml(m.dec.line)}</div>
-        `;
-        el.forecastList.appendChild(div);
-      });
-
-      const shouldAutoSelect = opts.forceSelectFirst || selectedForecastIndex == null;
-      if (latestForecastMeta.length && shouldAutoSelect){
-        selectForecastIndex(0);
-      } else if (selectedForecastIndex != null && latestForecastMeta[selectedForecastIndex]){
-        selectForecastIndex(selectedForecastIndex);
-      } else if (!latestForecastMeta.length){
-        selectedForecastIndex = null;
-        el.drawerTitle.textContent = "Select a day";
-        el.drawerMeta.textContent = "No day selected.";
-        el.drawerContent.textContent = "";
-        el.drawerSun.innerHTML = "";
-      }
-    }
-
-    function renderResultFromNormalized(cur){
-      const displayUnits = state.unitOverride || state.units;
-      const temp = fmtTemp(cur.temperature_C, displayUnits);
-      const feels = fmtTemp(cur.apparent_C, displayUnits);
-
-      el.tempLine.textContent = temp;
-      el.feelWind.textContent = `Feels like: ${feels} | Wind: ${fmtWind(cur.wind, displayUnits)}`;
-
-      const d = hoodieDecision(cur.apparent_C, cur.wind, state.run || "normal");
-      const word = d.word;
-      const line = pickUniqueQuip(word, new Set());
-
-      state.lastDecision = { word, line };
-      saveState();
-
-      el.bigWord.textContent = word;
-      el.oneLiner.textContent = line;
-    }
-
-    function selectForecastIndex(idx){
-      const i = Number(idx);
-      if (!Number.isFinite(i) || !latestForecastMeta[i]) return;
-
-      selectedForecastIndex = i;
-
-      const nodes = el.forecastList.querySelectorAll(".forecast-item");
-      nodes.forEach(n => n.classList.remove("selected"));
-      const node = el.forecastList.querySelector(`.forecast-item[data-idx="${i}"]`);
-      if (node) node.classList.add("selected");
-
-      const m = latestForecastMeta[i];
-      const icon = svgFor(m.weatherCode);
-      const displayUnits = state.unitOverride || state.units;
-
-      el.drawerTitle.textContent = m.dayLabel;
-      el.drawerMeta.innerHTML = `${icon.svg}<span>${escapeHtml(icon.text)}</span>`;
-      const hi = Number.isFinite(m.tmaxC) ? fmtTemp(m.tmaxC, displayUnits) : "--";
-      const lo = Number.isFinite(m.tminC) ? fmtTemp(m.tminC, displayUnits) : "--";
-      el.drawerContent.innerHTML = `
-        <div style="margin-top:2px">
-          <div style="color:rgba(255,255,255,.85);font-weight:750">${escapeHtml(m.dec.word)}</div>
-          <div style="margin-top:4px">${escapeHtml(m.dec.line)}</div>
-          <div style="margin-top:10px;color:rgba(255,255,255,.80)">High: ${escapeHtml(hi)} | Low: ${escapeHtml(lo)}</div>
-        </div>
-      `;
-
-      el.drawerSun.innerHTML = "";
-      const sunrise = m.sunrise ? new Date(m.sunrise) : null;
-      const sunset = m.sunset ? new Date(m.sunset) : null;
-
-      const sunriseTxt = sunrise && !isNaN(sunrise.getTime())
-        ? sunrise.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
-        : "--";
-      const sunsetTxt = sunset && !isNaN(sunset.getTime())
-        ? sunset.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
-        : "--";
-
-      el.drawerSun.innerHTML = `
-        <div class="sunbox">
-          <span class="sunlabel">Sun up</span>
-          <span class="sunvalue">${escapeHtml(sunriseTxt)}</span>
-        </div>
-        <div class="sunbox">
-          <span class="sunlabel">Sun down</span>
-          <span class="sunvalue">${escapeHtml(sunsetTxt)}</span>
-        </div>
-      `;
-    }
-    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source, opts = {}){
-      state.lat = lat;
-      state.lon = lon;
-      state.source = source || state.source;
-
-      state.placeLabel = normalizeLabel(label || state.placeLabel);
-      state.countryCode = countryCode || state.countryCode;
-
-      setPill(state.placeLabel);
-      updateSourceUI();
-      setFreezeUI();
-      saveState();
-
-      const effectiveUnits = state.unitOverride || state.units;
-
-      try{
-        const [cur, forecast] = await Promise.all([
-          fetchWeather(lat, lon, effectiveUnits),
-          fetchForecast(lat, lon, effectiveUnits),
-        ]);
-
-        renderResultFromNormalized(cur);
-        renderForecast(forecast, { forceSelectFirst: true });
-
-        if (countryCode && !state.unitOverride){
-          const should = countryUsesF(countryCode) ? "F" : "C";
-          if (should !== state.units){
-            state.units = should;
-            saveState();
-            setUnitControlButtons();
-
-            const [cur2, forecast2] = await Promise.all([
-              fetchWeather(lat, lon, state.units),
-              fetchForecast(lat, lon, state.units),
-            ]);
-            renderResultFromNormalized(cur2);
-            renderForecast(forecast2, { forceSelectFirst: true });
-            updateSourceUI();
-          }
-        }
-      } finally {
-        endLoadingUI();
-      }
-    }
-
-    function popNextSpinIndex(){
-      const key = "hoodieornah_spinbag_v1";
-      let bag = [];
-      try{ bag = JSON.parse(localStorage.getItem(key) || "[]"); }catch(e){}
-      if (!Array.isArray(bag) || bag.length !== CURATED_CITIES.length){
-        bag = Array.from({ length: CURATED_CITIES.length }, (_, i) => i);
-      }
-      const idx = Math.floor(Math.random() * bag.length);
-      const pick = bag.splice(idx, 1)[0];
-      try{ localStorage.setItem(key, JSON.stringify(bag)); }catch(e){}
-      return pick;
-    }
-
-    async function tryAutoLocation(){
-      state.source = "auto";
-      updateSourceUI();
-
-      if (!navigator.geolocation){
-        showToast("No GPS here. Type a city instead.");
-        return;
-      }
-
-      setPill("Locating...");
-      setLoadingUI();
-
-      const opts = { enableHighAccuracy: false, timeout: 6500, maximumAge: 600000 };
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-
-        await updateWeatherFromLatLon(lat, lon, "Near you", null, "auto", { forceSelectFirst: true });
-
-        try{
-          const got = await reverseGeocodeToLabel(lat, lon);
-          if (got && got.label){
-            state.placeLabel = got.label;
-            state.countryCode = got.cc || state.countryCode;
-            setPill(state.placeLabel);
-            updateSourceUI();
-            saveState();
-
-            if (!state.unitOverride && got.cc){
-              const newUnits = countryUsesF(got.cc) ? "F" : "C";
-              if (newUnits !== state.units){
-                state.units = newUnits;
-                setUnitControlButtons();
-                saveState();
-                setLoadingUI();
-                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "auto", { forceSelectFirst: true });
-              }
-            }
-          } else {
-            setPill("Near you");
-          }
-        }catch(e){
-          setPill("Near you");
-        }
-
-      }, () => {
-        setPill("Near you");
-        endLoadingUI();
-      }, opts);
-    }
-
-    async function onUseGPS(){
-      if (!navigator.geolocation){ showToast("No GPS available in this browser."); return; }
-      state.source = "gps";
-      updateSourceUI();
-      setPill("Locating...");
-      setLoadingUI();
-
-      const opts = { enableHighAccuracy: true, timeout: 8000, maximumAge: 120000 };
-      navigator.geolocation.getCurrentPosition(async (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-
-        let label = "Near you";
-        let cc = null;
-
-        try{
-          const got = await reverseGeocodeToLabel(lat, lon);
-          if (got && got.label) label = got.label;
-          if (got && got.cc) cc = got.cc;
-        }catch(e){}
-
-        await updateWeatherFromLatLon(lat, lon, label, cc, "gps", { forceSelectFirst: true });
-
-      }, (err) => {
-        endLoadingUI();
-        setPill(state.placeLabel || "Near you");
-        updateSourceUI();
-        if (err && err.code === 1) showToast("Location access denied");
-        else showToast("Could not get GPS. Try manual.");
-      }, opts);
-    }
-
-    async function onSpinGlobe(){
-      state.source = "globe";
-      updateSourceUI();
-      setLoadingUI();
-
-      const idx = popNextSpinIndex();
-      const spot = CURATED_CITIES[idx] || CURATED_CITIES[0];
-
-      state.placeLabel = spot.label;
-      state.countryCode = spot.cc;
-      setPill(spot.label);
-      saveState();
-
-      await updateWeatherFromLatLon(spot.lat, spot.lon, spot.label, spot.cc, "globe", { forceSelectFirst: true });
-    }
-
-    function clearDatalist(){
-      el.locList.innerHTML = "";
-    }
-
-    let suggestSeq = 0;
-    let suggestTimer = null;
-
-    async function refreshSuggestions(q){
-      const seq = ++suggestSeq;
-      if (!q || q.trim().length < 2) { clearDatalist(); return; }
-
-      try{
-        const results = await geocodeDisplayName(q.trim());
-        if (seq !== suggestSeq) return;
-
-        clearDatalist();
-        results.slice(0, 6).forEach(r => {
-          const opt = document.createElement("option");
-          opt.value = r.label;
-          el.locList.appendChild(opt);
-        });
-      }catch(e){
-        if (seq !== suggestSeq) return;
-        clearDatalist();
-      }
-    }
-
-    async function applyManualSelection(text){
-      const q = (text || "").trim();
-      if (!q) return;
-
-      setLoadingUI();
-      state.source = "manual";
-      updateSourceUI();
-
-      try{
-        const results = await geocodeDisplayName(q);
-        const best = results[0];
-        if (!best) throw new Error("no_results");
-
-        state.placeLabel = best.label;
-        state.countryCode = best.countryCode || state.countryCode;
-        setPill(best.label);
-
-        await updateWeatherFromLatLon(best.lat, best.lon, best.label, best.countryCode, "manual", { forceSelectFirst: true });
-
-        clearDatalist();
-        el.manualInput.blur();
-      }catch(e){
-        endLoadingUI();
-        showToast("No results. Try another spelling.");
-      } finally {
-        saveState();
-      }
-    }
-
-    function wireEvents(){
-      el.unitAuto.addEventListener("click", async () => {
-        state.unitOverride = null;
-        if (state.countryCode){
-          state.units = countryUsesF(state.countryCode) ? "F" : "C";
-        }
-        setUnitControlButtons();
-        updateSourceUI();
-        saveState();
-
-        if (state.lat != null && state.lon != null){
-          setLoadingUI();
-          await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        }
-      });
-
-      el.unitF.addEventListener("click", async () => {
-        state.unitOverride = "F";
-        setUnitControlButtons();
-        updateSourceUI();
-        saveState();
-
-        if (state.lat != null && state.lon != null){
-          setLoadingUI();
-          await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        }
-      });
-
-      el.unitC.addEventListener("click", async () => {
-        state.unitOverride = "C";
-        setUnitControlButtons();
-        updateSourceUI();
-        saveState();
-
-        if (state.lat != null && state.lon != null){
-          setLoadingUI();
-          await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        }
-      });
-
-      el.runSelect.addEventListener("change", async () => {
-        state.run = el.runSelect.value;
-        saveState();
-
-        if (state.lat != null && state.lon != null){
-          setLoadingUI();
-          await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        }
-      });
-
-      el.spinBtn.addEventListener("click", onSpinGlobe);
-      el.gpsBtn.addEventListener("click", onUseGPS);
-
-      el.brandHome.addEventListener("click", async () => {
-        state.freeze = false;
-        setFreezeUI();
-        saveState();
-        await tryAutoLocation();
-      });
-
-      el.freezeToggle.addEventListener("click", () => {
-        state.freeze = !state.freeze;
-        setFreezeUI();
-        saveState();
-        showToast(state.freeze ? "Frozen. Keeping this spot." : "Unfrozen. Auto will follow you.");
-      });
-      el.freezeToggle.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.freezeToggle.click(); }
-      });
-
-      el.forecastList.addEventListener("click", (e) => {
-        const item = e.target && e.target.closest ? e.target.closest(".forecast-item") : null;
-        if (!item) return;
-        selectForecastIndex(item.dataset.idx);
-      });
-      el.forecastList.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" && e.key !== " ") return;
-        const item = e.target && e.target.classList && e.target.classList.contains("forecast-item") ? e.target : null;
-        if (!item) return;
-        e.preventDefault();
-        selectForecastIndex(item.dataset.idx);
-      });
-
-      el.manualInput.addEventListener("input", () => {
-        const q = el.manualInput.value || "";
-        clearTimeout(suggestTimer);
-        suggestTimer = setTimeout(() => refreshSuggestions(q), 180);
-      });
-
-      el.manualInput.addEventListener("change", () => {
-        // This fires when user picks from the datalist too.
-        applyManualSelection(el.manualInput.value);
-      });
-
-      el.manualInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter"){
-          e.preventDefault();
-          applyManualSelection(el.manualInput.value);
-        }
-      });
-
-      el.wherePill.addEventListener("click", () => {
-        // Keep it simple now: no modal, no close button.
-        // A little affordance: jump focus to the details area on the right if on mobile.
-        const d = el.detailsDrawer;
-        if (d && typeof d.scrollIntoView === "function"){
-          d.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-    }
-
-    async function init(){
-      el.runSelect.value = state.run || "normal";
-      setUnitControlButtons();
-      setFreezeUI();
-      setPill(state.placeLabel || "Near you");
-      updateSourceUI();
-
-      wireEvents();
-
-      if (state.freeze && state.lat != null && state.lon != null){
-        setLoadingUI();
-        await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        return;
-      }
-
-      if (state.lat != null && state.lon != null && state.source && state.source !== "auto"){
-        setLoadingUI();
-        await updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
-        return;
-      }
-
-      await tryAutoLocation();
-    }
-
-    init();
-  </script>
-</body>
-</html>
