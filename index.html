@@ -142,7 +142,6 @@
     .forecast-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
     .forecast-top b{ font-size:13px; color: var(--text); white-space: normal; line-height:1.2; font-weight:700; }
     .forecast-top svg{ width:24px; height:24px; opacity:.98; color: var(--accent); flex:0 0 auto; }
-
     .forecast-mid{ margin-top:6px; font-size:12px; color: var(--muted); }
     .forecast-mid strong{ color: var(--text); font-size:14px; display:block; margin-top:3px; }
     .forecast-line{ margin-top:8px; font-size:12px; color: var(--muted2); line-height:1.25; min-height:34px; }
@@ -151,7 +150,7 @@
       margin-top:10px; color: var(--text); font-size:13px; line-height:1.4;
       max-width:620px; padding:8px 10px; border-radius:10px; background: var(--panel2); border:1px solid var(--stroke);
     }
-    .how-decided b{ color: var(--text); font-weight:800; }
+    .how-decided b{ color: var (--text); font-weight:800; }
 
     .wear-box{
       margin-top:12px; border:1px solid rgba(255,255,255,.14); border-radius:14px;
@@ -506,6 +505,13 @@
         "Too warm. Hoodie is cosplay at this point.",
         "Let the breeze live rent-free. No hoodie.",
         "Nah. Pocket warmth not required today."
+      ],
+      PARKA: [
+        "Parka time. Hoodie alone is a betrayal.",
+        "Layer the hoodie under a parka. Trust me.",
+        "Parka or bust. Your eyelashes would like to stay unfrosted.",
+        "Parka weather. Hoodie is the understudy.",
+        "Parka plus hoodie. Fashion is now survival."
       ]
     };
 
@@ -540,6 +546,20 @@
           "Nah. Hoodie would be overachieving.",
           "No hoodie. You will regret it in 30 seconds if you do.",
           "Hoodie stays benched today."
+        ]
+      },
+      PARKA: {
+        base: [
+          "Parka plus hoodie. Warmth is now a team sport.",
+          "Wear a parka. Hoodie goes underneath as moral support.",
+          "Full parka mode. Zippers up, drama down.",
+          "Parka with a hood. Double hood if you believe in redundancy.",
+          "Insulated parka. Pretend you are an expedition leader."
+        ],
+        deep: [
+          "Add thermal base layers. Your bones will notice.",
+          "Gloves, beanie, and a scarf. Negotiate with the wind.",
+          "Water-resistant parka if the sky looks dramatic."
         ]
       },
       wind: [
@@ -676,6 +696,7 @@
       if (run === "cold") adj -= 3;
       if (run === "hot") adj += 3;
       adj -= mph * 0.15;
+      if (adj <= 40) return { key:"PARKA" };
       if (adj <= 55) return { key:"HOODIE" };
       if (adj <= 68) return { key:"MAYBE" };
       return { key:"NAH" };
@@ -735,11 +756,15 @@
       const isSnow = snowCodes.has(Number(code));
       const isWindy = mph >= 12;
       const isCold = feelsF <= 38;
+      const isVeryCold = feelsF <= 25;
       const isWarm = feelsF >= 72;
 
       let basePool = (WEAR_SNARK[verdict] && WEAR_SNARK[verdict].base) ? WEAR_SNARK[verdict].base : [];
       if (verdict === "HOODIE" && isCold && WEAR_SNARK.HOODIE.cold) {
         basePool = basePool.concat(WEAR_SNARK.HOODIE.cold);
+      }
+      if (verdict === "PARKA" && isVeryCold && WEAR_SNARK.PARKA.deep) {
+        basePool = basePool.concat(WEAR_SNARK.PARKA.deep);
       }
 
       const line1 = uniqueSample(basePool, 1)[0] || "Wear something. The weather is real.";
@@ -751,7 +776,10 @@
       let line2 = helperPicks[0] || "Wind exists. Act accordingly.";
       let line3 = helperPicks[1] || "Shoes. Just trust me.";
 
-      if (isCold && verdict !== "NAH"){
+      if (verdict === "PARKA"){
+        const extra = uniqueSample(WEAR_SNARK.extrasCold, 1)[0];
+        if (extra) line3 = extra;
+      } else if (isCold && verdict !== "NAH"){
         const extra = uniqueSample(WEAR_SNARK.extrasCold, 1)[0];
         if (extra) line3 = extra;
       } else if (isWarm && verdict === "NAH"){
@@ -786,7 +814,7 @@
       const data = await res.json();
       return (data || []).map((r) => {
         const a = r.address || {};
-        const cc = (a.country_code || "").toUpperCase() || null;
+               const cc = (a.country_code || "").toUpperCase() || null;
         const label = r.display_name || q;
         return { label, lat: Number(r.lat), lon: Number(r.lon), countryCode: cc };
       }).filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
@@ -1081,7 +1109,7 @@
           const results = await geocodeDisplayName(q);
           if (seq !== suggestSeq) return;
           el.locList.innerHTML = results.map(r =>
-            "<option value=\"" + r.label.replaceAll("\"","&quot;") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
+            "<option value=\"" + r.label.replaceAll(\"\\\"\",\"&quot;\") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
           ).join("");
         }catch(err){ console.error(err); }
       }, 250);
