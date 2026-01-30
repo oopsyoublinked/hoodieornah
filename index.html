@@ -590,7 +590,7 @@
       }, opts);
     }
 
-    async function onUseGPS(){
+        async function onUseGPS(){
       if (!navigator.geolocation){ showToast("No GPS available in this browser."); return; }
       state.source = "gps";
       updateSourceUI();
@@ -710,7 +710,8 @@
       el.themeLabel.textContent = theme === "light" ? "Light" : "Dark";
       saveTheme(theme);
     }
-	    function wireEvents(){
+
+    function wireEvents(){
       el.unitAuto.addEventListener("click", async () => {
         state.unitOverride = null;
         if (state.countryCode){
@@ -738,7 +739,7 @@
         }
       });
 
-      el.unitC addEventListener("click", async () => {
+      el.unitC.addEventListener("click", async () => {
         state.unitOverride = "C";
         setUnitControlButtons();
         updateSourceUI();
