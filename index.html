@@ -37,18 +37,6 @@
       --radius: 22px;
       --radius2: 16px;
     }
-    .theme-light{
-      --bg:#eef1f7;
-      --panel: rgba(255,255,255,.82);
-      --panel2: rgba(255,255,255,.70);
-      --stroke: rgba(0,0,0,.16);
-      --text: rgba(15,15,25,.92);
-      --muted: rgba(20,20,30,.72);
-      --muted2: rgba(20,20,30,.62);
-      --accent: rgba(10,10,20,.92);
-      --shadow: 0 18px 45px rgba(0,0,0,.18);
-      --shadow2: 0 10px 25px rgba(0,0,0,.15);
-    }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
@@ -91,7 +79,7 @@
       display:flex;
       align-items:center;
       gap: 12px;
-      min-width: 260px;
+      min-width: 220px;
       cursor:pointer;
       user-select:none;
     }
@@ -107,13 +95,6 @@
       place-items:center;
       box-shadow: 0 10px 25px rgba(0,0,0,.45);
       transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-    }
-    .theme-light .brand .mark{
-      border-color: rgba(0,0,0,.10);
-      background:
-        radial-gradient(14px 14px at 30% 30%, rgba(0,0,0,.07), transparent 60%),
-        rgba(0,0,0,.03);
-      box-shadow: 0 10px 25px rgba(0,0,0,.10);
     }
     .brand:hover .mark{
       transform: translateY(-1px) scale(1.02);
@@ -139,39 +120,27 @@
       display:flex;
       align-items:center;
       gap: 10px;
-      flex-wrap: wrap;
-      justify-content:flex-end;
+    }
+    .pillrow{
+      display:flex;
+      gap: 8px;
+      align-items:center;
+      padding: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
     }
 
-    /* Perfect alignment for every top control */
-    .pill,
     .seg,
-    .seg button,
-    .theme-toggle{
-      height: 38px;
-      min-height: 38px;
-      line-height: 1;
-      display:inline-flex;
+    .pill{
+      height: 36px;
+      min-height: 36px;
       align-items:center;
     }
 
-    .pill{
-      gap: 8px;
-      padding: 0 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 999px;
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      font-size: 13px;
-      cursor: pointer;
-      user-select:none;
-      white-space: nowrap;
-      transition: background .16s ease, border-color .16s ease, transform .16s ease;
-    }
-    .pill:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
-    .pill[aria-pressed="true"]{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
-
     .seg{
+      display:inline-flex;
+      align-items:stretch;
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 999px;
       overflow:hidden;
@@ -185,57 +154,40 @@
       font-size: 13px;
       cursor:pointer;
       transition: background .16s ease, color .16s ease;
+      display:inline-flex;
+      align-items:center;
+      height:100%;
     }
     .seg button:hover{ background: rgba(255,255,255,.05); color: var(--text); }
     .seg button[aria-pressed="true"]{ background: rgba(255,255,255,.08); color: var(--text); }
 
-    .theme-toggle{
+    .pill{
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
       gap: 8px;
       padding: 0 12px;
       border: 1px solid rgba(255,255,255,.12);
       border-radius: 999px;
       background: rgba(255,255,255,.03);
-      user-select:none;
-      cursor:pointer;
-      transition: background .16s ease, border-color .16s ease, transform .16s ease;
-      font-size: 13px;
       color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+      user-select:none;
+      white-space: nowrap;
+      line-height: 1.2;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+      text-align: center;
     }
-    .theme-toggle:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
-    .theme-switch{
-      width: 36px;
-      height: 22px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(0,0,0,.18);
-      position: relative;
-      flex: 0 0 auto;
-      transition: background .16s ease, border-color .16s ease;
-    }
-    .theme-switch::after{
-      content:"";
-      width: 16px;
-      height: 16px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.92);
-      position:absolute;
-      top: 2px;
-      left: 2px;
-      transition: transform .16s ease, background .16s ease;
-    }
-    .theme-toggle[aria-pressed="true"] .theme-switch{
-      background: rgba(255,255,255,.12);
-      border-color: rgba(255,255,255,.22);
-    }
-    .theme-toggle[aria-pressed="true"] .theme-switch::after{
-      transform: translateX(12px);
-    }
+    .pill:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
+    .pill[aria-pressed="true"]{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
 
     .main{
       margin-top: 14px;
       display:grid;
       grid-template-columns: 1.25fr .95fr;
       gap: 14px;
+      align-items: stretch;
     }
     @media (max-width: 980px){
       .brand{ min-width: unset; }
@@ -249,6 +201,12 @@
       box-shadow: var(--shadow);
       overflow:hidden;
       position: relative;
+      height: 100%;
+    }
+    .card.loading{
+      opacity: .82;
+      filter: saturate(.85);
+      box-shadow: 0 12px 30px rgba(0,0,0,.38);
     }
     .card::before{
       content:"";
@@ -257,7 +215,7 @@
       background: radial-gradient(420px 220px at 20% 0%, rgba(255,255,255,.07), transparent 60%);
       pointer-events:none;
     }
-    .card-inner{ position:relative; padding: 18px; }
+    .card-inner{ position:relative; padding: 18px; min-height: 100%; }
 
     .bigword{
       font-size: 72px;
@@ -286,17 +244,15 @@
       padding: 12px 12px;
       min-height: 70px;
     }
-    .theme-light .stat{ background: rgba(255,255,255,.55); }
     .stat small{ display:block; color: var(--muted2); font-size:12px; margin-bottom: 6px; }
     .stat strong{ display:block; font-size: 15px; }
     .stat .sub{ margin-top: 4px; color: var(--muted2); font-size: 12px; }
 
-    /* Forecast: ALWAYS 5 on one line, fully visible (no clipping) */
     .forecast{
       margin-top: 14px;
       display:grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 10px;
+      gap: 12px;
       width: 100%;
       overflow: visible;
     }
@@ -318,7 +274,6 @@
       user-select:none;
       outline: none;
     }
-    .theme-light .forecast-item{ background: rgba(255,255,255,.55); }
     .forecast-item:hover{
       transform: translateY(-2px);
       background: rgba(255,255,255,.07);
@@ -329,11 +284,17 @@
 
     .forecast-top{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap: 8px;
     }
-    .forecast-top b{ font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .forecast-top b{
+      font-size: 13px;
+      color: var(--text);
+      white-space: normal;
+      line-height: 1.2;
+      font-weight: 700;
+    }
     .forecast-top svg{ width: 24px; height: 24px; opacity: .98; color: var(--accent); flex: 0 0 auto; }
 
     .forecast-mid{
@@ -371,7 +332,6 @@
       background: rgba(0,0,0,.12);
       color: var(--text);
     }
-    .theme-light .wear-box{ background: rgba(255,255,255,.60); }
     .wear-title{
       font-size: 13px;
       font-weight: 820;
@@ -394,10 +354,10 @@
 
     .cta{
       display:flex;
-      gap: 10px;
+      gap: 8px;
       align-items:center;
       flex-wrap: wrap;
-      margin-top: 12px;
+      margin-top: 8px;
     }
 
     .btn{
@@ -405,7 +365,7 @@
       align-items:center;
       justify-content:center;
       gap: 8px;
-      padding: 10px 14px;
+      padding: 9px 12px;
       border: 1px solid rgba(255,255,255,.16);
       border-radius: 999px;
       background: rgba(255,255,255,.07);
@@ -444,30 +404,15 @@
       font-size: 14px;
       transition: border-color .16s ease, background .16s ease;
     }
-    .theme-light select, .theme-light input{
-      background: rgba(255,255,255,.70);
-      border-color: rgba(0,0,0,.16);
-      color: rgba(15,15,25,.92);
-    }
     input::placeholder{ color: rgba(255,255,255,.38); }
-    .theme-light input::placeholder{ color: rgba(0,0,0,.38); }
-
     input:focus, select:focus{
       border-color: rgba(255,255,255,.24);
       background: rgba(0,0,0,.26);
-    }
-    .theme-light input:focus, .theme-light select:focus{
-      background: rgba(255,255,255,.86);
-      border-color: rgba(0,0,0,.22);
     }
 
     select option{
       background: #0b0b0f;
       color: rgba(255,255,255,.92);
-    }
-    .theme-light select option{
-      background: #ffffff;
-      color: rgba(15,15,25,.92);
     }
 
     .form-row{
@@ -485,7 +430,6 @@
       background: rgba(0,0,0,.14);
       overflow:hidden;
     }
-    .theme-light .details{ background: rgba(255,255,255,.60); }
     .details-header{
       display:flex;
       align-items:center;
@@ -517,7 +461,6 @@
 
     .sunrow{ width:100%; margin-top:10px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .sunbox{ border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:10px 12px; background: rgba(255,255,255,.06); }
-    .theme-light .sunbox{ background: rgba(255,255,255,.80); border-color: rgba(0,0,0,.12); }
     .sunlabel{ display:block; font-size:12px; color:var(--muted); letter-spacing:.02em; }
     .sunvalue{ display:block; margin-top:2px; font-size:14px; font-weight:700; color:var(--text); }
 
@@ -536,9 +479,7 @@
       line-height: 1.3;
       flex-wrap: wrap;
     }
-    .theme-light .site-footer{ background: rgba(255,255,255,.78); }
     .site-footer a{ color: rgba(255,255,255,.85); text-decoration:none; border-bottom: 1px solid rgba(255,255,255,.20); }
-    .theme-light .site-footer a{ color: rgba(15,15,25,.88); border-bottom-color: rgba(0,0,0,.20); }
     .site-footer a:hover{ border-bottom-color: rgba(255,255,255,.40); }
 
     .toast{
@@ -579,39 +520,6 @@
       0%,100%{ opacity: .85; }
       50%{ opacity: .55; }
     }
-    @keyframes popQ{
-      0%{ transform: translateY(0) scale(1); opacity: .85; }
-      40%{ transform: translateY(-1px) scale(1.06); opacity: 1; }
-      100%{ transform: translateY(0) scale(1); opacity: .92; }
-    }
-
-    /* Keep all 5 forecast items on one line and allow them to shrink */
-    .forecast{
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      overflow: visible;
-    }
-    .forecast-item{
-      min-width: 0;
-    }
-
-    /* Align the top controls to the same height */
-    .controls{
-      align-items: stretch;
-    }
-    .pillrow{
-      display: flex;
-      align-items: stretch;
-      gap: 10px;
-    }
-    .seg,
-    .pill,
-    .theme-toggle{
-      min-height: 38px;
-      height: 38px;
-    }
-    .seg button{
-      height: 100%;
-    }
   </style>
 </head>
 
@@ -634,21 +542,18 @@
       </div>
 
       <div class="controls">
-        <div class="seg" aria-label="Units">
-          <button id="unitAuto" type="button" aria-pressed="true">Auto</button>
-          <button id="unitF" type="button" aria-pressed="false">°F</button>
-          <button id="unitC" type="button" aria-pressed="false">°C</button>
-        </div>
+        <div class="pillrow">
+          <div class="seg" aria-label="Units">
+            <button id="unitAuto" type="button" aria-pressed="true">Auto</button>
+            <button id="unitF" type="button" aria-pressed="false">°F</button>
+            <button id="unitC" type="button" aria-pressed="false">°C</button>
+          </div>
 
-        <div class="pill" id="wherePill" title="Jump to forecast details">
-          <span aria-hidden="true">📍</span>
-          <span id="pillText">Near you</span>
+          <div class="pill" id="wherePill" title="Jump to forecast details">
+            <span aria-hidden="true">📍</span>
+            <span id="pillText">Near you</span>
+          </div>
         </div>
-
-        <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" title="Toggle theme">
-          <span class="theme-switch" aria-hidden="true"></span>
-          <span id="themeLabel">Dark</span>
-        </button>
       </div>
     </div>
 
@@ -777,8 +682,6 @@
       unitC: document.getElementById("unitC"),
       wherePill: document.getElementById("wherePill"),
       pillText: document.getElementById("pillText"),
-      themeToggle: document.getElementById("themeToggle"),
-      themeLabel: document.getElementById("themeLabel"),
 
       bigWord: document.getElementById("bigWord"),
       oneLiner: document.getElementById("oneLiner"),
@@ -811,42 +714,216 @@
       toast: document.getElementById("toast"),
     };
 
-    const CURATED_CITIES = [
-      { label:"Tulsa, Oklahoma", cc:"US", lat:36.1540, lon:-95.9928 },
-      { label:"Las Vegas, Nevada", cc:"US", lat:36.1699, lon:-115.1398 },
-      { label:"Chicago, Illinois", cc:"US", lat:41.8781, lon:-87.6298 },
-      { label:"New York, New York", cc:"US", lat:40.7128, lon:-74.0060 },
-      { label:"London, United Kingdom", cc:"GB", lat:51.5074, lon:-0.1278 },
-      { label:"Paris, France", cc:"FR", lat:48.8566, lon:2.3522 },
-      { label:"Tokyo, Japan", cc:"JP", lat:35.6762, lon:139.6503 },
-      { label:"Sydney, Australia", cc:"AU", lat:-33.8688, lon:151.2093 }
+    // Top 100 cities
+    const CURATED_CITIES = [ /* (same list as previous message) */ 
+      {label:"New York, USA",cc:"US",lat:40.7128,lon:-74.0060},
+      {label:"Los Angeles, USA",cc:"US",lat:34.0522,lon:-118.2437},
+      {label:"Chicago, USA",cc:"US",lat:41.8781,lon:-87.6298},
+      {label:"Houston, USA",cc:"US",lat:29.7604,lon:-95.3698},
+      {label:"Phoenix, USA",cc:"US",lat:33.4484,lon:-112.0740},
+      {label:"Philadelphia, USA",cc:"US",lat:39.9526,lon:-75.1652},
+      {label:"San Antonio, USA",cc:"US",lat:29.4241,lon:-98.4936},
+      {label:"San Diego, USA",cc:"US",lat:32.7157,lon:-117.1611},
+      {label:"Dallas, USA",cc:"US",lat:32.7767,lon:-96.7970},
+      {label:"San Jose, USA",cc:"US",lat:37.3382,lon:-121.8863},
+      {label:"Austin, USA",cc:"US",lat:30.2672,lon:-97.7431},
+      {label:"Jacksonville, USA",cc:"US",lat:30.3322,lon:-81.6557},
+      {label:"Fort Worth, USA",cc:"US",lat:32.7555,lon:-97.3308},
+      {label:"Columbus, USA",cc:"US",lat:39.9612,lon:-82.9988},
+      {label:"Charlotte, USA",cc:"US",lat:35.2271,lon:-80.8431},
+      {label:"San Francisco, USA",cc:"US",lat:37.7749,lon:-122.4194},
+      {label:"Indianapolis, USA",cc:"US",lat:39.7684,lon:-86.1581},
+      {label:"Seattle, USA",cc:"US",lat:47.6062,lon:-122.3321},
+      {label:"Denver, USA",cc:"US",lat:39.7392,lon:-104.9903},
+      {label:"Washington, USA",cc:"US",lat:38.9072,lon:-77.0369},
+      {label:"Boston, USA",cc:"US",lat:42.3601,lon:-71.0589},
+      {label:"El Paso, USA",cc:"US",lat:31.7619,lon:-106.4850},
+      {label:"Nashville, USA",cc:"US",lat:36.1627,lon:-86.7816},
+      {label:"Detroit, USA",cc:"US",lat:42.3314,lon:-83.0458},
+      {label:"Portland, USA",cc:"US",lat:45.5122,lon:-122.6587},
+      {label:"Memphis, USA",cc:"US",lat:35.1495,lon:-90.0490},
+      {label:"Oklahoma City, USA",cc:"US",lat:35.4676,lon:-97.5164},
+      {label:"Las Vegas, USA",cc:"US",lat:36.1699,lon:-115.1398},
+      {label:"Louisville, USA",cc:"US",lat:38.2527,lon:-85.7585},
+      {label:"Baltimore, USA",cc:"US",lat:39.2904,lon:-76.6122},
+      {label:"Milwaukee, USA",cc:"US",lat:43.0389,lon:-87.9065},
+      {label:"Albuquerque, USA",cc:"US",lat:35.0844,lon:-106.6504},
+      {label:"Tucson, USA",cc:"US",lat:32.2226,lon:-110.9747},
+      {label:"Fresno, USA",cc:"US",lat:36.7378,lon:-119.7871},
+      {label:"Sacramento, USA",cc:"US",lat:38.5816,lon:-121.4944},
+      {label:"Mesa, USA",cc:"US",lat:33.4152,lon:-111.8315},
+      {label:"Kansas City, USA",cc:"US",lat:39.0997,lon:-94.5786},
+      {label:"Atlanta, USA",cc:"US",lat:33.7490,lon:-84.3880},
+      {label:"Omaha, USA",cc:"US",lat:41.2565,lon:-95.9345},
+      {label:"Raleigh, USA",cc:"US",lat:35.7796,lon:-78.6382},
+      {label:"Miami, USA",cc:"US",lat:25.7617,lon:-80.1918},
+      {label:"Long Beach, USA",cc:"US",lat:33.7701,lon:-118.1937},
+      {label:"Virginia Beach, USA",cc:"US",lat:36.8529,lon:-75.9780},
+      {label:"Oakland, USA",cc:"US",lat:37.8044,lon:-122.2712},
+      {label:"Minneapolis, USA",cc:"US",lat:44.9778,lon:-93.2650},
+      {label:"Tulsa, USA",cc:"US",lat:36.1540,lon:-95.9928},
+      {label:"Arlington, USA",cc:"US",lat:32.7357,lon:-97.1081},
+      {label:"Tampa, USA",cc:"US",lat:27.9506,lon:-82.4572},
+      {label:"New Orleans, USA",cc:"US",lat:29.9511,lon:-90.0715},
+      {label:"Wichita, USA",cc:"US",lat:37.6872,lon:-97.3301},
+      {label:"Cleveland, USA",cc:"US",lat:41.4993,lon:-81.6944},
+      {label:"Bakersfield, USA",cc:"US",lat:35.3733,lon:-119.0187},
+      {label:"Aurora, USA",cc:"US",lat:39.7294,lon:-104.8319},
+      {label:"Honolulu, USA",cc:"US",lat:21.3069,lon:-157.8583},
+      {label:"Anaheim, USA",cc:"US",lat:33.8366,lon:-117.9143},
+      {label:"Santa Ana, USA",cc:"US",lat:33.7455,lon:-117.8677},
+      {label:"Riverside, USA",cc:"US",lat:33.9806,lon:-117.3755},
+      {label:"Corpus Christi, USA",cc:"US",lat:27.8006,lon:-97.3964},
+      {label:"Pittsburgh, USA",cc:"US",lat:40.4406,lon:-79.9959},
+      {label:"St. Louis, USA",cc:"US",lat:38.6270,lon:-90.1994},
+      {label:"Cincinnati, USA",cc:"US",lat:39.1031,lon:-84.5120},
+      {label:"Orlando, USA",cc:"US",lat:28.5383,lon:-81.3792},
+      {label:"Buffalo, USA",cc:"US",lat:42.8864,lon:-78.8784},
+      {label:"Madison, USA",cc:"US",lat:43.0731,lon:-89.4012},
+      {label:"Richmond, USA",cc:"US",lat:37.5407,lon:-77.4360},
+      {label:"Birmingham, USA",cc:"US",lat:33.5186,lon:-86.8104},
+      {label:"Salt Lake City, USA",cc:"US",lat:40.7608,lon:-111.8910},
+      {label:"Providence, USA",cc:"US",lat:41.8240,lon:-71.4128},
+      {label:"Reno, USA",cc:"US",lat:39.5296,lon:-119.8138},
+      {label:"Boise, USA",cc:"US",lat:43.6150,lon:-116.2023},
+      {label:"Spokane, USA",cc:"US",lat:47.6588,lon:-117.4260},
+      {label:"Des Moines, USA",cc:"US",lat:41.5868,lon:-93.6250},
+      {label:"Algiers, Algeria",cc:"DZ",lat:36.7538,lon:3.0588},
+      {label:"Lagos, Nigeria",cc:"NG",lat:6.5244,lon:3.3792},
+      {label:"Cairo, Egypt",cc:"EG",lat:30.0444,lon:31.2357},
+      {label:"Johannesburg, South Africa",cc:"ZA",lat:-26.2041,lon:28.0473},
+      {label:"Nairobi, Kenya",cc:"KE",lat:-1.2921,lon:36.8219},
+      {label:"London, United Kingdom",cc:"GB",lat:51.5074,lon:-0.1278},
+      {label:"Paris, France",cc:"FR",lat:48.8566,lon:2.3522},
+      {label:"Berlin, Germany",cc:"DE",lat:52.5200,lon:13.4050},
+      {label:"Madrid, Spain",cc:"ES",lat:40.4168,lon:-3.7038},
+      {label:"Rome, Italy",cc:"IT",lat:41.9028,lon:12.4964},
+      {label:"Amsterdam, Netherlands",cc:"NL",lat:52.3676,lon:4.9041},
+      {label:"Brussels, Belgium",cc:"BE",lat:50.8503,lon:4.3517},
+      {label:"Zurich, Switzerland",cc:"CH",lat:47.3769,lon:8.5417},
+      {label:"Vienna, Austria",cc:"AT",lat:48.2082,lon:16.3738},
+      {label:"Stockholm, Sweden",cc:"SE",lat:59.3293,lon:18.0686},
+      {label:"Oslo, Norway",cc:"NO",lat:59.9139,lon:10.7522},
+      {label:"Copenhagen, Denmark",cc:"DK",lat:55.6761,lon:12.5683},
+      {label:"Helsinki, Finland",cc:"FI",lat:60.1699,lon:24.9384},
+      {label:"Dublin, Ireland",cc:"IE",lat:53.3498,lon:-6.2603},
+      {label:"Lisbon, Portugal",cc:"PT",lat:38.7223,lon:-9.1393},
+      {label:"Warsaw, Poland",cc:"PL",lat:52.2297,lon:21.0122},
+      {label:"Prague, Czechia",cc:"CZ",lat:50.0755,lon:14.4378},
+      {label:"Budapest, Hungary",cc:"HU",lat:47.4979,lon:19.0402},
+      {label:"Athens, Greece",cc:"GR",lat:37.9838,lon:23.7275},
+      {label:"Istanbul, Türkiye",cc:"TR",lat:41.0082,lon:28.9784},
+      {label:"Moscow, Russia",cc:"RU",lat:55.7558,lon:37.6176},
+      {label:"Dubai, UAE",cc:"AE",lat:25.2048,lon:55.2708},
+      {label:"Riyadh, Saudi Arabia",cc:"SA",lat:24.7136,lon:46.6753},
+      {label:"Tel Aviv, Israel",cc:"IL",lat:32.0853,lon:34.7818},
+      {label:"Doha, Qatar",cc:"QA",lat:25.2854,lon:51.5310},
+      {label:"Karachi, Pakistan",cc:"PK",lat:24.8607,lon:67.0011},
+      {label:"Mumbai, India",cc:"IN",lat:19.0760,lon:72.8777},
+      {label:"Delhi, India",cc:"IN",lat:28.7041,lon:77.1025},
+      {label:"Bangalore, India",cc:"IN",lat:12.9716,lon:77.5946},
+      {label:"Chennai, India",cc:"IN",lat:13.0827,lon:80.2707},
+      {label:"Singapore, Singapore",cc:"SG",lat:1.3521,lon:103.8198},
+      {label:"Hong Kong, China",cc:"CN",lat:22.3193,lon:114.1694},
+      {label:"Bangkok, Thailand",cc:"TH",lat:13.7563,lon:100.5018},
+      {label:"Tokyo, Japan",cc:"JP",lat:35.6762,lon:139.6503},
+      {label:"Seoul, South Korea",cc:"KR",lat:37.5665,lon:126.9780},
+      {label:"Taipei, Taiwan",cc:"TW",lat:25.0330,lon:121.5654},
+      {label:"Manila, Philippines",cc:"PH",lat:14.5995,lon:120.9842},
+      {label:"Kuala Lumpur, Malaysia",cc:"MY",lat:3.1390,lon:101.6869},
+      {label:"Jakarta, Indonesia",cc:"ID",lat:-6.2088,lon:106.8456},
+      {label:"Sydney, Australia",cc:"AU",lat:-33.8688,lon:151.2093},
+      {label:"Melbourne, Australia",cc:"AU",lat:-37.8136,lon:144.9631},
+      {label:"Auckland, New Zealand",cc:"NZ",lat:-36.8485,lon:174.7633},
+      {label:"Mexico City, Mexico",cc:"MX",lat:19.4326,lon:-99.1332},
+      {label:"São Paulo, Brazil",cc:"BR",lat:-23.5505,lon:-46.6333},
+      {label:"Rio de Janeiro, Brazil",cc:"BR",lat:-22.9068,lon:-43.1729},
+      {label:"Buenos Aires, Argentina",cc:"AR",lat:-34.6037,lon:-58.3816},
+      {label:"Santiago, Chile",cc:"CL",lat:-33.4489,lon:-70.6693},
+      {label:"Bogotá, Colombia",cc:"CO",lat:4.7110,lon:-74.0721},
+      {label:"Lima, Peru",cc:"PE",lat:-12.0464,lon:-77.0428},
+      {label:"Toronto, Canada",cc:"CA",lat:43.6532,lon:-79.3832},
+      {label:"Vancouver, Canada",cc:"CA",lat:49.2827,lon:-123.1207},
+      {label:"Montreal, Canada",cc:"CA",lat:45.5019,lon:-73.5674}
     ];
 
     const WEATHER_CODES = {
-      0:"Clear",
-      1:"Mostly clear",
-      2:"Partly cloudy",
-      3:"Overcast",
-      45:"Fog",
-      48:"Rime fog",
-      51:"Light drizzle",
-      53:"Drizzle",
-      55:"Heavy drizzle",
-      61:"Light rain",
-      63:"Rain",
-      65:"Heavy rain",
-      71:"Light snow",
-      73:"Snow",
-      75:"Heavy snow",
-      80:"Rain showers",
-      81:"Heavy showers",
-      82:"Violent showers",
-      95:"Thunderstorm",
-      96:"Thunderstorm with hail",
-      99:"Thunderstorm with heavy hail"
+      0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Overcast",
+      45:"Fog",48:"Rime fog",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",
+      61:"Light rain",63:"Rain",65:"Heavy rain",
+      71:"Light snow",73:"Snow",75:"Heavy snow",
+      80:"Rain showers",81:"Heavy showers",82:"Violent showers",
+      95:"Thunderstorm",96:"Thunderstorm with hail",99:"Thunderstorm with heavy hail"
     };
 
-    let theme = loadTheme();
+    const QUIPS = {
+      HOODIE: [
+        "Yes. Hoodie plus life choices that include layers.",
+        "Yep. Hoodie weather. Enjoy the smug warmth.",
+        "Hoodie time. Your ears will send a thank-you note.",
+        "Put the hood up and pretend you are mysterious.",
+        "Wear the hoodie. Regret is for bare wrists.",
+        "This is hoodie weather and it knows it.",
+        "Hoodie recommended. Bonus points for pockets.",
+        "If you skip the hoodie, you will think about it all day.",
+        "Hoodie season. Lean into it.",
+        "Hoodie on. The wind is being rude.",
+        "Hoodie is the correct moral choice here.",
+        "You want sleeves and plausible deniability. Hoodie.",
+        "Yes hoodie. The air is spicy.",
+        "Hoodie now. Your future self is grateful.",
+        "Hoodie. You can still look cool while surviving.",
+        "Hoodie. Do not let the forecast bully you.",
+        "Hoodie is the safe play. Do not overthink it.",
+        "Hoodie weather. Proceed with confidence.",
+        "Hoodie. The vibe is chilly and slightly judgmental.",
+        "Hoodie now. Even the clouds agree."
+      ],
+      MAYBE: [
+        "Could go either way. Hoodie if you like options.",
+        "Borderline. Hoodie for the shade, nah for the sun.",
+        "A true toss-up. Bring the hoodie just to feel powerful.",
+        "This is a vibe check, not a science. Maybe hoodie.",
+        "You can raw-dog it, or you can hoodie. Your call.",
+        "Maybe hoodie. Depends on your tolerance for drama.",
+        "Not cold, not warm. Annoyingly in-between.",
+        "Hoodie if you will be outside longer than five minutes.",
+        "Maybe hoodie. The wind might try something.",
+        "This is the gray area. Dress like you have plans.",
+        "Coin-flip weather. Hoodie is the insurance policy.",
+        "You will be fine either way. Probably.",
+        "Maybe hoodie. Mostly for the pockets.",
+        "This is prime 'start with hoodie, regret later' territory.",
+        "Maybe. If you run cold, hoodie. If you run hot, nah.",
+        "Maybe. You will argue with yourself in the mirror.",
+        "Borderline. Hoodie for mornings, nah for afternoons.",
+        "Maybe hoodie. Commit to ambiguity.",
+        "Hoodie if you fear surprise breezes.",
+        "Layer-friendly weather. Hoodie on standby."
+      ],
+      NAH: [
+        "Nope. Hoodie would be a personal attack on your pores.",
+        "Hoodie? Only if you are trying to escape the sun by staying inside.",
+        "Nah. Let your shoulders live a little.",
+        "Skip the hoodie. You are not in a music video.",
+        "Nah. Hoodie would be overachieving.",
+        "No hoodie. Hydrate and pretend you are fine.",
+        "Nah. If you wear one, you will unzip it instantly.",
+        "Hoodie is not needed. Save it for the thermostat wars.",
+        "No hoodie. The air is doing enough already.",
+        "Nah. You will feel silly in 30 seconds.",
+        "Hoodie would be spicy overkill. Pass.",
+        "Too warm. Hoodie is cosplay at this point.",
+        "Your elbows demand freedom. No hoodie.",
+        "Hoodie would be an act of rebellion against comfort.",
+        "Nah. Sweat is not a statement piece.",
+        "Hoodie stays benched. Wear confidence instead.",
+        "Absolutely nah. Do not boil yourself.",
+        "Your future laundry load says no hoodie.",
+        "Let the breeze live rent-free. No hoodie.",
+        "Nah. Pocket warmth not required today."
+      ]
+    };
 
     const state = loadState() || {
       lat: null,
@@ -858,7 +935,8 @@
       unitOverride: null,
       run: "normal",
       lastForecast: null,
-      selectedIdx: 0
+      selectedIdx: 0,
+      spinSeen: [] // indices seen this session
     };
 
     let suggestTimer = null;
@@ -870,7 +948,6 @@
       clearTimeout(showToast._t);
       showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2200);
     }
-
     function saveState(){
       try{ localStorage.setItem("hoodieornah_state_v3", JSON.stringify(state)); }catch(e){}
     }
@@ -882,48 +959,25 @@
       }catch(e){ return null; }
     }
 
-    function loadTheme(){
-      try{
-        const saved = localStorage.getItem("hoodieornah_theme_v1");
-        if (saved === "light" || saved === "dark") return saved;
-      }catch(e){}
-      return "dark";
-    }
-    function saveTheme(t){
-      try{ localStorage.setItem("hoodieornah_theme_v1", t); }catch(e){}
-    }
-    function applyTheme(t){
-      theme = t === "light" ? "light" : "dark";
-      const root = document.documentElement;
-      root.classList.remove("theme-light","theme-dark");
-      root.classList.add(theme === "light" ? "theme-light" : "theme-dark");
-      el.themeToggle.setAttribute("aria-pressed", theme === "light" ? "true" : "false");
-      el.themeLabel.textContent = theme === "light" ? "Light" : "Dark";
-      saveTheme(theme);
-    }
-
     function setLoadingUI(){
+      document.documentElement.classList.remove("theme-light");
+      document.documentElement.classList.add("theme-dark");
       el.bigWord.textContent = "LOADING";
       el.bigWord.classList.add("loading-shimmer");
-      el.oneLiner.textContent = "Fetching your weather so we can judge you properly.";
+      el.oneLiner.textContent = pickLoadingCopy();
       el.nowTemp.textContent = "--";
       el.nowSub.textContent = "Feels like: -- | Wind: --";
+      document.querySelector(".card")?.classList.add("loading");
     }
     function endLoadingUI(){
       el.bigWord.classList.remove("loading-shimmer");
+      document.querySelector(".card")?.classList.remove("loading");
     }
 
-    function setPill(text){
-      el.pillText.textContent = text || "Near you";
-    }
-
+    function setPill(text){ el.pillText.textContent = text || "Near you"; }
     function updateSourceUI(){
       const src = state.source || "auto";
-      const label =
-        src === "gps" ? "gps" :
-        src === "manual" ? "manual" :
-        src === "globe" ? "globe" :
-        "auto";
+      const label = src === "gps" ? "gps" : src === "manual" ? "manual" : src === "globe" ? "globe" : "auto";
       el.locSource.textContent = "Source: " + label;
     }
 
@@ -931,13 +985,11 @@
       const f = new Set(["US","BS","BZ","KY","PW","FM","MH","LR"]);
       return cc && f.has(cc.toUpperCase());
     }
-
     function currentUnits(){
       if (state.unitOverride === "F") return "F";
       if (state.unitOverride === "C") return "C";
       return state.units || "F";
     }
-
     function setUnitControlButtons(){
       const u = currentUnits();
       el.unitAuto.setAttribute("aria-pressed", state.unitOverride ? "false" : "true");
@@ -949,13 +1001,11 @@
       if (v == null || Number.isNaN(v)) return "--";
       return Math.round(v) + "°" + currentUnits();
     }
-
     function windText(ms){
       if (ms == null || Number.isNaN(ms)) return "--";
       const mph = ms * 2.236936;
       return Math.round(mph) + " mph";
     }
-
     function fmtTimeHM(iso){
       if (!iso) return "--";
       const d = new Date(iso);
@@ -963,106 +1013,91 @@
       return d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
     }
 
-    function verdictForFeels(feelsF, run){
-      const feels = feelsF;
-      const bias =
-        run === "cold" ? -5 :
-        run === "hot" ? 5 : 0;
+    // Verdict: HOODIE / MAYBE / NAH only
+    function verdictForFeels(feelsF, run, windMps){
+      const mph = (windMps || 0) * 2.236936;
+      let adj = feelsF;
+      if (run === "cold") adj -= 3;
+      if (run === "hot") adj += 3;
+      adj -= mph * 0.15; // wind chill bias
 
-      const v = feels + bias;
-
-      if (v <= 25) return { key:"PARKA", line:"This is not hoodie weather. This is survival weather." };
-      if (v <= 38) return { key:"HOODIE", line:"Yep. Hoodie plus life choices that include layers." };
-      if (v <= 55) return { key:"HOODIE", line:"Hoodie season. Lean into it." };
-      if (v <= 65) return { key:"MAYBE", line:"Maybe hoodie. Depends on your ego and the wind." };
-      if (v <= 75) return { key:"NAH", line:"Nah. Save the hoodie for later." };
-      return { key:"ABSOLUTELY NAH", line:"No hoodie. You will regret it." };
+      if (adj <= 55) return { key:"HOODIE" };
+      if (adj <= 68) return { key:"MAYBE" };
+      return { key:"NAH" };
     }
 
     function iconForCode(code){
       const c = Number(code);
-      const is = (name) => {
-        const map = {
-          sun: "☀️",
-          cloud: "☁️",
-          fog: "🌫️",
-          rain: "🌧️",
-          storm: "⛈️",
-          snow: "❄️"
-        };
-        return map[name] || "🌡️";
-      };
-
-      let emoji = "🌡️";
-      if (c === 0) emoji = is("sun");
-      else if (c >= 1 && c <= 3) emoji = is("cloud");
-      else if (c === 45 || c === 48) emoji = is("fog");
-      else if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) emoji = is("rain");
-      else if (c >= 71 && c <= 77) emoji = is("snow");
-      else if (c >= 95) emoji = is("storm");
-
-      return "<span style='font-size:20px; line-height:1;'>" + emoji + "</span>";
+      const map = { sun:"☀️", cloud:"☁️", fog:"🌫️", rain:"🌧️", storm:"⛈️", snow:"❄️" };
+      if (c === 0) return wrap(map.sun);
+      if (c >= 1 && c <= 3) return wrap(map.cloud);
+      if (c === 45 || c === 48) return wrap(map.fog);
+      if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return wrap(map.rain);
+      if (c >= 71 && c <= 77) return wrap(map.snow);
+      if (c >= 95) return wrap(map.storm);
+      return wrap("🌡️");
+      function wrap(e){ return "<span style='font-size:20px; line-height:1;'>" + e + "</span>"; }
     }
-
     function safeDayLabel(dateISO){
       const d = new Date(dateISO);
       if (Number.isNaN(d.getTime())) return "--";
-      return d.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+      return d.toLocaleDateString(undefined, { month:"short", day:"numeric" }); // no weekday
     }
 
-    function ensureNoDuplicateQuips(quips, count){
-      const out = [];
-      const used = new Set();
-      for (let i = 0; i < quips.length && out.length < count; i++){
-        const q = String(quips[i] || "").trim();
-        if (!q) continue;
-        const key = q.toLowerCase();
-        if (used.has(key)) continue;
-        used.add(key);
-        out.push(q);
-      }
-      while (out.length < count){
-        out.push("Weather is doing a thing. You do you.");
-      }
-      return out.slice(0, count);
-    }
-
-    function buildQuipPool(){
-      return [
-        "Hoodie recommended. Bonus points for pockets.",
-        "This is the kind of cold that demands a zipper.",
-        "Wind is feeling bold. You should dress smarter than it.",
-        "If your ears hurt, that is your sign.",
-        "This is a hoodie day, not a debate day.",
-        "Layer like you mean it.",
-        "Your future self wants a hoodie.",
-        "This is not shorts weather. Be serious.",
-        "Cold air has opinions. So should you.",
-        "This is a good day to pretend you love winter.",
-        "A hoodie fixes most problems. Not all, but most.",
-        "If you step outside and make a noise, grab the hoodie.",
-        "The vibe is chilly. Dress accordingly."
-      ];
-    }
-
-    function pickWearList(feelsF, windMps){
-      const w = windMps || 0;
-      const mph = w * 2.236936;
+    function pickWearList(feelsF, windMps, precipPct=0, code=0){
+      const mph = (windMps || 0) * 2.236936;
+      const isWet = precipPct >= 40 || [51,53,55,61,63,65,80,81,82,95,96,99].includes(Number(code));
+      const isSnow = [71,73,75].includes(Number(code));
+      const isFog = [45,48].includes(Number(code));
       const items = [];
 
-      if (feelsF <= 25) items.push("Heavy coat, beanie, gloves. Hoodie is just a moral support layer.");
-      else if (feelsF <= 38) items.push("Hoodie plus a jacket. Wind gets extra votes today.");
-      else if (feelsF <= 55) items.push("Midweight hoodie. You are in your prime.");
-      else if (feelsF <= 65) items.push("Light hoodie or long sleeve. Choose your fighter.");
-      else items.push("T-shirt. Hoodie stays on the bench.");
+      if (feelsF <= 25){
+        items.push("Heavy coat over a hoodie. Pretend you are in a documentary.");
+      } else if (feelsF <= 38){
+        items.push("Hoodie plus a jacket. Regret-proof your torso.");
+      } else if (feelsF <= 55){
+        items.push("Midweight hoodie. Peak cozy, minimal drama.");
+      } else if (feelsF <= 68){
+        items.push("Light hoodie or long sleeve. Choose your fighter.");
+      } else {
+        items.push("No hoodie needed. Let your elbows get some sun.");
+      }
 
-      if (mph >= 15) items.push("Add a shell or windbreaker. Wind is being disrespectful.");
-      else items.push("No shell needed unless you want the extra swagger.");
+      if (mph >= 18){
+        items.push("Add a wind shell. The air is trying to form opinions.");
+      } else if (mph >= 10){
+        items.push("Maybe a light shell. Wind is mouthy but not yelling.");
+      } else {
+        items.push("Skip the shell unless you want extra swagger.");
+      }
 
-      if (feelsF <= 38) items.push("Closed shoes. Socks that mean business.");
-      else items.push("Whatever shoes you regret the least.");
+      if (isSnow){
+        items.push("Water-resistant outer layer; warm hat; gloves that work with phones.");
+      } else if (isWet){
+        items.push("Waterproof layer. Hood up or accept the moist aesthetic.");
+      } else if (isFog){
+        items.push("Reflective bit or light color. Fog is playing stealth mode.");
+      } else {
+        items.push("Footwear you won’t regret. Bonus points for dry socks.");
+      }
 
       return items.slice(0,3);
+    }
+
+    function pickLoadingCopy(){
+      const lines = [
+        "Fetching weather receipts...",
+        "Consulting the hoodie council...",
+        "Interrogating the wind...",
+        "Bribing the clouds for data...",
+        "Calibrating pocket warmth..."
+      ];
+      return lines[Math.floor(Math.random()*lines.length)];
+    }
+
+    function pickQuip(word){
+      const pool = QUIPS[word] || ["Weather is doing a thing. You do you."];
+      return pool[Math.floor(Math.random()*pool.length)];
     }
 
     async function geocodeDisplayName(q){
@@ -1074,15 +1109,9 @@
         const a = r.address || {};
         const cc = (a.country_code || "").toUpperCase() || null;
         const label = r.display_name || q;
-        return {
-          label,
-          lat: Number(r.lat),
-          lon: Number(r.lon),
-          countryCode: cc
-        };
+        return { label, lat: Number(r.lat), lon: Number(r.lon), countryCode: cc };
       }).filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
     }
-
     async function reverseGeocodeToLabel(lat, lon){
       const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon) + "&addressdetails=1";
       const res = await fetch(url, { headers: { "Accept":"application/json" } });
@@ -1090,24 +1119,19 @@
       const data = await res.json();
       const a = data.address || {};
       const cc = (a.country_code || "").toUpperCase() || null;
-
       const city = a.city || a.town || a.village || a.hamlet || a.county || "";
       const region = a.state || a.region || a.province || "";
       let label = (city && region) ? (city + ", " + region) : (city || region || data.display_name || "Near you");
-
       if (cc && cc !== "US" && a.country){
         if (city) label = city + ", " + a.country;
         else label = (region ? region + ", " : "") + a.country;
       }
-
       return { label, cc };
     }
-
     async function fetchOpenMeteo(lat, lon){
       const units = currentUnits() === "F" ? "fahrenheit" : "celsius";
       const windUnits = "ms";
       const tz = "auto";
-
       const url = "https://api.open-meteo.com/v1/forecast"
         + "?latitude=" + encodeURIComponent(lat)
         + "&longitude=" + encodeURIComponent(lon)
@@ -1115,11 +1139,254 @@
         + "&wind_speed_unit=" + windUnits
         + "&timezone=" + encodeURIComponent(tz)
         + "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m"
-        + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10_
-Streaming interrupted. Waiting for the complete message...
+        + "&daily=weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset";
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("weather_failed");
+      return res.json();
+    }
 
+    function renderWear(feelsF, windMps, precipPct, code){
+      const items = pickWearList(feelsF, windMps, precipPct, code);
+      el.wearList.innerHTML = items.map(i => "<li>" + i + "</li>").join("");
+    }
+    function renderNow(current){
+      const feels = current.apparent_temperature;
+      const temp = current.temperature_2m;
+      const wind = current.wind_speed_10m;
+      el.nowTemp.textContent = fmtTemp(temp);
+      el.nowSub.textContent = "Feels like: " + fmtTemp(feels) + " | Wind: " + windText(wind);
+      return { temp, feels, wind };
+    }
+    function buildDailyArray(daily){
+      const len = Math.min(5, (daily.time || []).length);
+      const out = [];
+      for (let i = 0; i < len; i++){
+        out.push({
+          date: daily.time[i],
+          code: daily.weather_code[i],
+          tMax: daily.temperature_2m_max[i],
+          tMin: daily.temperature_2m_min[i],
+          appMax: daily.apparent_temperature_max[i],
+          appMin: daily.apparent_temperature_min[i],
+          precip: daily.precipitation_probability_max[i],
+          wind: daily.wind_speed_10m_max[i],
+          sunrise: daily.sunrise[i],
+          sunset: daily.sunset[i]
+        });
+      }
+      return out;
+    }
+    function renderForecast(dailyArr){
+      el.forecastList.innerHTML = "";
+      dailyArr.forEach((d, idx) => {
+        const div = document.createElement("button");
+        div.className = "forecast-item";
+        div.type = "button";
+        div.setAttribute("data-idx", idx);
+        div.innerHTML = `
+          <div class="forecast-top">
+            <b>${safeDayLabel(d.date)}</b>
+            ${iconForCode(d.code)}
+          </div>
+          <div class="forecast-mid">
+            ${WEATHER_CODES[d.code] || "Weather"}
+            <strong>${fmtTemp(d.tMax)} / ${fmtTemp(d.tMin)}</strong>
+          </div>
+          <div class="forecast-line">
+            Precip: ${d.precip ?? "--"}% | Wind: ${windText(d.wind)}
+          </div>
+        `;
+        div.addEventListener("click", () => selectForecastIndex(idx));
+        el.forecastList.appendChild(div);
+      });
+      selectForecastIndex(0, true);
+    }
+    function renderDetails(d, run){
+      el.detailsDay.textContent = safeDayLabel(d.date);
+      el.detailsIcon.innerHTML = iconForCode(d.code);
+      el.detailsSummary.textContent = WEATHER_CODES[d.code] || "Weather";
+      const feelsMid = (d.appMax + d.appMin) / 2;
+      const verdict = verdictForFeels(feelsMid, run, d.wind);
+      el.detailsDecision.textContent = verdict.key;
+      el.detailsText.textContent = pickQuip(verdict.key);
+      el.detailsHigh.textContent = fmtTemp(d.tMax);
+      el.detailsLow.textContent = fmtTemp(d.tMin);
+      el.sunUp.textContent = fmtTimeHM(d.sunrise);
+      el.sunDown.textContent = fmtTimeHM(d.sunset);
+      const chips = [
+        `Feels: ${fmtTemp(feelsMid)}`,
+        `Wind: ${windText(d.wind)}`,
+        `Precip: ${d.precip ?? "--"}%`
+      ];
+      el.chipsRow.innerHTML = chips.map(c => `<span class="chip">${c}</span>`).join("");
+      renderWear(feelsMid, d.wind, d.precip, d.code);
+    }
+    function renderBigVerdict(feelsF, run, windMps, precipPct, code){
+      const v = verdictForFeels(feelsF, run, windMps);
+      el.bigWord.textContent = v.key;
+      el.oneLiner.textContent = pickQuip(v.key);
+      renderWear(feelsF, windMps, precipPct, code);
+    }
 
+    function selectForecastIndex(idx, fromAuto=false){
+      state.selectedIdx = idx;
+      saveState();
+      [...el.forecastList.children].forEach((c,i)=> c.classList.toggle("selected", i===idx));
+      const d = (state.lastForecast || [])[idx];
+      if (d){
+        renderDetails(d, state.run);
+        const feelsMid = (d.appMax + d.appMin) / 2;
+        renderBigVerdict(feelsMid, state.run, d.wind, d.precip, d.code);
+      }
+      el.detailsHint.textContent = fromAuto ? "Auto-filled for today" : "Showing selection";
+    }
 
-No file chosenNo file chosen
-ChatGPT can make mistakes. Check important info.
-ChatGPT is still generating a response...
+    async function setLocation(lat, lon, placeLabel, countryCode, source){
+      state.lat = lat;
+      state.lon = lon;
+      state.placeLabel = placeLabel || "Near you";
+      state.countryCode = countryCode || null;
+      state.source = source || "manual";
+      state.units = countryUsesF(state.countryCode) ? "F" : "C";
+      saveState();
+      setPill(state.placeLabel);
+      updateSourceUI();
+      setUnitControlButtons();
+      await refreshWeather();
+    }
+
+    async function refreshWeather(){
+      if (!state.lat || !state.lon){
+        try{
+          await useGPS(true);
+          if (!state.lat || !state.lon) throw new Error("no gps");
+        }catch(e){
+          const fallback = CURATED_CITIES[0];
+          await setLocation(fallback.lat, fallback.lon, fallback.label, fallback.cc, "auto");
+          return;
+        }
+      }
+      setLoadingUI();
+      try{
+        const data = await fetchOpenMeteo(state.lat, state.lon);
+        state.lastForecast = buildDailyArray(data.daily || {});
+        saveState();
+        el.locName.textContent = state.placeLabel || "Near you";
+        const now = renderNow(data.current || {});
+        renderForecast(state.lastForecast);
+        const todayDaily = state.lastForecast?.[0];
+        const feelsToday = data.current?.apparent_temperature ?? todayDaily?.appMax ?? 60;
+        renderBigVerdict(
+          feelsToday,
+          state.run,
+          data.current?.wind_speed_10m ?? todayDaily?.wind ?? 0,
+          todayDaily?.precip ?? 0,
+          todayDaily?.code ?? 0
+        );
+      }catch(e){
+        console.error(e);
+        showToast("Weather data failed. Try again.");
+      }finally{
+        endLoadingUI();
+      }
+    }
+
+    async function useGPS(silent=false){
+      if (!navigator.geolocation) throw new Error("no_gps");
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(async (pos)=>{
+          try{
+            const { latitude:lat, longitude:lon } = pos.coords;
+            const rev = await reverseGeocodeToLabel(lat, lon);
+            await setLocation(lat, lon, rev.label, rev.cc, "gps");
+            if (!silent) showToast("Location set by GPS");
+            resolve();
+          }catch(err){ reject(err); }
+        }, (err)=>{
+          if (!silent) showToast("GPS denied. Use manual or Spin.");
+          reject(err);
+        }, { enableHighAccuracy:true, timeout: 12000, maximumAge: 60000 });
+      });
+    }
+
+    function handleManualSelection(choice){
+      if (!choice) return;
+      setLocation(choice.lat, choice.lon, choice.label, choice.countryCode, "manual").catch(()=>{});
+    }
+
+    // Spin the globe without repeats in a session
+    function spinCity(){
+      if (!Array.isArray(state.spinSeen)) state.spinSeen = [];
+      const all = CURATED_CITIES.map((_,i)=>i);
+      const remaining = all.filter(i => !state.spinSeen.includes(i));
+      const pickIdx = remaining.length ? remaining[Math.floor(Math.random()*remaining.length)] : all[Math.floor(Math.random()*all.length)];
+      const city = CURATED_CITIES[pickIdx];
+      state.spinSeen = remaining.length ? [...state.spinSeen, pickIdx] : [pickIdx];
+      saveState();
+      setLocation(city.lat, city.lon, city.label, city.cc, "globe");
+      showToast("Spun the globe: " + city.label);
+    }
+
+    el.unitAuto.addEventListener("click", ()=>{ state.unitOverride=null; setUnitControlButtons(); refreshWeather(); });
+    el.unitF.addEventListener("click", ()=>{ state.unitOverride="F"; setUnitControlButtons(); refreshWeather(); });
+    el.unitC.addEventListener("click", ()=>{ state.unitOverride="C"; setUnitControlButtons(); refreshWeather(); });
+
+    el.brandHome.addEventListener("click", ()=>{ refreshWeather(); });
+    el.wherePill.addEventListener("click", ()=>{ document.getElementById("detailsDrawer").scrollIntoView({ behavior:"smooth" }); });
+
+    el.runSelect.value = state.run || "normal";
+    el.runSelect.addEventListener("change", ()=>{
+      state.run = el.runSelect.value;
+      saveState();
+      const d = state.lastForecast?.[state.selectedIdx ?? 0];
+      if (d){
+        const feelsMid = (d.appMax + d.appMin) / 2;
+        renderDetails(d, state.run);
+        renderBigVerdict(feelsMid, state.run, d.wind, d.precip, d.code);
+      }
+    });
+
+    el.spinBtn.addEventListener("click", ()=>{ spinCity(); });
+    el.gpsBtn.addEventListener("click", ()=>{ useGPS().catch(()=>{}); });
+
+    el.manualInput.addEventListener("input", (e)=>{
+      const q = e.target.value.trim();
+      if (!q){ el.locList.innerHTML=""; return; }
+      clearTimeout(suggestTimer);
+      const seq = ++suggestSeq;
+      suggestTimer = setTimeout(async ()=>{
+        try{
+          const results = await geocodeDisplayName(q);
+          if (seq !== suggestSeq) return;
+          el.locList.innerHTML = results.map(r => `<option value="${r.label}" data-lat="${r.lat}" data-lon="${r.lon}" data-cc="${r.countryCode}"></option>`).join("");
+        }catch(err){
+          console.error(err);
+        }
+      }, 250);
+    });
+    el.manualInput.addEventListener("change", ()=>{
+      const val = el.manualInput.value.trim();
+      if (!val) return;
+      const opt = [...el.locList.children].find(o => o.value === val);
+      if (opt){
+        handleManualSelection({
+          label: opt.value,
+          lat: Number(opt.dataset.lat),
+          lon: Number(opt.dataset.lon),
+          countryCode: opt.dataset.cc || null
+        });
+      }else{
+        geocodeDisplayName(val).then(res=>{
+          if (res[0]) handleManualSelection(res[0]);
+        }).catch(()=>{ showToast("Could not find that place."); });
+      }
+    });
+
+    setUnitControlButtons();
+    setPill(state.placeLabel || "Near you");
+    updateSourceUI();
+    setLoadingUI();
+    refreshWeather();
+  </script>
+</body>
+</html>
