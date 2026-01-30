@@ -72,9 +72,16 @@
     .brand .word span{ font-size:12px; color: var(--muted); letter-spacing:.02em; }
 
     .controls{ display:flex; align-items:center; gap:10px; flex:1 1 auto; }
+    /* Pill row and pills fix */
     .pillrow{
-      display:flex; gap:8px; align-items:center; padding:4px;
-      border-radius:999px; background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:6px;
+      border-radius:999px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      flex-wrap: wrap;
       overflow:hidden;
     }
     .seg, .pill{ height:36px; min-height:36px; align-items:center; }
@@ -89,14 +96,19 @@
     }
     .seg button:hover{ background: rgba(255,255,255,.05); color: var(--text); }
     .seg button[aria-pressed="true"]{ background: rgba(255,255,255,.08); color: var(--text); }
+
     .pill{
-      display:inline-flex; justify-content:center; align-items:center; gap:8px; padding:0 12px;
+      display:inline-flex; justify-content:center; align-items:center; gap:8px; padding:0 14px;
       border:1px solid rgba(255,255,255,.12); border-radius:999px; background: rgba(255,255,255,.03);
-      color: var(--text); font-size:13px; cursor:pointer; user-select:none; white-space: nowrap; line-height:1.2;
+      color: var(--text); font-size:13px; cursor:pointer; user-select:none; line-height:1.3;
       transition: background .16s ease, border-color .16s ease, transform .16s ease; text-align:center;
-      max-width: 280px;
-      overflow:hidden;
+      flex: 1 1 180px;
+      min-width: 0;
+      height:38px;
+      white-space: nowrap;
+      overflow: visible;
       text-overflow: ellipsis;
+      max-width: 280px;
     }
     .pill:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); transform: translateY(-1px); }
     .pill[aria-pressed="true"]{ background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); }
@@ -161,7 +173,7 @@
 
     .wear-box{
       margin-top:12px; border:1px solid rgba(255,255,255,.14); border-radius:14px;
-      padding:10px 12px; background: rgba(0,0,0,.12); color: var (--text);
+      padding:10px 12px; background: rgba(0,0,0,.12); color: var(--text);
     }
     .wear-title{ font-size:13px; font-weight:820; margin-bottom:6px; color: var(--text); }
     .wear-list{ list-style:none; padding:0; margin:0; display:grid; gap:6px; font-size:13px; color: var(--muted); }
@@ -181,7 +193,7 @@
     .right-card h2{ margin:0; font-size:22px; letter-spacing:.01em; }
     .right-card .subhead{ margin-top:6px; color: var(--muted); font-size:13px; }
 
-    label{ display:block; margin-top:12px; color: var (--muted2); font-size:12px; letter-spacing:.02em; }
+    label{ display:block; margin-top:12px; color: var(--muted2); font-size:12px; letter-spacing:.02em; }
     select, input{
       width:100%; margin-top:6px; padding:11px 12px; border-radius:14px;
       border:1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.18); color: var(--text);
@@ -262,7 +274,7 @@
         align-items: flex-start;
         gap: 10px;
         border-radius: 18px;
-        position: static; /* stop sticking on scroll */
+        position: static; /* stop sticking on mobile */
       }
       .brand{
         width: 100%;
@@ -291,9 +303,8 @@
         height: 34px;
       }
       .pill{
-        height: 34px;
-        min-height: 34px;
-        padding: 0 10px;
+        height: 36px;
+        padding: 0 12px;
         font-size: 12px;
         max-width: 100%;
       }
@@ -381,6 +392,29 @@
     </div>
 
     <div class="main" id="mainLayout">
+      <div class="card" id="rightCard">
+        <div class="card-inner">
+          <h2>How do you run?</h2>
+          <div class="subhead">Be honest. We can tell.</div>
+
+          <label for="runSelect">Temperature preference</label>
+          <select id="runSelect">
+            <option value="normal">Normal</option>
+            <option value="cold">I run cold</option>
+            <option value="hot">I run hot</option>
+          </select>
+
+          <label for="manualInput">Manual location (optional)</label>
+          <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP" autocomplete="off" />
+          <datalist id="locList"></datalist>
+
+          <div class="form-row">
+            <button class="btn secondary" id="spinBtn" type="button">Spin the globe</button>
+            <button class="btn secondary" id="gpsBtn" type="button">Use my GPS</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card" id="leftCard">
         <div class="card-inner">
           <div class="bigword" id="bigWord">LOADING</div>
@@ -421,27 +455,8 @@
         </div>
       </div>
 
-      <div class="card right-card" id="rightCard">
+      <div class="card details-card" id="detailsCard">
         <div class="card-inner">
-          <h2>How do you run?</h2>
-          <div class="subhead">Be honest. We can tell.</div>
-
-          <label for="runSelect">Temperature preference</label>
-          <select id="runSelect">
-            <option value="normal">Normal</option>
-            <option value="cold">I run cold</option>
-            <option value="hot">I run hot</option>
-          </select>
-
-          <label for="manualInput">Manual location (optional)</label>
-          <input id="manualInput" list="locList" placeholder="City, Region, Country or ZIP" autocomplete="off" />
-          <datalist id="locList"></datalist>
-
-          <div class="form-row">
-            <button class="btn secondary" id="spinBtn" type="button">Spin the globe</button>
-            <button class="btn secondary" id="gpsBtn" type="button">Use my GPS</button>
-          </div>
-
           <div class="details" id="detailsDrawer">
             <div class="details-header">
               <b>Forecast details</b>
@@ -478,9 +493,9 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
+
     </div>
 
     <div class="site-footer">
@@ -502,6 +517,8 @@
     const el = {
       brandHome: document.getElementById("brandHome"),
       leftCard: document.getElementById("leftCard"),
+      rightCard: document.getElementById("rightCard"),
+      detailsCard: document.getElementById("detailsCard"),
       unitAuto: document.getElementById("unitAuto"),
       unitF: document.getElementById("unitF"),
       unitC: document.getElementById("unitC"),
@@ -738,43 +755,44 @@
     let suggestTimer = null;
     let suggestSeq = 0;
 
-    // placeholders for DOM move/restore
+    // placeholders for DOM restore
     const placeholders = {
-      detailsParent: el.detailsDrawer.parentNode,
-      detailsNext: el.detailsDrawer.nextSibling,
-      rightCardParent: el.rightCard.parentNode,
-      rightCardNext: el.rightCard.nextSibling
+      detailsParent: el.detailsCard.parentNode,
+      detailsNext: el.detailsCard.nextSibling,
+      leftParent: el.leftCard.parentNode,
+      leftNext: el.leftCard.nextSibling,
+      rightParent: el.rightCard.parentNode,
+      rightNext: el.rightCard.nextSibling
     };
     let mobileApplied = false;
 
     function applyMobileLayout(){
       if (mobileApplied) return;
-      // Move details under forecast (before how-decided)
-      const howDecided = el.leftCard.querySelector(".how-decided");
-      if (howDecided && el.detailsDrawer.parentNode !== el.leftCard){
-        el.leftCard.querySelector(".card-inner").insertBefore(el.detailsDrawer, howDecided);
-      }
-      // Order: right-card (form) then left-card? Request order: pills -> how do you run -> main verdict...
-      // We keep form (rightCard) before leftCard on mobile to satisfy requested order.
       const main = el.mainLayout;
+      // Order: controls (already above), rightCard (form), leftCard (verdict/forecast), detailsCard, then rest.
       if (main.firstChild !== el.rightCard){
-        main.insertBefore(el.rightCard, el.leftCard);
+        main.insertBefore(el.rightCard, main.firstChild);
+      }
+      if (el.leftCard.previousSibling !== el.rightCard){
+        main.insertBefore(el.leftCard, el.rightCard.nextSibling);
+      }
+      if (el.detailsCard.parentNode !== main){
+        main.insertBefore(el.detailsCard, el.leftCard.nextSibling);
       }
       mobileApplied = true;
     }
     function revertMobileLayout(){
       if (!mobileApplied) return;
-      // restore details
-      if (placeholders.detailsParent){
-        placeholders.detailsParent.insertBefore(el.detailsDrawer, placeholders.detailsNext);
-      }
-      // restore order: leftCard then rightCard
       const main = el.mainLayout;
-      if (main.firstChild !== el.leftCard){
-        main.insertBefore(el.leftCard, main.firstChild);
+      // Restore original order: leftCard, rightCard, detailsCard at end
+      if (placeholders.leftParent){
+        placeholders.leftParent.insertBefore(el.leftCard, placeholders.leftNext);
       }
-      if (placeholders.rightCardParent){
-        placeholders.rightCardParent.insertBefore(el.rightCard, placeholders.rightCardNext);
+      if (placeholders.rightParent){
+        placeholders.rightParent.insertBefore(el.rightCard, placeholders.rightNext);
+      }
+      if (placeholders.detailsParent){
+        placeholders.detailsParent.insertBefore(el.detailsCard, placeholders.detailsNext);
       }
       mobileApplied = false;
     }
@@ -1242,7 +1260,7 @@
     });
 
     el.brandHome.addEventListener("click", ()=>{ refreshWeather(); });
-    el.wherePill.addEventListener("click", ()=>{ el.detailsDrawer.scrollIntoView({ behavior:"smooth" }); });
+    el.wherePill.addEventListener("click", ()=>{ el.detailsCard.scrollIntoView({ behavior:"smooth" }); });
 
     el.runSelect.value = state.run || "normal";
     el.runSelect.addEventListener("change", ()=>{
