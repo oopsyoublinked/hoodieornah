@@ -287,20 +287,24 @@
       min-height: 34px;
     }
 
+    /* Footer layout tweak: remove awkward dead space and nudge support lower */
     .left-footer{
-      margin-top: 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+      margin-top: 16px;
+      display:block;
     }
-
     .cta{
       display:flex;
       gap: 10px;
       align-items:center;
       flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    #supportBtn{ margin-top: 6px; }
+    #unitsLine{
+      margin-top: 10px;
+      color: var(--muted2);
+      font-size: 12px;
+      text-align:right;
     }
 
     .btn{
@@ -600,9 +604,8 @@
           <div class="left-footer">
             <div class="cta">
               <a class="btn" id="supportBtn" href="https://buymeacoffee.com/hoodieornah" target="_blank" rel="noopener">Support the hoodie science</a>
-              <button class="btn secondary" id="shareTakeBtn" type="button">Copy share text</button>
             </div>
-            <div style="color:var(--muted2);font-size:12px" id="unitsLine">Units: Auto</div>
+            <div id="unitsLine">Units: Auto</div>
           </div>
         </div>
       </div>
@@ -703,7 +706,6 @@
       usingLocation: document.getElementById("usingLocation"),
       usingUnits: document.getElementById("usingUnits"),
       supportBtn: document.getElementById("supportBtn"),
-      shareTakeBtn: document.getElementById("shareTakeBtn"),
       loadingOverlay: document.getElementById("loadingOverlay"),
       detailsDrawer: document.getElementById("detailsDrawer"),
       drawerTitle: document.getElementById("drawerTitle"),
@@ -1019,12 +1021,89 @@
       if (runPref === "cold") adj -= 2.0;
       if (runPref === "hot") adj += 2.0;
 
-      if (adj <= -2) return { word:"HOODIE", line:"Yes. Hoodie plus life choices that include layers." };
-      if (adj <= 6) return { word:"HOODIE", line:"Yep. Hoodie weather. Enjoy the smug warmth." };
-      if (adj <= 12) return { word:"MAYBE", line:"Could go either way. Hoodie if you like options." };
-      if (adj <= 18) return { word:"MAYBE", line:"Borderline. Hoodie for the shade, nah for the sun." };
-      if (adj <= 24) return { word:"NAH", line:"Hoodie? Only if you are trying to escape the sun by staying inside." };
-      return { word:"NAH", line:"Nope. Hoodie would be a personal attack on your pores." };
+      if (adj <= -2) return { word:"HOODIE", band:"cold_snap" };
+      if (adj <= 6) return { word:"HOODIE", band:"hoodie_prime" };
+      if (adj <= 12) return { word:"MAYBE", band:"maybe_cool" };
+      if (adj <= 18) return { word:"MAYBE", band:"maybe_warm" };
+      if (adj <= 24) return { word:"NAH", band:"nah_warm" };
+      return { word:"NAH", band:"nah_hot" };
+    }
+
+    const QUIPS = {
+      HOODIE: [
+        "Yes. Hoodie plus life choices that include layers.",
+        "Yep. Hoodie weather. Enjoy the smug warmth.",
+        "Hoodie time. Your ears will send a thank-you note.",
+        "Put the hood up and pretend you are mysterious.",
+        "Wear the hoodie. Regret is for bare wrists.",
+        "This is hoodie weather and it knows it.",
+        "Hoodie recommended. Bonus points for pockets.",
+        "If you skip the hoodie, you will think about it all day.",
+        "Hoodie season. Lean into it.",
+        "Hoodie on. The wind is being rude.",
+        "Hoodie is the correct moral choice here.",
+        "You want sleeves and plausible deniability. Hoodie.",
+        "Yes hoodie. The air is spicy.",
+        "Hoodie now. Your future self is grateful.",
+        "Hoodie. You can still look cool while surviving.",
+        "Hoodie. Do not let the forecast bully you.",
+        "Hoodie is the safe play. Do not overthink it.",
+        "Hoodie weather. Proceed with confidence."
+      ],
+      MAYBE: [
+        "Could go either way. Hoodie if you like options.",
+        "Borderline. Hoodie for the shade, nah for the sun.",
+        "A true toss-up. Bring the hoodie just to feel powerful.",
+        "This is a vibe check, not a science. Maybe hoodie.",
+        "You can raw-dog it, or you can hoodie. Your call.",
+        "Maybe hoodie. Depends on your tolerance for drama.",
+        "Not cold, not warm. Annoyingly in-between.",
+        "Hoodie if you will be outside longer than five minutes.",
+        "Maybe hoodie. The wind might try something.",
+        "This is the gray area. Dress like you have plans.",
+        "Coin-flip weather. Hoodie is the insurance policy.",
+        "You will be fine either way. Probably.",
+        "Maybe hoodie. Mostly for the pockets.",
+        "This is prime 'start with hoodie, regret later' territory.",
+        "Maybe. If you run cold, hoodie. If you run hot, nah.",
+        "Maybe. You will argue with yourself in the mirror.",
+        "Borderline. Hoodie for mornings, nah for afternoons.",
+        "Maybe hoodie. Commit to ambiguity."
+      ],
+      NAH: [
+        "Nope. Hoodie would be a personal attack on your pores.",
+        "Hoodie? Only if you are trying to escape the sun by staying inside.",
+        "Nah. Let your shoulders live a little.",
+        "Skip the hoodie. You are not in a music video.",
+        "Nah. Hoodie would be overachieving.",
+        "No hoodie. Hydrate and pretend you are fine.",
+        "Nah. If you wear one, you will unzip it instantly.",
+        "Hoodie is not needed. Save it for the thermostat wars.",
+        "No hoodie. The air is doing enough already.",
+        "Nah. You will feel silly in 30 seconds.",
+        "Skip it. This is short-sleeve confidence weather.",
+        "Nah. Your hood will just become a backpack.",
+        "No hoodie. Your future sweat glands object.",
+        "Nah. Hoodie is a trap right now.",
+        "Skip it. The sun is winning.",
+        "Nah. Hoodie is too dramatic for this temp.",
+        "No hoodie. Keep it simple.",
+        "Nah. You will survive without the comfort blanket."
+      ]
+    };
+
+    function pickUniqueQuip(word, usedSet){
+      const pool = (QUIPS[word] || []).slice();
+      for (let i = pool.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+      }
+      for (const q of pool){
+        if (!usedSet.has(q)) { usedSet.add(q); return q; }
+      }
+      const fallback = pool[0] || "";
+      usedSet.add(fallback);
+      return fallback;
     }
 
     function fmtTemp(tempC, units){
@@ -1068,6 +1147,7 @@
 
     function buildForecastMeta(forecast){
       const out = [];
+      const usedQuips = new Set();
       const times = forecast.time || [];
       for (let i = 0; i < Math.min(5, times.length); i++){
         const day = new Date(times[i] + "T00:00:00");
@@ -1077,17 +1157,22 @@
         const amaxC = forecast.apparent_temperature_max_C[i];
         const aminC = forecast.apparent_temperature_min_C[i];
         const code = forecast.weathercode[i];
+
+        const avgApp = (Number.isFinite(amaxC) && Number.isFinite(aminC)) ? ((amaxC + aminC)/2) : (Number.isFinite(tmaxC) ? tmaxC : 10);
+        const d = hoodieDecision(avgApp, null, state.run || "normal");
+        const line = pickUniqueQuip(d.word, usedQuips);
+
         out.push({
           dayLabel,
           tmaxC, tminC, amaxC, aminC,
           weatherCode: code,
-          dec: hoodieDecision(((amaxC + aminC)/2), null, state.run || "normal"),
+          dec: { word: d.word, line }
         });
       }
       return out;
     }
 
-    function renderForecast(forecast){
+    function renderForecast(forecast, opts = {}){
       latestForecastMeta = buildForecastMeta(forecast);
       el.forecastList.innerHTML = "";
       const displayUnits = state.unitOverride || state.units;
@@ -1113,9 +1198,12 @@
         el.forecastList.appendChild(div);
       });
 
-      if (selectedForecastIndex != null && latestForecastMeta[selectedForecastIndex]){
+      const shouldAutoSelect = opts.forceSelectFirst || selectedForecastIndex == null;
+      if (latestForecastMeta.length && shouldAutoSelect){
+        selectForecastIndex(0, { openDrawerNow: true });
+      } else if (selectedForecastIndex != null && latestForecastMeta[selectedForecastIndex]){
         selectForecastIndex(selectedForecastIndex);
-      } else {
+      } else if (!latestForecastMeta.length){
         closeDrawer();
       }
     }
@@ -1128,14 +1216,17 @@
       el.tempLine.textContent = temp;
       el.feelWind.textContent = `Feels like: ${feels} | Wind: ${fmtWind(cur.wind, displayUnits)}`;
 
-      const dec = hoodieDecision(cur.apparent_C, cur.wind, state.run || "normal");
-      state.lastDecision = dec;
+      const d = hoodieDecision(cur.apparent_C, cur.wind, state.run || "normal");
+      const word = d.word;
+      const line = pickUniqueQuip(word, new Set()); // single pick for the hero line, no need to compare
+
+      state.lastDecision = { word, line };
       saveState();
-      el.bigWord.textContent = dec.word;
-      el.oneLiner.textContent = dec.line;
+      el.bigWord.textContent = word;
+      el.oneLiner.textContent = line;
     }
 
-    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source){
+    async function updateWeatherFromLatLon(lat, lon, label, countryCode, source, opts = {}){
       state.lat = lat;
       state.lon = lon;
       state.source = source || state.source;
@@ -1154,7 +1245,7 @@
           fetchForecast(lat, lon, effectiveUnits),
         ]);
         renderResultFromNormalized(cur);
-        renderForecast(forecast);
+        renderForecast(forecast, { forceSelectFirst: !!opts.forceSelectFirst });
 
         if (countryCode && !state.unitOverride){
           const should = countryUsesF(countryCode) ? "F" : "C";
@@ -1163,7 +1254,7 @@
             saveState();
             setUnitControlButtons();
             renderResultFromNormalized(cur);
-            renderForecast(forecast);
+            renderForecast(forecast, { forceSelectFirst: true });
             updateSourceUI();
           }
         }
@@ -1203,7 +1294,7 @@
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        await updateWeatherFromLatLon(lat, lon, "Near you", null, "auto");
+        await updateWeatherFromLatLon(lat, lon, "Near you", null, "auto", { forceSelectFirst: true });
 
         try{
           const got = await reverseGeocodeToLabel(lat, lon);
@@ -1217,7 +1308,7 @@
               if (newUnits !== state.units){
                 state.units = newUnits;
                 setUnitControlButtons();
-                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "auto");
+                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "auto", { forceSelectFirst: true });
               }
             }
           } else {
@@ -1246,7 +1337,7 @@
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps");
+        await updateWeatherFromLatLon(lat, lon, "Near you", null, "gps", { forceSelectFirst: true });
 
         try{
           const got = await reverseGeocodeToLabel(lat, lon);
@@ -1261,7 +1352,7 @@
             if (!state.unitOverride){
               const newUnits = cc ? (countryUsesF(cc) ? "F" : "C") : state.units;
               if (newUnits !== state.units){
-                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps");
+                await updateWeatherFromLatLon(lat, lon, state.placeLabel, state.countryCode, "gps", { forceSelectFirst: true });
               }
             }
           }
@@ -1294,14 +1385,14 @@
           state.countryCode = got.cc || null;
           if (!state.unitOverride && state.countryCode) state.units = countryUsesF(state.countryCode) ? "F" : "C";
           setPill(state.placeLabel);
-          await updateWeatherFromLatLon(got.lat, got.lon, state.placeLabel, state.countryCode, "globe");
+          await updateWeatherFromLatLon(got.lat, got.lon, state.placeLabel, state.countryCode, "globe", { forceSelectFirst: true });
           return;
         }
 
         state.placeLabel = "Somewhere on Earth";
         state.countryCode = null;
         setPill(state.placeLabel);
-        await updateWeatherFromLatLon((Math.random()*160)-80, (Math.random()*360)-180, state.placeLabel, null, "globe");
+        await updateWeatherFromLatLon((Math.random()*160)-80, (Math.random()*360)-180, state.placeLabel, null, "globe", { forceSelectFirst: true });
         return;
       }
 
@@ -1321,40 +1412,66 @@
 
       if (!state.unitOverride && state.countryCode) state.units = countryUsesF(state.countryCode) ? "F" : "C";
       setPill(state.placeLabel);
-      await updateWeatherFromLatLon(pick.lat, pick.lon, state.placeLabel, cc, "globe");
+      await updateWeatherFromLatLon(pick.lat, pick.lon, state.placeLabel, cc, "globe", { forceSelectFirst: true });
     }
 
     let suggestTimer = null, suggestAbort = null;
     function suggestLocations(q){
+      if (loading) return;
       const s = (q||"").trim();
       if (s.length < 3){ el.locList.innerHTML = ""; return; }
       if (suggestAbort){ try{ suggestAbort.abort(); }catch(e){} }
       if (suggestTimer) clearTimeout(suggestTimer);
       suggestTimer = setTimeout(async ()=>{
         suggestAbort = new AbortController();
-        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&q=" + encodeURIComponent(s);
+        const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=8&q=" + encodeURIComponent(s);
         try{
           const res = await fetch(url, { signal: suggestAbort.signal, headers: { "Accept":"application/json" } });
           if (!res.ok) return;
           const data = await res.json();
-          el.locList.innerHTML = (data||[]).map(item => `<option value="${escapeHtml(item.display_name||"")}"></option>`).join("");
+
+          const seen = new Set();
+          const opts = [];
+          for (const item of (data || [])){
+            const v = (item && item.display_name) ? String(item.display_name) : "";
+            if (!v) continue;
+            if (seen.has(v)) continue;
+            seen.add(v);
+            opts.push(v);
+            if (opts.length >= 6) break;
+          }
+
+          el.locList.innerHTML = opts.map(v => `<option value="${escapeHtml(v)}"></option>`).join("");
         }catch(e){} finally { suggestAbort = null; }
-      }, 300);
+      }, 260);
+    }
+
+    function suppressDatalistOnce(){
+      try{
+        el.locList.innerHTML = "";
+        const curList = el.manualInput.getAttribute("list");
+        if (!curList) return;
+        el.manualInput.removeAttribute("list");
+        setTimeout(() => {
+          el.manualInput.setAttribute("list", curList);
+        }, 400);
+      }catch(e){}
     }
 
     el.manualInput.addEventListener('input', () => {
       suggestLocations(el.manualInput.value);
       const val = (el.manualInput.value || "").trim();
-      if (!val || val.length < 1) return;
+      if (!val) return;
+
       const opts = Array.from(el.locList.options || []).map(o => o.value);
       if (opts.includes(val)){
         setTimeout(() => {
-          if (!loading) onManualSubmit();
+          if (!loading) onManualSubmit(true);
         }, 6);
       }
     });
 
-    async function onManualSubmit(){
+    async function onManualSubmit(fromPick){
       const q = (el.manualInput.value || "").trim();
       if (!q){ showToast("Type a place first."); return; }
       state.source = "manual";
@@ -1363,7 +1480,12 @@
       setLoadingUI();
       try{
         const g = await geocodeDisplayName(q);
-        await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual");
+        await updateWeatherFromLatLon(g.lat, g.lon, g.label, g.countryCode, "manual", { forceSelectFirst: true });
+
+        el.manualInput.value = g.label;
+        el.manualInput.blur();
+        suppressDatalistOnce();
+        if (fromPick) showToast("Locked in: " + g.label);
       }catch(e){
         console.error(e);
         el.bigWord.textContent = "MAYBE";
@@ -1481,19 +1603,11 @@
         }
         return;
       }
-      const latlon = "";
-      const html = `<div><strong>${escapeHtml(displayWithPin(full))}</strong>${latlon}<pre style="margin-top:8px;">${escapeHtml(state.lastDecision.word || "")} - ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
+      const html = `<div><strong>${escapeHtml(displayWithPin(full))}</strong><pre style="margin-top:8px;">${escapeHtml((state.lastDecision && state.lastDecision.word) || "")} - ${escapeHtml(state.placeLabel || "")}\n${el.tempLine.textContent || ""}\n${el.oneLiner.textContent || ""}</pre></div>`;
       openModal(html);
     });
     el.wherePill.addEventListener("keydown", (e)=>{ if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.wherePill.click(); } });
 
-    el.shareTakeBtn.addEventListener("click", async ()=>{
-      const shareText = `${state.lastDecision.word || "MAYBE"} - ${state.placeLabel || ""} - ${el.tempLine.textContent || ""} - ${el.oneLiner.textContent || ""} - #HoodieOrNah`;
-      try{
-        await navigator.clipboard.writeText(shareText);
-        showToast("Share text copied");
-      }catch(e){ showToast(shareText); }
-    });
     el.closeModalBtn.addEventListener("click", closeModal);
     el.modalBackdrop.addEventListener("click", (e)=>{ if (e.target === el.modalBackdrop) closeModal(); });
 
@@ -1521,19 +1635,19 @@
         const cachedCur = getCached(wkey);
         const cachedF = getCached(fkey);
         if (cachedCur) renderResultFromNormalized(cachedCur);
-        if (cachedF) renderForecast(cachedF);
+        if (cachedF) renderForecast(cachedF, { forceSelectFirst: selectedForecastIndex == null });
         if (!cachedCur || !cachedF){
-          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: selectedForecastIndex == null });
         }
       } else {
         updateSourceUI();
       }
     }
 
-    el.manualInput.addEventListener('keydown', (e) => { if (e.key === "Enter"){ e.preventDefault(); onManualSubmit(); } });
+    el.manualInput.addEventListener('keydown', (e) => { if (e.key === "Enter"){ e.preventDefault(); onManualSubmit(false); } });
     el.spinBtn.addEventListener("click", onSpinGlobe);
     el.gpsBtn.addEventListener("click", onUseGPS);
-    el.brandHome.addEventListener("click", () => { el.manualInput.value = ""; tryAutoLocation(); });
+    el.brandHome.addEventListener("click", () => { el.manualInput.value = ""; suppressDatalistOnce(); tryAutoLocation(); });
     el.unitAuto.addEventListener("click", () => applyUnitSelection(null));
     el.unitF.addEventListener("click", () => applyUnitSelection("F"));
     el.unitC.addEventListener("click", () => applyUnitSelection("C"));
@@ -1550,8 +1664,8 @@
           const cachedCur = getCached(wkey);
           const cachedF = getCached(fkey);
           if (cachedCur) renderResultFromNormalized(cachedCur);
-          if (cachedF) renderForecast(cachedF);
-          if (!cachedCur || !cachedF) updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
+          if (cachedF) renderForecast(cachedF, { forceSelectFirst: true });
+          if (!cachedCur || !cachedF) updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
         }
       });
 
@@ -1564,8 +1678,9 @@
           el.bigWord.textContent = state.lastDecision.word;
           el.oneLiner.textContent = state.lastDecision.line || "";
           updateSourceUI();
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
         } else {
-          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source);
+          updateWeatherFromLatLon(state.lat, state.lon, state.placeLabel, state.countryCode, state.source, { forceSelectFirst: true });
         }
       } else {
         tryAutoLocation();
