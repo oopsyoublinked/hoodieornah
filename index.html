@@ -1,4 +1,3 @@
-// PART 1 of 5
 <!doctype html>
 <html lang="en">
 <head>
@@ -638,7 +637,6 @@
           </div>
         </div>
       </div>
-// PART 2 of 5
       <!-- Right -->
       <div class="card right-card">
         <div class="card-inner">
@@ -778,7 +776,6 @@
     let loading = false;
     let latestForecastMeta = [];
     let selectedForecastIndex = null;
-// PART 3 of 5
     function saveState(){
       try{
         localStorage.setItem("hoodieornah_state_v3", JSON.stringify(state));
@@ -1010,7 +1007,6 @@
       `;
       return { svg, text: i.text };
     }
-// PART 4 of 5
     async function fetchJson(url, timeoutMs = 12000){
       const ctrl = new AbortController();
       const t = setTimeout(()=>ctrl.abort(), timeoutMs);
@@ -1293,7 +1289,6 @@
         </div>
       `;
     }
-// PART 5 of 5
     async function updateWeatherFromLatLon(lat, lon, label, countryCode, source, opts = {}){
       state.lat = lat;
       state.lon = lon;
