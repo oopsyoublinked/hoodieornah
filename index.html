@@ -261,8 +261,9 @@
         </div>
       </div>
     </div>
-        <div class="main">
-      <div class="card">
+
+    <div class="main">
+      <div class="card" id="leftCard">
         <div class="card-inner">
           <div class="bigword" id="bigWord">LOADING</div>
           <div class="oneliner" id="oneLiner">Fetching your weather so we can judge you properly.</div>
@@ -381,6 +382,7 @@
   <script>
     const el = {
       brandHome: document.getElementById("brandHome"),
+      leftCard: document.getElementById("leftCard"),
       unitAuto: document.getElementById("unitAuto"),
       unitF: document.getElementById("unitF"),
       unitC: document.getElementById("unitC"),
@@ -393,8 +395,9 @@
       locSource: document.getElementById("locSource"),
       nowTemp: document.getElementById("nowTemp"),
       nowSub: document.getElementById("nowSub"),
-
       forecastList: document.getElementById("forecastList"),
+
+      wearList: document.getElementById("wearList"),
 
       runSelect: document.getElementById("runSelect"),
       manualInput: document.getElementById("manualInput"),
@@ -418,8 +421,42 @@
       toast: document.getElementById("toast"),
     };
 
-    /* Top 100 cities list unchanged; truncated here for brevity */
-    const CURATED_CITIES = [ /* ...full list from previous version... */ ];
+    const CURATED_CITIES = [
+      { label:"Las Vegas, NV", lat:36.1699, lon:-115.1398, cc:"US" },
+      { label:"Tulsa, OK", lat:36.15398, lon:-95.99277, cc:"US" },
+      { label:"Dallas, TX", lat:32.7767, lon:-96.7970, cc:"US" },
+      { label:"Austin, TX", lat:30.2672, lon:-97.7431, cc:"US" },
+      { label:"Chicago, IL", lat:41.8781, lon:-87.6298, cc:"US" },
+      { label:"New York, NY", lat:40.7128, lon:-74.0060, cc:"US" },
+      { label:"Los Angeles, CA", lat:34.0522, lon:-118.2437, cc:"US" },
+      { label:"Seattle, WA", lat:47.6062, lon:-122.3321, cc:"US" },
+      { label:"Denver, CO", lat:39.7392, lon:-104.9903, cc:"US" },
+      { label:"Miami, FL", lat:25.7617, lon:-80.1918, cc:"US" },
+      { label:"Phoenix, AZ", lat:33.4484, lon:-112.0740, cc:"US" },
+      { label:"Boston, MA", lat:42.3601, lon:-71.0589, cc:"US" },
+      { label:"Atlanta, GA", lat:33.7490, lon:-84.3880, cc:"US" },
+      { label:"San Francisco, CA", lat:37.7749, lon:-122.4194, cc:"US" },
+      { label:"London, UK", lat:51.5072, lon:-0.1276, cc:"GB" },
+      { label:"Paris, France", lat:48.8566, lon:2.3522, cc:"FR" },
+      { label:"Berlin, Germany", lat:52.5200, lon:13.4050, cc:"DE" },
+      { label:"Rome, Italy", lat:41.9028, lon:12.4964, cc:"IT" },
+      { label:"Madrid, Spain", lat:40.4168, lon:-3.7038, cc:"ES" },
+      { label:"Tokyo, Japan", lat:35.6762, lon:139.6503, cc:"JP" },
+      { label:"Seoul, South Korea", lat:37.5665, lon:126.9780, cc:"KR" },
+      { label:"Sydney, Australia", lat:-33.8688, lon:151.2093, cc:"AU" },
+      { label:"Melbourne, Australia", lat:-37.8136, lon:144.9631, cc:"AU" },
+      { label:"Auckland, New Zealand", lat:-36.8485, lon:174.7633, cc:"NZ" },
+      { label:"Toronto, Canada", lat:43.6532, lon:-79.3832, cc:"CA" },
+      { label:"Vancouver, Canada", lat:49.2827, lon:-123.1207, cc:"CA" },
+      { label:"Mexico City, Mexico", lat:19.4326, lon:-99.1332, cc:"MX" },
+      { label:"São Paulo, Brazil", lat:-23.5505, lon:-46.6333, cc:"BR" },
+      { label:"Buenos Aires, Argentina", lat:-34.6037, lon:-58.3816, cc:"AR" },
+      { label:"Cape Town, South Africa", lat:-33.9249, lon:18.4241, cc:"ZA" },
+      { label:"Cairo, Egypt", lat:30.0444, lon:31.2357, cc:"EG" },
+      { label:"Dubai, UAE", lat:25.2048, lon:55.2708, cc:"AE" },
+      { label:"Mumbai, India", lat:19.0760, lon:72.8777, cc:"IN" },
+      { label:"Singapore", lat:1.3521, lon:103.8198, cc:"SG" }
+    ];
 
     const WEATHER_CODES = {
       0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Overcast",
@@ -446,56 +483,99 @@
         "You want sleeves and plausible deniability. Hoodie.",
         "Yes hoodie. The air is spicy.",
         "Hoodie now. Your future self is grateful.",
-        "Hoodie. You can still look cool while surviving.",
-        "Hoodie. Do not let the forecast bully you.",
-        "Hoodie is the safe play. Do not overthink it.",
-        "Hoodie weather. Proceed with confidence.",
-        "Hoodie. The vibe is chilly and slightly judgmental.",
-        "Hoodie now. Even the clouds agree."
+        "Hoodie. You can still look cool while surviving."
       ],
       MAYBE: [
         "Could go either way. Hoodie if you like options.",
         "Borderline. Hoodie for the shade, nah for the sun.",
         "A true toss-up. Bring the hoodie just to feel powerful.",
-        "This is a vibe check, not a science. Maybe hoodie.",
-        "You can raw-dog it, or you can hoodie. Your call.",
-        "Maybe hoodie. Depends on your tolerance for drama.",
         "Not cold, not warm. Annoyingly in-between.",
         "Hoodie if you will be outside longer than five minutes.",
         "Maybe hoodie. The wind might try something.",
-        "This is the gray area. Dress like you have plans.",
         "Coin-flip weather. Hoodie is the insurance policy.",
-        "You will be fine either way. Probably.",
         "Maybe hoodie. Mostly for the pockets.",
-        "This is prime 'start with hoodie, regret later' territory.",
-        "Maybe. If you run cold, hoodie. If you run hot, nah.",
-        "Maybe. You will argue with yourself in the mirror.",
         "Borderline. Hoodie for mornings, nah for afternoons.",
-        "Maybe hoodie. Commit to ambiguity.",
-        "Hoodie if you fear surprise breezes.",
         "Layer-friendly weather. Hoodie on standby."
       ],
       NAH: [
         "Nope. Hoodie would be a personal attack on your pores.",
-        "Hoodie? Only if you are trying to escape the sun by staying inside.",
         "Nah. Let your shoulders live a little.",
         "Skip the hoodie. You are not in a music video.",
-        "Nah. Hoodie would be overachieving.",
         "No hoodie. Hydrate and pretend you are fine.",
-        "Nah. If you wear one, you will unzip it instantly.",
-        "Hoodie is not needed. Save it for the thermostat wars.",
-        "No hoodie. The air is doing enough already.",
-        "Nah. You will feel silly in 30 seconds.",
         "Hoodie would be spicy overkill. Pass.",
         "Too warm. Hoodie is cosplay at this point.",
-        "Your elbows demand freedom. No hoodie.",
-        "Hoodie would be an act of rebellion against comfort.",
-        "Nah. Sweat is not a statement piece.",
-        "Hoodie stays benched. Wear confidence instead.",
-        "Absolutely nah. Do not boil yourself.",
-        "Your future laundry load says no hoodie.",
         "Let the breeze live rent-free. No hoodie.",
         "Nah. Pocket warmth not required today."
+      ]
+    };
+
+    const WEAR_SNARK = {
+      HOODIE: {
+        base: [
+          "Hoodie. Obviously. Zip or pullover, choose your character.",
+          "Put on a hoodie and act like you planned this.",
+          "Hoodie time. Your wrists deserve protection.",
+          "Hoodie, and yes, you may use the pocket for emotional support.",
+          "Hoodie weather. Take the win."
+        ],
+        cold: [
+          "Hoodie plus a jacket. You are not proving anything today.",
+          "Hoodie and a coat. Survival first, drip second.",
+          "Layer up. Hoodie is the inner armor."
+        ]
+      },
+      MAYBE: {
+        base: [
+          "Light hoodie or long sleeve. Commit to flexibility.",
+          "Bring the hoodie if you hate being mildly annoyed.",
+          "This is 'hoodie in the car' weather.",
+          "Maybe hoodie. Mainly for the pockets and the vibes.",
+          "Start with a layer. You can always pretend you are fine later."
+        ]
+      },
+      NAH: {
+        base: [
+          "No hoodie. Let your elbows breathe.",
+          "Skip the hoodie. This is a sleeves-optional situation.",
+          "Nah. Hoodie would be overachieving.",
+          "No hoodie. You will regret it in 30 seconds if you do.",
+          "Hoodie stays benched today."
+        ]
+      },
+      wind: [
+        "Wind is being loud. Add a shell so it stops getting ideas.",
+        "Wind advisory for your face. Consider a light shell.",
+        "If the wind is rude, wear something that can argue back."
+      ],
+      calm: [
+        "Wind is chill. You can stop fighting the air.",
+        "No wind drama. Enjoy the peace.",
+        "Air is behaving. Rare."
+      ],
+      wet: [
+        "Rain plan: water-resistant layer. Moist is not a personality.",
+        "Bring a rain layer. Hoodies soak like a sponge with dreams.",
+        "Wet weather. Choose fabric that does not give up immediately."
+      ],
+      dry: [
+        "Dry forecast. Your socks are safe. For now.",
+        "No rain. You can relax your shoulders.",
+        "Dry skies. Proceed without puddle paranoia."
+      ],
+      shoes: [
+        "Closed shoes. Cold toes are a betrayal.",
+        "Wear shoes you can defend in court.",
+        "Footwear that does not hate you later."
+      ],
+      extrasCold: [
+        "Beanie optional, but your ears will remember this.",
+        "Gloves if you plan to touch metal like a hero.",
+        "Warm socks. Do not negotiate with cold ankles."
+      ],
+      extrasWarm: [
+        "Breathable top. Do not turn into soup.",
+        "Sunglasses if you enjoy seeing.",
+        "Deodorant remains undefeated."
       ]
     };
 
@@ -510,7 +590,8 @@
       run: "normal",
       lastForecast: null,
       selectedIdx: 0,
-      spinSeen: []
+      spinSeen: [],
+      lastWearSig: ""
     };
 
     let suggestTimer = null;
@@ -522,29 +603,28 @@
       clearTimeout(showToast._t);
       showToast._t = setTimeout(() => el.toast.classList.remove("show"), 2200);
     }
+
     function saveState(){
-      try{ localStorage.setItem("hoodieornah_state_v3", JSON.stringify(state)); }catch(e){}
+      try{ localStorage.setItem("hoodieornah_state_v4", JSON.stringify(state)); }catch(e){}
     }
     function loadState(){
       try{
-        const raw = localStorage.getItem("hoodieornah_state_v3");
+        const raw = localStorage.getItem("hoodieornah_state_v4");
         if (!raw) return null;
         return JSON.parse(raw);
       }catch(e){ return null; }
     }
 
     function setLoadingUI(){
-      document.documentElement.classList.add("theme-dark");
       el.bigWord.textContent = "LOADING";
       el.bigWord.classList.add("loading-shimmer");
       el.oneLiner.textContent = pickLoadingCopy();
       el.nowTemp.textContent = "--";
       el.nowSub.textContent = "Feels like: -- | Wind: --";
-      document.querySelector(".card")?.classList.add("loading");
+      el.leftCard?.classList.add("loading");
     }
     function endLoadingUI(){
-      el.bigWord.classList.remove("loading-shimmer");
-      document.querySelector(".card")?.classList.remove("loading");
+      el.leftCard?.classList.remove("loading");
     }
 
     function setPill(text){ el.pillText.textContent = text || "Near you"; }
@@ -553,33 +633,43 @@
       const label = src === "gps" ? "gps" : src === "manual" ? "manual" : src === "globe" ? "globe" : "auto";
       el.locSource.textContent = "Source: " + label;
     }
+
     function countryUsesF(cc){
       const f = new Set(["US","BS","BZ","KY","PW","FM","MH","LR"]);
       return cc && f.has(cc.toUpperCase());
     }
+
     function currentUnits(){
       if (state.unitOverride === "F") return "F";
       if (state.unitOverride === "C") return "C";
       return state.units || "F";
     }
+
     function setUnitControlButtons(){
       const u = currentUnits();
       el.unitAuto.setAttribute("aria-pressed", state.unitOverride ? "false" : "true");
       el.unitF.setAttribute("aria-pressed", u === "F" ? "true" : "false");
       el.unitC.setAttribute("aria-pressed", u === "C" ? "true" : "false");
     }
-    function fmtTemp(v){ if (v==null || Number.isNaN(v)) return "--"; return Math.round(v) + "°" + currentUnits(); }
+
+    function fmtTemp(v){
+      if (v==null || Number.isNaN(v)) return "--";
+      return Math.round(v) + "°" + currentUnits();
+    }
+
     function windText(ms){
       if (ms==null || Number.isNaN(ms)) return "--";
       const mph = ms * 2.236936;
       return Math.round(mph) + " mph";
     }
+
     function fmtTimeHM(iso){
       if (!iso) return "--";
       const d = new Date(iso);
       if (Number.isNaN(d.getTime())) return "--";
       return d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
     }
+
     function verdictForFeels(feelsF, run, windMps){
       const mph = (windMps || 0) * 2.236936;
       let adj = feelsF;
@@ -590,6 +680,7 @@
       if (adj <= 68) return { key:"MAYBE" };
       return { key:"NAH" };
     }
+
     function iconForCode(code){
       const c = Number(code);
       const map = { sun:"☀️", cloud:"☁️", fog:"🌫️", rain:"🌧️", storm:"⛈️", snow:"❄️" };
@@ -602,31 +693,13 @@
       return wrap("🌡️");
       function wrap(e){ return "<span style='font-size:20px; line-height:1;'>" + e + "</span>"; }
     }
+
     function safeDayLabel(dateISO){
       const d = new Date(dateISO);
       if (Number.isNaN(d.getTime())) return "--";
       return d.toLocaleDateString(undefined, { month:"short", day:"numeric" });
     }
-    function pickWearList(feelsF, windMps, precipPct=0, code=0){
-      const mph = (windMps || 0) * 2.236936;
-      const isWet = precipPct >= 40 || [51,53,55,61,63,65,80,81,82,95,96,99].includes(Number(code));
-      const isSnow = [71,73,75].includes(Number(code));
-      const isFog = [45,48].includes(Number(code));
-      const items = [];
-      if (feelsF <= 25) items.push("Heavy coat over a hoodie. Pretend you are in a documentary.");
-      else if (feelsF <= 38) items.push("Hoodie plus a jacket. Regret-proof your torso.");
-      else if (feelsF <= 55) items.push("Midweight hoodie. Peak cozy, minimal drama.");
-      else if (feelsF <= 68) items.push("Light hoodie or long sleeve. Choose your fighter.");
-      else items.push("No hoodie needed. Let your elbows get some sun.");
-      if (mph >= 18) items.push("Add a wind shell. The air is trying to form opinions.");
-      else if (mph >= 10) items.push("Maybe a light shell. Wind is mouthy but not yelling.");
-      else items.push("Skip the shell unless you want extra swagger.");
-      if (isSnow) items.push("Water-resistant outer layer; warm hat; gloves that work with phones.");
-      else if (isWet) items.push("Waterproof layer. Hood up or accept the moist aesthetic.");
-      else if (isFog) items.push("Reflective bit or light color. Fog is playing stealth mode.");
-      else items.push("Footwear you won’t regret. Bonus points for dry socks.");
-      return items.slice(0,3);
-    }
+
     function pickLoadingCopy(){
       const lines = [
         "Fetching weather receipts...",
@@ -637,11 +710,76 @@
       ];
       return lines[Math.floor(Math.random()*lines.length)];
     }
+
     function pickQuip(word){
       const pool = QUIPS[word] || ["Weather is doing a thing. You do you."];
       return pool[Math.floor(Math.random()*pool.length)];
     }
-        async function geocodeDisplayName(q){
+
+    function uniqueSample(pool, n){
+      const src = (pool || []).slice();
+      const out = [];
+      while (src.length && out.length < n){
+        const i = Math.floor(Math.random() * src.length);
+        out.push(src.splice(i,1)[0]);
+      }
+      return out;
+    }
+
+    function buildWearLines(verdict, feelsF, windMps, precipPct, code){
+      const mph = (windMps || 0) * 2.236936;
+
+      const wetCodes = new Set([51,53,55,61,63,65,80,81,82,95,96,99]);
+      const snowCodes = new Set([71,73,75]);
+      const isWet = (precipPct >= 40) || wetCodes.has(Number(code));
+      const isSnow = snowCodes.has(Number(code));
+      const isWindy = mph >= 12;
+      const isCold = feelsF <= 38;
+      const isWarm = feelsF >= 72;
+
+      let basePool = (WEAR_SNARK[verdict] && WEAR_SNARK[verdict].base) ? WEAR_SNARK[verdict].base : [];
+      if (verdict === "HOODIE" && isCold && WEAR_SNARK.HOODIE.cold) {
+        basePool = basePool.concat(WEAR_SNARK.HOODIE.cold);
+      }
+
+      const line1 = uniqueSample(basePool, 1)[0] || "Wear something. The weather is real.";
+
+      const windPool = isWindy ? WEAR_SNARK.wind : WEAR_SNARK.calm;
+      const wetPool = (isWet || isSnow) ? WEAR_SNARK.wet : WEAR_SNARK.dry;
+
+      const helperPicks = uniqueSample(windPool.concat(wetPool).concat(WEAR_SNARK.shoes), 2);
+      let line2 = helperPicks[0] || "Wind exists. Act accordingly.";
+      let line3 = helperPicks[1] || "Shoes. Just trust me.";
+
+      if (isCold && verdict !== "NAH"){
+        const extra = uniqueSample(WEAR_SNARK.extrasCold, 1)[0];
+        if (extra) line3 = extra;
+      } else if (isWarm && verdict === "NAH"){
+        const extra = uniqueSample(WEAR_SNARK.extrasWarm, 1)[0];
+        if (extra) line3 = extra;
+      }
+
+      return [line1, line2, line3];
+    }
+
+    function renderWearByVerdict(verdict, feelsF, windMps, precipPct, code){
+      let tries = 0;
+      let lines = buildWearLines(verdict, feelsF, windMps, precipPct, code);
+      let sig = verdict + "|" + lines.join("|");
+
+      while (tries < 5 && sig === state.lastWearSig){
+        lines = buildWearLines(verdict, feelsF, windMps, precipPct, code);
+        sig = verdict + "|" + lines.join("|");
+        tries++;
+      }
+
+      state.lastWearSig = sig;
+      saveState();
+
+      el.wearList.innerHTML = lines.map(t => "<li>" + t + "</li>").join("");
+    }
+
+    async function geocodeDisplayName(q){
       const url = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&addressdetails=1&q=" + encodeURIComponent(q);
       const res = await fetch(url, { headers: { "Accept":"application/json" } });
       if (!res.ok) throw new Error("geocode_failed");
@@ -653,6 +791,7 @@
         return { label, lat: Number(r.lat), lon: Number(r.lon), countryCode: cc };
       }).filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon));
     }
+
     async function reverseGeocodeToLabel(lat, lon){
       const url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon) + "&addressdetails=1";
       const res = await fetch(url, { headers: { "Accept":"application/json" } });
@@ -669,6 +808,7 @@
       }
       return { label, cc };
     }
+
     async function fetchOpenMeteo(lat, lon){
       const units = currentUnits() === "F" ? "fahrenheit" : "celsius";
       const windUnits = "ms";
@@ -686,10 +826,6 @@
       return res.json();
     }
 
-    function renderWear(feelsF, windMps, precipPct, code){
-      const items = pickWearList(feelsF, windMps, precipPct, code);
-      el.wearList.innerHTML = items.map(i => "<li>" + i + "</li>").join("");
-    }
     function renderNow(current){
       const feels = current.apparent_temperature;
       const temp = current.temperature_2m;
@@ -698,6 +834,7 @@
       el.nowSub.textContent = "Feels like: " + fmtTemp(feels) + " | Wind: " + windText(wind);
       return { temp, feels, wind };
     }
+
     function buildDailyArray(daily){
       const len = Math.min(5, (daily.time || []).length);
       const out = [];
@@ -717,13 +854,22 @@
       }
       return out;
     }
+
+    function renderBigVerdict(feelsF, run, windMps, precipPct, code){
+      const verdict = verdictForFeels(feelsF, run, windMps);
+      el.bigWord.textContent = verdict.key;
+      el.bigWord.classList.remove("loading-shimmer");
+      el.oneLiner.textContent = pickQuip(verdict.key);
+      renderWearByVerdict(verdict.key, feelsF, windMps, precipPct, code);
+    }
+
     function renderForecast(dailyArr){
       el.forecastList.innerHTML = "";
       dailyArr.forEach((d, idx) => {
         const div = document.createElement("button");
         div.className = "forecast-item";
         div.type = "button";
-        div.setAttribute("data-idx", idx);
+        div.setAttribute("data-idx", String(idx));
         div.innerHTML = `
           <div class="forecast-top">
             <b>${safeDayLabel(d.date)}</b>
@@ -742,49 +888,51 @@
       });
       selectForecastIndex(0, true);
     }
+
     function renderDetails(d, run){
       el.detailsDay.textContent = safeDayLabel(d.date);
       el.detailsIcon.innerHTML = iconForCode(d.code);
       el.detailsSummary.textContent = WEATHER_CODES[d.code] || "Weather";
+
       const feelsMid = (d.appMax + d.appMin) / 2;
       const verdict = verdictForFeels(feelsMid, run, d.wind);
+
       el.detailsDecision.textContent = verdict.key;
       el.detailsText.textContent = pickQuip(verdict.key);
       el.detailsHigh.textContent = fmtTemp(d.tMax);
       el.detailsLow.textContent = fmtTemp(d.tMin);
       el.sunUp.textContent = fmtTimeHM(d.sunrise);
       el.sunDown.textContent = fmtTimeHM(d.sunset);
+
       const chips = [
-        `Feels: ${fmtTemp(feelsMid)}`,
-        `Wind: ${windText(d.wind)}`,
-        `Precip: ${d.precip ?? "--"}%`
+        "Feels: " + fmtTemp(feelsMid),
+        "Wind: " + windText(d.wind),
+        "Precip: " + (d.precip ?? "--") + "%"
       ];
-      el.chipsRow.innerHTML = chips.map(c => `<span class="chip">${c}</span>`).join("");
-      renderWear(feelsMid, d.wind, d.precip, d.code);
-      // ensure big word is not stuck loading
-      el.bigWord.classList.remove("loading-shimmer");
-    }
-    function renderBigVerdict(feelsF, run, windMps, precipPct, code){
-      const v = verdictForFeels(feelsF, run, windMps);
-      el.bigWord.textContent = v.key;
-      el.oneLiner.textContent = pickQuip(v.key);
-      renderWear(feelsF, windMps, precipPct, code);
-      el.bigWord.classList.remove("loading-shimmer");
+      el.chipsRow.innerHTML = chips.map(c => "<span class=\"chip\">" + c + "</span>").join("");
+
+      renderWearByVerdict(verdict.key, feelsMid, d.wind, d.precip, d.code);
+      renderBigVerdict(feelsMid, run, d.wind, d.precip, d.code);
     }
 
     function selectForecastIndex(idx, fromAuto=false){
       state.selectedIdx = idx;
       saveState();
+
       [...el.forecastList.children].forEach((c,i)=> c.classList.toggle("selected", i===idx));
       const d = (state.lastForecast || [])[idx];
-      if (d){
-        renderDetails(d, state.run);
-        const feelsMid = (d.appMax + d.appMin) / 2;
-        renderBigVerdict(feelsMid, state.run, d.wind, d.precip, d.code);
-      }
+      if (!d) return;
+
+      renderDetails(d, state.run);
       el.detailsHint.textContent = fromAuto ? "Auto-filled for today" : "Showing selection";
     }
 
+    function closeDatalistDropdown(){
+      const listId = el.manualInput.getAttribute("list");
+      if (!listId) return;
+      el.manualInput.setAttribute("list", "");
+      setTimeout(() => el.manualInput.setAttribute("list", listId), 0);
+    }
     async function setLocation(lat, lon, placeLabel, countryCode, source){
       state.lat = lat;
       state.lon = lon;
@@ -793,9 +941,11 @@
       state.source = source || "manual";
       state.units = countryUsesF(state.countryCode) ? "F" : "C";
       saveState();
+
       setPill(state.placeLabel);
       updateSourceUI();
       setUnitControlButtons();
+
       await refreshWeather();
     }
 
@@ -803,23 +953,30 @@
       if (!state.lat || !state.lon){
         try{
           await useGPS(true);
-          if (!state.lat || !state.lon) throw new Error("no gps");
+          if (!state.lat || !state.lon) throw new Error("no_gps");
         }catch(e){
           const fallback = CURATED_CITIES[0];
+          if (!fallback) return;
           await setLocation(fallback.lat, fallback.lon, fallback.label, fallback.cc, "auto");
           return;
         }
       }
+
       setLoadingUI();
+
       try{
         const data = await fetchOpenMeteo(state.lat, state.lon);
         state.lastForecast = buildDailyArray(data.daily || {});
         saveState();
+
         el.locName.textContent = state.placeLabel || "Near you";
-        renderNow(data.current || {});
+
+        const now = renderNow(data.current || {});
         renderForecast(state.lastForecast);
+
         const todayDaily = state.lastForecast?.[state.selectedIdx ?? 0] || state.lastForecast?.[0];
         const feelsToday = data.current?.apparent_temperature ?? todayDaily?.appMax ?? 60;
+
         renderBigVerdict(
           feelsToday,
           state.run,
@@ -827,6 +984,7 @@
           todayDaily?.precip ?? 0,
           todayDaily?.code ?? 0
         );
+
       }catch(e){
         console.error(e);
         showToast("Weather data failed. Try again.");
@@ -870,22 +1028,37 @@
       showToast("Spun the globe: " + city.label);
     }
 
-    el.unitAuto.addEventListener("click", ()=>{ state.unitOverride=null; setUnitControlButtons(); refreshWeather(); });
-    el.unitF.addEventListener("click", ()=>{ state.unitOverride="F"; setUnitControlButtons(); refreshWeather(); });
-    el.unitC.addEventListener("click", ()=>{ state.unitOverride="C"; setUnitControlButtons(); refreshWeather(); });
+    el.unitAuto.addEventListener("click", ()=>{
+      state.unitOverride = null;
+      setUnitControlButtons();
+      refreshWeather();
+    });
+    el.unitF.addEventListener("click", ()=>{
+      state.unitOverride = "F";
+      setUnitControlButtons();
+      refreshWeather();
+    });
+    el.unitC.addEventListener("click", ()=>{
+      state.unitOverride = "C";
+      setUnitControlButtons();
+      refreshWeather();
+    });
 
     el.brandHome.addEventListener("click", ()=>{ refreshWeather(); });
-    el.wherePill.addEventListener("click", ()=>{ document.getElementById("detailsDrawer").scrollIntoView({ behavior:"smooth" }); });
+    el.wherePill.addEventListener("click", ()=>{ el.detailsDrawer.scrollIntoView({ behavior:"smooth" }); });
 
     el.runSelect.value = state.run || "normal";
     el.runSelect.addEventListener("change", ()=>{
       state.run = el.runSelect.value;
       saveState();
+
       const d = state.lastForecast?.[state.selectedIdx ?? 0];
-      if (d){
-        renderDetails(d, state.run);
-        const feelsMid = (d.appMax + d.appMin) / 2;
-        renderBigVerdict(feelsMid, state.run, d.wind, d.precip, d.code);
+      if (d) renderDetails(d, state.run);
+
+      const todayDaily = state.lastForecast?.[state.selectedIdx ?? 0] || state.lastForecast?.[0];
+      if (todayDaily){
+        const feelsMid = (todayDaily.appMax + todayDaily.appMin) / 2;
+        renderBigVerdict(feelsMid, state.run, todayDaily.wind, todayDaily.precip, todayDaily.code);
       }
     });
 
@@ -894,6 +1067,7 @@
 
     function clearAndBlurInput(){
       el.locList.innerHTML = "";
+      closeDatalistDropdown();
       el.manualInput.blur();
     }
 
@@ -906,7 +1080,9 @@
         try{
           const results = await geocodeDisplayName(q);
           if (seq !== suggestSeq) return;
-          el.locList.innerHTML = results.map(r => `<option value="${r.label}" data-lat="${r.lat}" data-lon="${r.lon}" data-cc="${r.countryCode}"></option>`).join("");
+          el.locList.innerHTML = results.map(r =>
+            "<option value=\"" + r.label.replaceAll("\"","&quot;") + "\" data-lat=\"" + r.lat + "\" data-lon=\"" + r.lon + "\" data-cc=\"" + (r.countryCode || "") + "\"></option>"
+          ).join("");
         }catch(err){ console.error(err); }
       }, 250);
     });
@@ -914,6 +1090,7 @@
     el.manualInput.addEventListener("change", ()=>{
       const val = el.manualInput.value.trim();
       if (!val) return;
+
       const opt = [...el.locList.children].find(o => o.value === val);
       if (opt){
         handleManualSelection({
@@ -927,7 +1104,10 @@
         geocodeDisplayName(val).then(res=>{
           if (res[0]) handleManualSelection(res[0]);
           clearAndBlurInput();
-        }).catch(()=>{ showToast("Could not find that place."); clearAndBlurInput(); });
+        }).catch(()=>{
+          showToast("Could not find that place.");
+          clearAndBlurInput();
+        });
       }
     });
 
