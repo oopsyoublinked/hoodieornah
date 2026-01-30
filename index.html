@@ -596,33 +596,39 @@ Copy and replace your whole index.html with this:
       0%,100%{ opacity: .85; }
       50%{ opacity: .55; }
     }
-	/* Keep all 5 forecast items on one line and allow them to shrink */
-.forecast{
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  overflow: visible;
-}
-.forecast-item{
-  min-width: 0;
-}
+    @keyframes popQ{
+      0%{ transform: translateY(0) scale(1); opacity: .85; }
+      40%{ transform: translateY(-1px) scale(1.06); opacity: 1; }
+      100%{ transform: translateY(0) scale(1); opacity: .92; }
+    }
 
-/* Align the top controls to the same height */
-.controls{
-  align-items: stretch;
-}
-.pillrow{
-  display: flex;
-  align-items: stretch;
-  gap: 10px;
-}
-.seg,
-.pill,
-.theme-toggle{
-  min-height: 38px;
-  height: 38px;
-}
-.seg button{
-  height: 100%;
-}
+    /* Keep all 5 forecast items on one line and allow them to shrink */
+    .forecast{
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      overflow: visible;
+    }
+    .forecast-item{
+      min-width: 0;
+    }
+
+    /* Align the top controls to the same height */
+    .controls{
+      align-items: stretch;
+    }
+    .pillrow{
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .seg,
+    .pill,
+    .theme-toggle{
+      min-height: 38px;
+      height: 38px;
+    }
+    .seg button{
+      height: 100%;
+    }
   </style>
 </head>
 
