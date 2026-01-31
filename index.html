@@ -113,9 +113,28 @@
     }
     @media (max-width:980px){ 
       .brand{ min-width:unset; } 
-      .main{ grid-template-columns:1fr; } 
-      .col-right { order: 2; }
-      .col-left { order: 1; }
+      
+      /* Switch to Flexbox to reorder the columns */
+      .main{ 
+        display: flex; 
+        flex-direction: column; 
+      }
+
+      /* 1. Show the Verdict (Right Col) FIRST */
+      .col-right { 
+        order: 1; 
+      }
+
+      /* 2. Show the Inputs/Details (Left Col) SECOND */
+      .col-left { 
+        order: 2; 
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Put Inputs above Details inside the left col */
+      #rightCard { order: 1; }
+      #detailsCard { order: 2; }
     }
 
     /* --- CARDS --- */
@@ -767,3 +786,4 @@
   </script>
 </body>
 </html>
+
