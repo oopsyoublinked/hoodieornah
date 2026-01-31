@@ -114,27 +114,47 @@
     @media (max-width:980px){ 
       .brand{ min-width:unset; } 
       
-      /* Switch to Flexbox to reorder the columns */
+      /* 1. Stack everything nicely in one column */
       .main{ 
         display: flex; 
         flex-direction: column; 
+        gap: 16px;
       }
 
-      /* 1. Show the Verdict (Right Col) FIRST */
-      .col-right { 
-        order: 1; 
+      /* 2. Force full width for everything */
+      .col-left, .col-right, .card {
+        width: 100%;
+        min-width: 0; /* Prevents overflow bugs */
       }
 
-      /* 2. Show the Inputs/Details (Left Col) SECOND */
+      /* 3. Reorder: Verdict First, then Inputs, then Details */
+      .col-right { order: 1; }
       .col-left { 
         order: 2; 
         display: flex;
         flex-direction: column;
+        gap: 16px;
       }
-      
-      /* Put Inputs above Details inside the left col */
       #rightCard { order: 1; }
       #detailsCard { order: 2; }
+
+      /* 4. FIX THE FORECAST: Scroll instead of Squish */
+      .forecast {
+        display: flex;       /* Use flex, not grid */
+        overflow-x: auto;    /* Allow scrolling */
+        gap: 12px;
+        padding-bottom: 8px; /* Space for scrollbar */
+      }
+      
+      .forecast-item {
+        flex: 0 0 100px;     /* Force each item to be 100px wide */
+        min-width: 100px;    /* Never shrink below this */
+      }
+      
+      /* 5. Make the Big Word responsive so it doesn't break */
+      .bigword {
+        font-size: 14vw; /* Scales with screen width */
+      }
     }
 
     /* --- CARDS --- */
@@ -786,4 +806,5 @@
   </script>
 </body>
 </html>
+
 
