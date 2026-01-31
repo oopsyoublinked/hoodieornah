@@ -436,7 +436,6 @@
       PARKA: ["Parka time. Hoodie is not enough.", "Layer the hoodie under a parka.", "Parka or bust. It is freezing.", "Survival mode initiated."]
     };
 
-    // UPDATED: "Item + Snark" format for every entry
     const WEAR_VARIANTS = {
       PARKA: [
         "Heavy parka. Your core temp is now your priority.",
@@ -482,8 +481,12 @@
     // --- UTILS ---
     function saveState(){ try{ localStorage.setItem("hoodie_state_v6", JSON.stringify(state)); }catch(e){} }
     function loadState(){ try{ return JSON.parse(localStorage.getItem("hoodie_state_v6")); }catch(e){ return null; } }
+    
+    // --- FIX: LOAD STATE & RESET LOCK ---
     const saved = loadState();
     if(saved) Object.assign(state, saved);
+    state.isRefreshing = false; // <--- CRITICAL FIX: Always unlock on load
+    // ------------------------------------
 
     function showToast(msg){
       const t = document.getElementById('toast');
@@ -546,7 +549,6 @@
       return "NAH";
     }
 
-    // UPDATED: Completely randomizes Gear on every call
     function renderBigVerdict(feelsF, run, windMps, precipPct, code, isDay){
       const verdictKey = verdictForFeels(feelsF, run, windMps);
       
@@ -554,13 +556,10 @@
       document.getElementById('oneLiner').textContent = getRandomItem(QUIPS[verdictKey]);
 
       const items = [];
-      // 1. Base Layer
       items.push(getRandomItem(WEAR_VARIANTS[verdictKey])); 
       
-      // 2. Rain/Snow
       if (precipPct > 30 || code >= 51) items.push(getRandomItem(WEAR_VARIANTS.RAIN));
       
-      // 3. Day/Night
       if (!isDay) items.push(getRandomItem(WEAR_VARIANTS.NIGHT));
       else if (code <= 2) items.push(getRandomItem(WEAR_VARIANTS.SUN));
 
@@ -591,7 +590,6 @@
         list.appendChild(btn);
       });
       
-      // Initial selection
       selectForecastIndex(state.selectedIdx || 0, true);
     }
 
@@ -604,7 +602,6 @@
         c.classList.toggle("selected", i === idx);
       });
 
-      // Update Details
       document.getElementById('detailsDay').textContent = new Date(d.date).toLocaleDateString('en-US',{weekday:'long', month:'short', day:'numeric'});
       document.getElementById('detailsIcon').innerHTML = `<span style="font-size:32px">${iconForCode(d.code)}</span>`;
       document.getElementById('detailsSummary').textContent = "Forecast"; 
@@ -620,17 +617,15 @@
       document.getElementById('sunDown').textContent = new Date(d.sunset).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
       document.getElementById('detailsHint').textContent = fromAuto ? "Auto-filled" : "Selected";
       
-      // NEW: Update Big Card on Click too!
       if (!fromAuto) {
         renderBigVerdict(midFeels, state.run, d.wind, d.precip, d.code, true);
-        document.getElementById('nowTemp').textContent = fmtTemp(d.tMax); // Show high for that day
+        document.getElementById('nowTemp').textContent = fmtTemp(d.tMax); 
         document.getElementById('nowSub').textContent = `Day Avg: ${fmtTemp(midFeels)}`;
       }
     }
 
     // --- API ---
     async function refreshWeather(force=false){
-      // Force ignores timestamp check
       if (state.isRefreshing) return;
       if (!force && Date.now() - state.lastFetch < 2000) return;
 
@@ -704,7 +699,6 @@
 
     async function useGPS(){
       if (!navigator.geolocation) { showToast("GPS not supported"); return; }
-      // 5s Timeout fallback
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
           await setLocation(pos.coords.latitude, pos.coords.longitude, "Current Location", "US", "gps");
@@ -767,11 +761,9 @@
        runBtn.setAttribute('aria-pressed', 'true');
     }
 
-    // Auto-load
     if(!state.lat) useGPS(); 
-    else refreshWeather(true); // Force refresh on load
+    else refreshWeather(true);
 
   </script>
 </body>
 </html>
-
