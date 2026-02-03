@@ -760,6 +760,7 @@
     };
 
     const CURATED_CITIES = [
+      // United States - Major Cities
       { label:"Las Vegas, NV", lat:36.1699, lon:-115.1398, cc:"US" },
       { label:"Tulsa, OK", lat:36.15398, lon:-95.99277, cc:"US" },
       { label:"Dallas, TX", lat:32.7767, lon:-96.7970, cc:"US" },
@@ -774,26 +775,154 @@
       { label:"Boston, MA", lat:42.3601, lon:-71.0589, cc:"US" },
       { label:"Atlanta, GA", lat:33.7490, lon:-84.3880, cc:"US" },
       { label:"San Francisco, CA", lat:37.7749, lon:-122.4194, cc:"US" },
+      
+      // United States - More Cities
+      { label:"Portland, OR", lat:45.5152, lon:-122.6784, cc:"US" },
+      { label:"Minneapolis, MN", lat:44.9778, lon:-93.2650, cc:"US" },
+      { label:"Detroit, MI", lat:42.3314, lon:-83.0458, cc:"US" },
+      { label:"Philadelphia, PA", lat:39.9526, lon:-75.1652, cc:"US" },
+      { label:"San Diego, CA", lat:32.7157, lon:-117.1611, cc:"US" },
+      { label:"Nashville, TN", lat:36.1627, lon:-86.7816, cc:"US" },
+      { label:"Charlotte, NC", lat:35.2271, lon:-80.8431, cc:"US" },
+      { label:"Columbus, OH", lat:39.9612, lon:-82.9988, cc:"US" },
+      { label:"Indianapolis, IN", lat:39.7684, lon:-86.1581, cc:"US" },
+      { label:"San Antonio, TX", lat:29.4241, lon:-98.4936, cc:"US" },
+      { label:"Houston, TX", lat:29.7604, lon:-95.3698, cc:"US" },
+      { label:"New Orleans, LA", lat:29.9511, lon:-90.0715, cc:"US" },
+      { label:"Salt Lake City, UT", lat:40.7608, lon:-111.8910, cc:"US" },
+      { label:"Kansas City, MO", lat:39.0997, lon:-94.5786, cc:"US" },
+      { label:"Milwaukee, WI", lat:43.0389, lon:-87.9065, cc:"US" },
+      { label:"Anchorage, AK", lat:61.2181, lon:-149.9003, cc:"US" },
+      { label:"Honolulu, HI", lat:21.3099, lon:-157.8581, cc:"US" },
+      { label:"Boise, ID", lat:43.6150, lon:-116.2023, cc:"US" },
+      { label:"Albuquerque, NM", lat:35.0844, lon:-106.6504, cc:"US" },
+      { label:"Pittsburgh, PA", lat:40.4406, lon:-79.9959, cc:"US" },
+      
+      // Canada
+      { label:"Toronto, Canada", lat:43.6532, lon:-79.3832, cc:"CA" },
+      { label:"Vancouver, Canada", lat:49.2827, lon:-123.1207, cc:"CA" },
+      { label:"Montreal, Canada", lat:45.5017, lon:-73.5673, cc:"CA" },
+      { label:"Calgary, Canada", lat:51.0447, lon:-114.0719, cc:"CA" },
+      { label:"Ottawa, Canada", lat:45.4215, lon:-75.6972, cc:"CA" },
+      { label:"Edmonton, Canada", lat:53.5461, lon:-113.4938, cc:"CA" },
+      { label:"Winnipeg, Canada", lat:49.8951, lon:-97.1384, cc:"CA" },
+      { label:"Quebec City, Canada", lat:46.8139, lon:-71.2080, cc:"CA" },
+      
+      // Mexico & Central America
+      { label:"Mexico City, Mexico", lat:19.4326, lon:-99.1332, cc:"MX" },
+      { label:"Guadalajara, Mexico", lat:20.6597, lon:-103.3496, cc:"MX" },
+      { label:"Monterrey, Mexico", lat:25.6866, lon:-100.3161, cc:"MX" },
+      { label:"Cancun, Mexico", lat:21.1619, lon:-86.8515, cc:"MX" },
+      { label:"San Jose, Costa Rica", lat:9.9281, lon:-84.0907, cc:"CR" },
+      { label:"Panama City, Panama", lat:8.9824, lon:-79.5199, cc:"PA" },
+      
+      // South America
+      { label:"São Paulo, Brazil", lat:-23.5505, lon:-46.6333, cc:"BR" },
+      { label:"Rio de Janeiro, Brazil", lat:-22.9068, lon:-43.1729, cc:"BR" },
+      { label:"Buenos Aires, Argentina", lat:-34.6037, lon:-58.3816, cc:"AR" },
+      { label:"Lima, Peru", lat:-12.0464, lon:-77.0428, cc:"PE" },
+      { label:"Bogotá, Colombia", lat:4.7110, lon:-74.0721, cc:"CO" },
+      { label:"Santiago, Chile", lat:-33.4489, lon:-70.6693, cc:"CL" },
+      { label:"Quito, Ecuador", lat:-0.1807, lon:-78.4678, cc:"EC" },
+      { label:"Caracas, Venezuela", lat:10.4806, lon:-66.9036, cc:"VE" },
+      { label:"Montevideo, Uruguay", lat:-34.9011, lon:-56.1645, cc:"UY" },
+      
+      // Europe - Western
       { label:"London, UK", lat:51.5072, lon:-0.1276, cc:"GB" },
       { label:"Paris, France", lat:48.8566, lon:2.3522, cc:"FR" },
       { label:"Berlin, Germany", lat:52.5200, lon:13.4050, cc:"DE" },
       { label:"Rome, Italy", lat:41.9028, lon:12.4964, cc:"IT" },
       { label:"Madrid, Spain", lat:40.4168, lon:-3.7038, cc:"ES" },
+      { label:"Amsterdam, Netherlands", lat:52.3676, lon:4.9041, cc:"NL" },
+      { label:"Brussels, Belgium", lat:50.8503, lon:4.3517, cc:"BE" },
+      { label:"Vienna, Austria", lat:48.2082, lon:16.3738, cc:"AT" },
+      { label:"Zurich, Switzerland", lat:47.3769, lon:8.5417, cc:"CH" },
+      { label:"Barcelona, Spain", lat:41.3851, lon:2.1734, cc:"ES" },
+      { label:"Milan, Italy", lat:45.4642, lon:9.1900, cc:"IT" },
+      { label:"Munich, Germany", lat:48.1351, lon:11.5820, cc:"DE" },
+      { label:"Dublin, Ireland", lat:53.3498, lon:-6.2603, cc:"IE" },
+      { label:"Lisbon, Portugal", lat:38.7223, lon:-9.1393, cc:"PT" },
+      { label:"Copenhagen, Denmark", lat:55.6761, lon:12.5683, cc:"DK" },
+      { label:"Stockholm, Sweden", lat:59.3293, lon:18.0686, cc:"SE" },
+      { label:"Oslo, Norway", lat:59.9139, lon:10.7522, cc:"NO" },
+      { label:"Helsinki, Finland", lat:60.1699, lon:24.9384, cc:"FI" },
+      
+      // Europe - Eastern
+      { label:"Warsaw, Poland", lat:52.2297, lon:21.0122, cc:"PL" },
+      { label:"Prague, Czech Republic", lat:50.0755, lon:14.4378, cc:"CZ" },
+      { label:"Budapest, Hungary", lat:47.4979, lon:19.0402, cc:"HU" },
+      { label:"Athens, Greece", lat:37.9838, lon:23.7275, cc:"GR" },
+      { label:"Bucharest, Romania", lat:44.4268, lon:26.1025, cc:"RO" },
+      { label:"Sofia, Bulgaria", lat:42.6977, lon:23.3219, cc:"BG" },
+      { label:"Moscow, Russia", lat:55.7558, lon:37.6173, cc:"RU" },
+      { label:"St. Petersburg, Russia", lat:59.9343, lon:30.3351, cc:"RU" },
+      { label:"Kiev, Ukraine", lat:50.4501, lon:30.5234, cc:"UA" },
+      
+      // Asia - East
       { label:"Tokyo, Japan", lat:35.6762, lon:139.6503, cc:"JP" },
       { label:"Seoul, South Korea", lat:37.5665, lon:126.9780, cc:"KR" },
+      { label:"Beijing, China", lat:39.9042, lon:116.4074, cc:"CN" },
+      { label:"Shanghai, China", lat:31.2304, lon:121.4737, cc:"CN" },
+      { label:"Hong Kong", lat:22.3193, lon:114.1694, cc:"HK" },
+      { label:"Taipei, Taiwan", lat:25.0330, lon:121.5654, cc:"TW" },
+      { label:"Osaka, Japan", lat:34.6937, lon:135.5023, cc:"JP" },
+      { label:"Kyoto, Japan", lat:35.0116, lon:135.7681, cc:"JP" },
+      
+      // Asia - Southeast
+      { label:"Singapore", lat:1.3521, lon:103.8198, cc:"SG" },
+      { label:"Bangkok, Thailand", lat:13.7563, lon:100.5018, cc:"TH" },
+      { label:"Manila, Philippines", lat:14.5995, lon:120.9842, cc:"PH" },
+      { label:"Jakarta, Indonesia", lat:-6.2088, lon:106.8456, cc:"ID" },
+      { label:"Kuala Lumpur, Malaysia", lat:3.1390, lon:101.6869, cc:"MY" },
+      { label:"Ho Chi Minh City, Vietnam", lat:10.8231, lon:106.6297, cc:"VN" },
+      { label:"Hanoi, Vietnam", lat:21.0285, lon:105.8542, cc:"VN" },
+      
+      // Asia - South
+      { label:"Mumbai, India", lat:19.0760, lon:72.8777, cc:"IN" },
+      { label:"Delhi, India", lat:28.7041, lon:77.1025, cc:"IN" },
+      { label:"Bangalore, India", lat:12.9716, lon:77.5946, cc:"IN" },
+      { label:"Karachi, Pakistan", lat:24.8607, lon:67.0011, cc:"PK" },
+      { label:"Dhaka, Bangladesh", lat:23.8103, lon:90.4125, cc:"BD" },
+      { label:"Colombo, Sri Lanka", lat:6.9271, lon:79.8612, cc:"LK" },
+      
+      // Middle East
+      { label:"Dubai, UAE", lat:25.2048, lon:55.2708, cc:"AE" },
+      { label:"Abu Dhabi, UAE", lat:24.4539, lon:54.3773, cc:"AE" },
+      { label:"Istanbul, Turkey", lat:41.0082, lon:28.9784, cc:"TR" },
+      { label:"Tel Aviv, Israel", lat:32.0853, lon:34.7818, cc:"IL" },
+      { label:"Jerusalem, Israel", lat:31.7683, lon:35.2137, cc:"IL" },
+      { label:"Beirut, Lebanon", lat:33.8886, lon:35.4955, cc:"LB" },
+      { label:"Riyadh, Saudi Arabia", lat:24.7136, lon:46.6753, cc:"SA" },
+      { label:"Doha, Qatar", lat:25.2854, lon:51.5310, cc:"QA" },
+      { label:"Kuwait City, Kuwait", lat:29.3759, lon:47.9774, cc:"KW" },
+      
+      // Africa
+      { label:"Cairo, Egypt", lat:30.0444, lon:31.2357, cc:"EG" },
+      { label:"Cape Town, South Africa", lat:-33.9249, lon:18.4241, cc:"ZA" },
+      { label:"Johannesburg, South Africa", lat:-26.2041, lon:28.0473, cc:"ZA" },
+      { label:"Lagos, Nigeria", lat:6.5244, lon:3.3792, cc:"NG" },
+      { label:"Nairobi, Kenya", lat:-1.2864, lon:36.8172, cc:"KE" },
+      { label:"Casablanca, Morocco", lat:33.5731, lon:-7.5898, cc:"MA" },
+      { label:"Accra, Ghana", lat:5.6037, lon:-0.1870, cc:"GH" },
+      { label:"Tunis, Tunisia", lat:36.8065, lon:10.1815, cc:"TN" },
+      { label:"Addis Ababa, Ethiopia", lat:9.0320, lon:38.7469, cc:"ET" },
+      
+      // Oceania
       { label:"Sydney, Australia", lat:-33.8688, lon:151.2093, cc:"AU" },
       { label:"Melbourne, Australia", lat:-37.8136, lon:144.9631, cc:"AU" },
+      { label:"Brisbane, Australia", lat:-27.4698, lon:153.0251, cc:"AU" },
+      { label:"Perth, Australia", lat:-31.9505, lon:115.8605, cc:"AU" },
       { label:"Auckland, New Zealand", lat:-36.8485, lon:174.7633, cc:"NZ" },
-      { label:"Toronto, Canada", lat:43.6532, lon:-79.3832, cc:"CA" },
-      { label:"Vancouver, Canada", lat:49.2827, lon:-123.1207, cc:"CA" },
-      { label:"Mexico City, Mexico", lat:19.4326, lon:-99.1332, cc:"MX" },
-      { label:"SÃ£o Paulo, Brazil", lat:-23.5505, lon:-46.6333, cc:"BR" },
-      { label:"Buenos Aires, Argentina", lat:-34.6037, lon:-58.3816, cc:"AR" },
-      { label:"Cape Town, South Africa", lat:-33.9249, lon:18.4241, cc:"ZA" },
-      { label:"Cairo, Egypt", lat:30.0444, lon:31.2357, cc:"EG" },
-      { label:"Dubai, UAE", lat:25.2048, lon:55.2708, cc:"AE" },
-      { label:"Mumbai, India", lat:19.0760, lon:72.8777, cc:"IN" },
-      { label:"Singapore", lat:1.3521, lon:103.8198, cc:"SG" }
+      { label:"Wellington, New Zealand", lat:-41.2865, lon:174.7762, cc:"NZ" },
+      { label:"Christchurch, New Zealand", lat:-43.5321, lon:172.6362, cc:"NZ" },
+      
+      // Interesting/Extreme Weather Locations
+      { label:"Reykjavik, Iceland", lat:64.1466, lon:-21.9426, cc:"IS" },
+      { label:"Tromsø, Norway", lat:69.6492, lon:18.9553, cc:"NO" },
+      { label:"Fairbanks, AK", lat:64.8378, lon:-147.7164, cc:"US" },
+      { label:"Barrow, AK", lat:71.2906, lon:-156.7886, cc:"US" },
+      { label:"Ushuaia, Argentina", lat:-54.8019, lon:-68.3029, cc:"AR" },
+      { label:"Darwin, Australia", lat:-12.4634, lon:130.8456, cc:"AU" }
     ];
 
     const WEATHER_CODES = {
