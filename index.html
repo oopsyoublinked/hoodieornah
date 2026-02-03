@@ -219,7 +219,7 @@
     .card{
       border:1px solid rgba(255,255,255,.14); border-radius: var(--radius);
       background: linear-gradient(to bottom, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      box-shadow: var(--shadow); overflow:hidden; position:relative; height:100%;
+      box-shadow: var(--shadow); overflow:hidden; position:relative;
     }
     .card.loading{ opacity:.82; filter:saturate(.85); box-shadow:0 12px 30px rgba(0,0,0,.38); }
     .card::before{
@@ -227,7 +227,7 @@
       background: radial-gradient(420px 220px at 20% 0%, rgba(255,255,255,.07), transparent 60%);
       pointer-events:none;
     }
-    .card-inner{ position:relative; padding:18px; min-height:100%; }
+    .card-inner{ position:relative; padding:18px; }
     .bigword{ 
       font-size:72px; font-weight:900; letter-spacing:.02em; margin:6px 0 4px; line-height:.9;
       transition: color 0.4s ease, transform 0.3s ease;
@@ -602,6 +602,16 @@
               The main verdict changes based on current temperature. Check back throughout the day for updates!
             </div>
           </div>
+          
+          <div style="margin-top:14px; padding:12px 14px; border-radius:14px; background:var(--panel); border:1px solid var(--stroke);">
+            <div style="font-size:12px; font-weight:700; margin-bottom:8px; color:var(--text);">🌡️ Threshold guide</div>
+            <div style="font-size:11px; line-height:1.5; color:var(--muted); display:grid; gap:4px;">
+              <div><strong style="color:rgba(129,140,248,.95);">≤25°F</strong> = Parka weather</div>
+              <div><strong style="color:rgba(96,165,250,.95);">26-50°F</strong> = Hoodie time</div>
+              <div><strong style="color:rgba(251,191,36,.95);">51-65°F</strong> = Maybe hoodie</div>
+              <div><strong style="color:rgba(248,113,113,.95);">≥66°F</strong> = Too warm</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -686,6 +696,11 @@
                   <span class="sunvalue" id="sunDown">--</span>
                 </div>
               </div>
+              
+              <div id="dayTipsBox" style="margin-top:14px; padding:12px; border-radius:14px; background:var(--panel2); border:1px solid var(--stroke); display:none;">
+                <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:var(--text);">💭 Day planning</div>
+                <div id="dayTipsContent" style="font-size:12px; line-height:1.5; color:var(--muted);"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -756,7 +771,10 @@
       themeBtn: document.getElementById("themeBtn"),
       shareBtn: document.getElementById("shareBtn"),
       lastUpdated: document.getElementById("lastUpdated"),
-      loadingBar: document.getElementById("loadingBar")
+      loadingBar: document.getElementById("loadingBar"),
+      
+      dayTipsBox: document.getElementById("dayTipsBox"),
+      dayTipsContent: document.getElementById("dayTipsContent")
     };
 
     const CURATED_CITIES = [
@@ -1392,6 +1410,56 @@
 
       return [line1, line2, line3];
     }
+    
+    function generateDayTips(d, verdict){
+      const tips = [];
+      const mph = (d.wind || 0) * 2.236936;
+      const feelsMid = (d.appMax + d.appMin) / 2;
+      const tempSwing = d.tMax - d.tMin;
+      
+      // Temperature swing tip
+      if (tempSwing >= 25) {
+        tips.push("Big temperature swing today. Layer up so you can adjust.");
+      } else if (tempSwing >= 15) {
+        tips.push("Temperature will change throughout the day. Bring options.");
+      }
+      
+      // Precipitation tip
+      if (d.precip >= 60) {
+        tips.push("High chance of rain. Waterproof layer recommended.");
+      } else if (d.precip >= 30) {
+        tips.push("Rain possible. Keep an umbrella handy.");
+      }
+      
+      // Wind tip
+      if (mph >= 20) {
+        tips.push("Windy conditions. Secure loose items and expect wind chill.");
+      } else if (mph >= 12) {
+        tips.push("Moderate wind. A windbreaker helps.");
+      }
+      
+      // Temperature-specific tips
+      if (feelsMid <= 20) {
+        tips.push("Extreme cold. Limit outdoor exposure and cover all skin.");
+      } else if (feelsMid <= 32) {
+        tips.push("Freezing temps. Watch for ice and bundle up.");
+      } else if (feelsMid >= 85) {
+        tips.push("Hot day. Stay hydrated and seek shade when possible.");
+      }
+      
+      // Weather code specific tips
+      const code = Number(d.code);
+      if (code >= 95) {
+        tips.push("Thunderstorms expected. Stay indoors during peak activity.");
+      } else if (code >= 71 && code <= 77) {
+        tips.push("Snow forecast. Allow extra travel time.");
+      } else if (code === 0) {
+        tips.push("Clear skies. Great day for outdoor activities.");
+      }
+      
+      // Return up to 2 tips
+      return tips.slice(0, 2);
+    }
 
     function renderWearByVerdict(verdict, feelsF, windMps, precipPct, code){
       let tries = 0;
@@ -1550,6 +1618,15 @@
         "Precip: " + (d.precip ?? "--") + "%"
       ];
       el.chipsRow.innerHTML = chips.map(c => "<span class=\"chip\">" + c + "</span>").join("");
+
+      // Generate and display day tips
+      const dayTips = generateDayTips(d, verdict.key);
+      if (dayTips.length > 0 && el.dayTipsBox && el.dayTipsContent) {
+        el.dayTipsContent.innerHTML = dayTips.map(tip => "<div style='margin-bottom:4px;'>• " + tip + "</div>").join("");
+        el.dayTipsBox.style.display = "block";
+      } else if (el.dayTipsBox) {
+        el.dayTipsBox.style.display = "none";
+      }
 
       renderWearByVerdict(verdict.key, feelsMid, d.wind, d.precip, d.code);
       renderBigVerdict(feelsMid, run, d.wind, d.precip, d.code);
