@@ -539,6 +539,9 @@
       <div class="card" id="leftCard">
         <div class="loading-bar" id="loadingBar"></div>
         <div class="card-inner">
+          <div style="display:inline-block; padding:4px 10px; border-radius:999px; background:rgba(96,165,250,.15); border:1px solid rgba(96,165,250,.3); font-size:11px; font-weight:700; letter-spacing:.02em; margin-bottom:8px; color:rgba(96,165,250,.95);">
+            RIGHT NOW
+          </div>
           <div class="bigword" id="bigWord">LOADING</div>
           <div class="oneliner" id="oneLiner">Fetching your weather so we can judge you properly.</div>
 
@@ -559,7 +562,7 @@
           <div class="forecast" id="forecastList" aria-label="5 day forecast"></div>
 
           <div class="how-decided">
-            <b>How we decided:</b> feels-like temp, wind, and how you said you run. Not your fashion sense.
+            <b>How we decided:</b> based on what it feels like RIGHT NOW (not the forecast), plus wind and how you run. Not your fashion sense.
           </div>
 
           <div class="wear-box">
@@ -881,7 +884,8 @@
       spinSeen: [],
       lastWearSig: "",
       lastUpdated: null,
-      theme: "dark"
+      theme: "dark",
+      currentConditions: null  // Store current weather for live verdict updates
     };
 
     let suggestTimer = null;
@@ -1096,10 +1100,12 @@
       if (run === "cold") adj -= 3;
       if (run === "hot") adj += 3;
       adj -= mph * 0.15;
-      if (adj <= 40) return { key:"PARKA" };
-      if (adj <= 55) return { key:"HOODIE" };
-      if (adj <= 68) return { key:"MAYBE" };
-      return { key:"NAH" };
+      
+      // More realistic thresholds
+      if (adj <= 25) return { key:"PARKA" };    // Actually freezing/dangerous
+      if (adj <= 50) return { key:"HOODIE" };   // Classic hoodie weather
+      if (adj <= 65) return { key:"MAYBE" };    // Borderline/transitional
+      return { key:"NAH" };                     // Too warm for hoodie
     }
 
     function iconForCode(code){
@@ -1411,15 +1417,24 @@
         const now = renderNow(data.current || {});
         renderForecast(state.lastForecast);
 
-        const todayDaily = state.lastForecast?.[state.selectedIdx ?? 0] || state.lastForecast?.[0];
-        const feelsToday = data.current?.apparent_temperature ?? todayDaily?.appMax ?? 60;
-
+        // Store current conditions for live verdict updates
+        state.currentConditions = {
+          feels: data.current?.apparent_temperature ?? 60,
+          wind: data.current?.wind_speed_10m ?? 0,
+          code: data.current?.weather_code ?? 0
+        };
+        saveState();
+        
+        // Get today's daily data for precipitation info
+        const todayDaily = state.lastForecast?.[0];
+        
+        // Main verdict ALWAYS uses current conditions (right now)
         renderBigVerdict(
-          feelsToday,
+          state.currentConditions.feels,
           state.run,
-          data.current?.wind_speed_10m ?? todayDaily?.wind ?? 0,
+          state.currentConditions.wind,
           todayDaily?.precip ?? 0,
-          todayDaily?.code ?? 0
+          state.currentConditions.code
         );
 
       }catch(e){
@@ -1489,13 +1504,20 @@
       state.run = el.runSelect.value;
       saveState();
 
+      // Update the selected forecast day's details panel
       const d = state.lastForecast?.[state.selectedIdx ?? 0];
       if (d) renderDetails(d, state.run);
 
-      const todayDaily = state.lastForecast?.[state.selectedIdx ?? 0] || state.lastForecast?.[0];
-      if (todayDaily){
-        const feelsMid = (todayDaily.appMax + todayDaily.appMin) / 2;
-        renderBigVerdict(feelsMid, state.run, todayDaily.wind, todayDaily.precip, todayDaily.code);
+      // Update big verdict using CURRENT conditions (not forecast)
+      if (state.currentConditions){
+        const todayDaily = state.lastForecast?.[0];
+        renderBigVerdict(
+          state.currentConditions.feels,
+          state.run,
+          state.currentConditions.wind,
+          todayDaily?.precip ?? 0,
+          state.currentConditions.code
+        );
       }
     });
 
