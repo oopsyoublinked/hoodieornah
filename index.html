@@ -318,6 +318,8 @@
       font-size: 140px;
       margin: 20px 0;
       line-height: 1;
+      /* Fallback color for accessibility */
+      color: var(--text);
       background: linear-gradient(135deg, 
         #3b82f6 0%, 
         #8b5cf6 25%, 
@@ -330,6 +332,18 @@
       -webkit-text-fill-color: transparent;
       animation: gradientShift 6s ease infinite;
       background-size: 200% 200%;
+      /* Ensure text wraps if needed */
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* Fallback for high contrast mode */
+    @media (prefers-contrast: high) {
+      .big {
+        -webkit-text-fill-color: var(--text);
+        background: none;
+        animation: none;
+      }
     }
     
     @keyframes gradientShift {
@@ -604,6 +618,14 @@
         transition: none !important;
         animation: none !important;
       }
+      
+      .big {
+        animation: none !important;
+      }
+      
+      .pill .dot {
+        animation: none !important;
+      }
     }
 
     /* Responsive: mobile layout with bottom sheet */
@@ -712,7 +734,8 @@
       }
       
       .big {
-        font-size: 72px;
+        font-size: clamp(48px, 15vw, 72px);
+        /* Ensure it fits even on very small screens */
       }
       
       header {
@@ -737,6 +760,21 @@
       
       .location-input-group input {
         min-width: 100%;
+      }
+    }
+    
+    /* Extra small devices (very narrow phones) */
+    @media (max-width: 360px) {
+      .big {
+        font-size: clamp(40px, 12vw, 60px);
+      }
+      
+      .wrap {
+        padding: 12px;
+      }
+      
+      .card {
+        padding: 16px;
       }
     }
   </style>
