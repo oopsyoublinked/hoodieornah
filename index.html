@@ -697,6 +697,11 @@
                 </div>
               </div>
               
+              <div id="hourlyBreakdown" style="margin-top:14px; padding:14px; border-radius:14px; background:var(--panel2); border:1px solid var(--stroke);">
+                <div style="font-size:12px; font-weight:700; margin-bottom:10px; color:var(--text);">🕐 Throughout the day</div>
+                <div id="hourlyContent" style="display:grid; gap:8px;"></div>
+              </div>
+              
               <div id="dayTipsBox" style="margin-top:14px; padding:12px; border-radius:14px; background:var(--panel2); border:1px solid var(--stroke); display:none;">
                 <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:var(--text);">💭 Day planning</div>
                 <div id="dayTipsContent" style="font-size:12px; line-height:1.5; color:var(--muted);"></div>
@@ -773,6 +778,8 @@
       lastUpdated: document.getElementById("lastUpdated"),
       loadingBar: document.getElementById("loadingBar"),
       
+      hourlyBreakdown: document.getElementById("hourlyBreakdown"),
+      hourlyContent: document.getElementById("hourlyContent"),
       dayTipsBox: document.getElementById("dayTipsBox"),
       dayTipsContent: document.getElementById("dayTipsContent")
     };
@@ -1460,6 +1467,80 @@
       // Return up to 2 tips
       return tips.slice(0, 2);
     }
+    
+    function generateHourlyBreakdown(d, run){
+      // Estimate temperatures at key times throughout the day
+      // Based on typical temperature curves: coldest at sunrise, warmest mid-afternoon
+      const low = d.appMin;
+      const high = d.appMax;
+      const range = high - low;
+      
+      const periods = [
+        {
+          label: "Early Morning",
+          time: "6-9 AM",
+          // Close to minimum (sunrise time)
+          temp: low + (range * 0.1)
+        },
+        {
+          label: "Late Morning", 
+          time: "9 AM-12 PM",
+          // Warming up
+          temp: low + (range * 0.5)
+        },
+        {
+          label: "Afternoon",
+          time: "12-4 PM",
+          // Peak temperature
+          temp: high - (range * 0.05)
+        },
+        {
+          label: "Evening",
+          time: "4-8 PM",
+          // Cooling down
+          temp: low + (range * 0.4)
+        }
+      ];
+      
+      return periods.map(period => {
+        const verdict = verdictForFeels(period.temp, run, d.wind);
+        return {
+          label: period.label,
+          time: period.time,
+          temp: period.temp,
+          verdict: verdict.key
+        };
+      });
+    }
+    
+    function renderHourlyBreakdown(periods){
+      if (!el.hourlyContent) return;
+      
+      const verdictColors = {
+        PARKA: "rgba(129,140,248,.95)",
+        HOODIE: "rgba(96,165,250,.95)",
+        MAYBE: "rgba(251,191,36,.95)",
+        NAH: "rgba(248,113,113,.95)"
+      };
+      
+      const html = periods.map(p => {
+        const color = verdictColors[p.verdict] || "var(--text)";
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:10px; background:var(--panel); border:1px solid var(--stroke);">
+            <div style="flex:1;">
+              <div style="font-size:11px; color:var(--muted2); margin-bottom:2px;">${p.time}</div>
+              <div style="font-size:12px; font-weight:600; color:var(--text);">${p.label}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:14px; font-weight:700; color:var(--text);">${fmtTemp(p.temp)}</div>
+              <div style="font-size:10px; font-weight:700; color:${color}; margin-top:2px;">${p.verdict}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+      
+      el.hourlyContent.innerHTML = html;
+    }
 
     function renderWearByVerdict(verdict, feelsF, windMps, precipPct, code){
       let tries = 0;
@@ -1618,6 +1699,10 @@
         "Precip: " + (d.precip ?? "--") + "%"
       ];
       el.chipsRow.innerHTML = chips.map(c => "<span class=\"chip\">" + c + "</span>").join("");
+
+      // Generate and display hourly breakdown
+      const hourlyPeriods = generateHourlyBreakdown(d, run);
+      renderHourlyBreakdown(hourlyPeriods);
 
       // Generate and display day tips
       const dayTips = generateDayTips(d, verdict.key);
