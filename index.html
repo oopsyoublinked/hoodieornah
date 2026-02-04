@@ -469,33 +469,14 @@
     /* ========== FORECAST SECTION ========== */
     .forecast {
       margin-top: var(--space-lg);
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
       gap: var(--space-md);
-      overflow-x: auto;
-      overflow-y: visible;
-      padding: var(--space-sm) var(--space-sm) var(--space-lg);
-      margin: var(--space-lg) calc(var(--space-lg) * -1) var(--space-lg);
-      scrollbar-width: thin;
-      scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
       position: relative;
       z-index: 1;
     }
     
-    .forecast::-webkit-scrollbar {
-      height: 8px;
-    }
-    
-    .forecast::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    .forecast::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, 0.3);
-      border-radius: var(--radius-full);
-    }
-    
     .forecast-item {
-      min-width: 180px;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(20px);
       border: 2px solid rgba(0, 0, 0, 0.08);
@@ -1072,6 +1053,7 @@
     @media (max-width: 980px) {
       .brand { min-width: unset; }
       .main { grid-template-columns: 1fr; }
+      .forecast { grid-template-columns: repeat(3, 1fr); }
     }
     
     @media (max-width: 720px) {
@@ -1146,7 +1128,7 @@
       }
       
       .forecast {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: var(--space-sm);
       }
       
@@ -1188,6 +1170,10 @@
       }
       
       .statrow {
+        grid-template-columns: 1fr;
+      }
+      
+      .forecast {
         grid-template-columns: 1fr;
       }
       
@@ -1252,6 +1238,109 @@
     
     .theme-dark input::placeholder {
       color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .theme-dark .btn.secondary {
+      background: rgba(40, 40, 50, 0.9);
+      color: white;
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Dark mode text colors */
+    .theme-dark .stat small,
+    .theme-dark .stat strong,
+    .theme-dark .stat .sub,
+    .theme-dark .last-updated {
+      color: white;
+    }
+    
+    .theme-dark .forecast-item:not(.selected) .forecast-top b,
+    .theme-dark .forecast-item:not(.selected) .forecast-mid,
+    .theme-dark .forecast-item:not(.selected) .forecast-mid strong,
+    .theme-dark .forecast-item:not(.selected) .forecast-line {
+      color: white;
+    }
+    
+    .theme-dark .forecast-item:not(.selected) .forecast-mid {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .theme-dark .forecast-item:not(.selected) .forecast-line {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .theme-dark .oneliner,
+    .theme-dark .how-decided,
+    .theme-dark .wear-box,
+    .theme-dark .wear-list,
+    .theme-dark .wear-list li,
+    .theme-dark .subhead,
+    .theme-dark label,
+    .theme-dark .info-box-content,
+    .theme-dark .threshold-item,
+    .theme-dark .details-body,
+    .theme-dark .details-meta,
+    .theme-dark .site-footer {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
+    .theme-dark .how-decided b,
+    .theme-dark .wear-title,
+    .theme-dark .info-box-title,
+    .theme-dark h2,
+    .theme-dark h3,
+    .theme-dark .details-title,
+    .theme-dark .details-header b,
+    .theme-dark .sunlabel,
+    .theme-dark .sunvalue,
+    .theme-dark .hourly-label,
+    .theme-dark .hourly-temp,
+    .theme-dark .hourly-period,
+    .theme-dark .hourly-verdict {
+      color: white;
+    }
+    
+    .theme-dark .brand .word span {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .theme-dark .seg button {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .theme-dark .details {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    
+    .theme-dark .details-header {
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .theme-dark .info-box {
+      background: rgba(102, 126, 234, 0.15);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+    
+    .theme-dark .wear-box {
+      background: rgba(102, 126, 234, 0.15);
+      border-color: rgba(102, 126, 234, 0.3);
+    }
+    
+    .theme-dark .how-decided {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .theme-dark .tips-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-left-color: #667eea;
+    }
+    
+    .theme-dark .tips-title,
+    .theme-dark .tips-content,
+    .theme-dark .tips-content div {
+      color: rgba(255, 255, 255, 0.85);
     }
   </style>
 </head>
@@ -1437,7 +1526,7 @@
     <div class="site-footer">
       <div>
         <b>Contact</b>
-        <a href="mailto:info@hoodieornah.com">info@hoodieornah.com</a><br />
+        <a href="/cdn-cgi/l/email-protection#eb82858d84ab8384848f828e8499858a83c5888486"><span class="__cf_email__" data-cfemail="a1c8cfc7cee1c9cecec5c8c4ced3cfc0c98fc2cecc">[email&#160;protected]</span></a><br />
         We read it. Eventually.
       </div>
       <div style="max-width: 720px;">
@@ -1449,7 +1538,7 @@
 
   <div class="toast" id="toast"></div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const el = {
       brandHome: document.getElementById("brandHome"),
       leftCard: document.getElementById("leftCard"),
@@ -2689,13 +2778,4 @@
     el.refreshBtn?.addEventListener("click", () => {
       el.refreshBtn.classList.add("spinning");
       refreshWeather().finally(() => {
-        setTimeout(() => el.refreshBtn.classList.remove("spinning"), 800);
-      });
-    });
-    
-    el.themeBtn?.addEventListener("click", toggleTheme);
-    el.shareBtn?.addEventListener("click", shareVerdict);
-  </script>
-</body>
-</html></body>
-</html>
+        set
